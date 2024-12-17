@@ -91,7 +91,7 @@ export default function ResetPasswordPage() {
         )}
         </div>
         <div className='flex justify-center my-4'>
-          <Button variant="link" onClick={() => router.push("/ota/auth/login")}>
+          <Button variant="link" onClick={() => router.push("/app/auth/login")}>
             Volver a Iniciar Sesión
           </Button>
         </div>

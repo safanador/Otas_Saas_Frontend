@@ -78,7 +78,7 @@ export default function LoginPage() {
           <Button onClick={handleLogin} className="w-full" disabled={loading}>
             {loading ? "Cargando..." : "Iniciar sesión"}
           </Button>
-          <Button variant="link" onClick={() => router.push("/ota/auth/forgot-password")}>
+          <Button variant="link" onClick={() => router.push("/app/auth/forgot-password")}>
             ¿Olvidaste tu contraseña?
           </Button>
         </CardFooter>
