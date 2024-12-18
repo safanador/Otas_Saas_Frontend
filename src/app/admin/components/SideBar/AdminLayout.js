@@ -40,7 +40,8 @@ export default function AdminLayout({ children }) {
           </div>
         </header>
         <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
-          <SkeletonCard />
+          {/**
+          <SkeletonCard /> */}
           { children }
         </div>
       </SidebarInset>

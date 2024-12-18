@@ -96,13 +96,14 @@ const data = {
       icon: Puzzle,
       items: [
         {
-          title: "Introduction",
-          url: "#",
+          title: "Listar Roles",
+          url: "/admin/roles/list",
         },
         {
-          title: "Get Started",
-          url: "#",
+          title: "Crear Roles",
+          url: "/admin/roles/create",
         },
+        /**
         {
           title: "Tutorials",
           url: "#",
@@ -110,7 +111,7 @@ const data = {
         {
           title: "Changelog",
           url: "#",
-        },
+        }, */
       ],
     },
     {

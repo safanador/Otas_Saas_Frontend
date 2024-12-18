@@ -28,7 +28,7 @@ export default function LoginPage() {
       // Supongamos que el backend retorna un token o algún dato relevante
       if (response.data.token) {
         localStorage.setItem("token", response.data.token); // Almacenar el token
-        router.push("/dashboard"); // Redirigir al dashboard
+        router.push("/admin/dashboard"); // Redirigir al dashboard
       }
     } catch (err) {
       setError(err.response?.data?.message || "Error al iniciar sesión");
