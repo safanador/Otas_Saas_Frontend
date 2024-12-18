@@ -66,7 +66,7 @@ export default function ForgotPasswordPage() {
           )}
         </CardContent>
         <CardFooter className="flex justify-center">
-          <Button variant="link" onClick={() => router.push("/app/auth/login")}>
+          <Button variant="link" onClick={() => router.push("/auth/login")}>
             Volver a Iniciar Sesión
           </Button>
         </CardFooter>

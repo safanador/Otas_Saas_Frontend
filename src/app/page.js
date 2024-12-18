@@ -40,7 +40,7 @@ export default function Home() {
             />
             Deploy now
           </a>
-          <Link href="/ota/auth/login">
+          <Link href="/auth/login">
             <button className="border rounded-sm text-primary bg-gray-50 px-2 py-1  text-[16px]">Login</button>
           </Link>
         </div>
