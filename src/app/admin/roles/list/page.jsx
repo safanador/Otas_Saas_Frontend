@@ -72,6 +72,7 @@ const RolesList = () => {
                   <TableHead className="">Item</TableHead>
                     <TableHead className="">Rol</TableHead>
                     <TableHead className="">Fecha de Creación</TableHead>
+                    <TableHead className="">Fecha de Actualización</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -80,6 +81,7 @@ const RolesList = () => {
                       <TableCell>{index+1}</TableCell>
                       <TableCell>{role.name}</TableCell>
                       <TableCell>{new Date(role.createdAt).toLocaleDateString()}</TableCell>
+                      <TableCell>{new Date(role.updatedAt).toLocaleDateString()}</TableCell>
                       <TableCell>
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
@@ -105,7 +107,7 @@ const RolesList = () => {
                   ))
                 ) : (
                     <TableRow>
-                      <TableCell colSpan={4} className="text-center">
+                      <TableCell colSpan={5} className="text-center">
                         No se encontraron roles.
                       </TableCell>
                     </TableRow>
