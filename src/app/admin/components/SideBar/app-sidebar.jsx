@@ -11,7 +11,11 @@ import {
   Map,
   PieChart,
   Settings2,
-  SquareTerminal,
+  SquareTerminal, 
+  Receipt,
+  Users,
+  Puzzle,
+  House,
 } from "lucide-react"
 
 //import { NavMain } from "@/components/nav-main"
@@ -48,9 +52,9 @@ const data = {
   ],
   navMain: [
     {
-      title: "Playground",
+      title: "Inicio",
       url: "#",
-      icon: SquareTerminal,
+      icon: House,
       isActive: true,
       items: [
         {
@@ -68,9 +72,9 @@ const data = {
       ],
     },
     {
-      title: "Models",
+      title: "Usuarios",
       url: "#",
-      icon: Bot,
+      icon: Users,
       items: [
         {
           title: "Genesis",
@@ -87,9 +91,9 @@ const data = {
       ],
     },
     {
-      title: "Documentation",
+      title: "Roles",
       url: "#",
-      icon: BookOpen,
+      icon: Puzzle,
       items: [
         {
           title: "Introduction",
@@ -110,9 +114,55 @@ const data = {
       ],
     },
     {
-      title: "Settings",
+      title: "OTA's",
       url: "#",
       icon: Settings2,
+      items: [
+        {
+          title: "General",
+          url: "#",
+        },
+        {
+          title: "Team",
+          url: "#",
+        },
+        {
+          title: "Billing",
+          url: "#",
+        },
+        {
+          title: "Limits",
+          url: "#",
+        },
+      ],
+    },
+    {
+      title: "Suscripciones",
+      url: "#",
+      icon: Settings2,
+      items: [
+        {
+          title: "General",
+          url: "#",
+        },
+        {
+          title: "Team",
+          url: "#",
+        },
+        {
+          title: "Billing",
+          url: "#",
+        },
+        {
+          title: "Limits",
+          url: "#",
+        },
+      ],
+    },
+    {
+      title: "Pagos",
+      url: "#",
+      icon: Receipt,
       items: [
         {
           title: "General",
@@ -135,17 +185,17 @@ const data = {
   ],
   projects: [
     {
-      name: "Design Engineering",
+      name: "Partners",
       url: "#",
       icon: Frame,
     },
     {
-      name: "Sales & Marketing",
+      name: "Ventas & Marketing",
       url: "#",
       icon: PieChart,
     },
     {
-      name: "Travel",
+      name: "Reservas Online",
       url: "#",
       icon: Map,
     },
