@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
-import AdminLayout from "../../components/SideBar/AdminLayout";
+import AdminLayout from "../../../components/SideBar/AdminLayout";
 
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -19,20 +19,48 @@ import {
 } from "@/components/ui/select"
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
+import { useParams } from "next/navigation";
 
 
-const RolesCreate = () => {
+const RolesEdit = () => {
   const [permissions, setPermissions] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [form, setForm] = useState({name: "", type: "", permissionIds: []});
+  const [form, setForm] = useState({});
   const { toast } = useToast();
+  const { id } = useParams();
+  console.log(id)
+
+
+
+   // Renderiza un estado de carga mientras `id` no esté disponible
+   if (!id) {
+    return (
+    <AdminLayout>
+      <p>Cargando...</p>
+    </AdminLayout>
+    );
+  }
 
   useEffect(() => {
     const fetchPermissions = async () => {
       try {
+        //permisos de la tabla de permisos
         const response = await fetch("http://localhost:3000/api/v1/permissions/");
         const data = await response.json();
         setPermissions(data);
+
+        //role desde base de datos
+        const responseForm = await fetch(`http://localhost:3000/api/v1/roles/${id}`);
+        const dataForm = await responseForm.json();
+
+        //modificar los permisos del form
+        const formattedPermissions = dataForm.permissions.map((p)=> data.find((pDb) => pDb.description === p.description)?.description);
+
+        // Actualizar el formulario con permisos formateados
+      setForm({
+        ...dataForm,
+        permissions: formattedPermissions,
+      });
       } catch (error) {
         console.error("Error fetching roles:", error);
       } finally {
@@ -41,7 +69,7 @@ const RolesCreate = () => {
     };
 
     fetchPermissions();
-  }, []);
+  }, [id]);
 
   if (loading) {
     return (
@@ -52,6 +80,9 @@ const RolesCreate = () => {
         </AdminLayout>
     );
   }
+
+  console.log(form)
+
   // tabla de permisos
   const entities = [
     { spanish: 'Rol', english: 'role' },
@@ -67,24 +98,23 @@ const RolesCreate = () => {
   const handleCheckboxChange = (permission) => {
     setForm((prev) => ({
       ...prev,
-      permissionIds: prev.permissionIds.includes(permission)
-        ? prev.permissionIds.filter((perm) => perm !== permission)
-        : [...prev.permissionIds, permission],
+      permissions: prev.permissions.includes(permission)
+        ? prev.permissions.filter((perm) => perm !== permission)
+        : [...prev.permissions, permission],
     }));
   };
 
     const handleCreateRole = async () => {
       try {
-        console.log(form)
-        const formattedPermissions = form.permissionIds.map((p)=> permissions.find((pDb) => pDb.description === p)?.id).filter((id) => id !== undefined)
-        console.log(formattedPermissions);
+
+        const formattedPermissions = form.permissions.map((p)=> permissions.find((pDb) => pDb.description === p)?.id).filter((id) => id !== undefined)
         
         // Sobrescribir directamente los permisos en una copia del estado
-        const updatedForm = { ...form, permissionIds: formattedPermissions };
+        const updatedForm = { name: form.name, permissionIds: formattedPermissions , type: form.type };
 
         console.log("Formulario actualizado:", updatedForm);
-        const response = await fetch("http://localhost:3000/api/v1/roles", {
-          method: 'post',
+        const response = await fetch(`http://localhost:3000/api/v1/roles/${id}`, {
+          method: 'PATCH',
           headers: {
             'Content-Type': 'application/json', // Corrección
           },
@@ -94,7 +124,7 @@ const RolesCreate = () => {
         if (response.ok) {
           toast({
             title: "Realizado!",
-            description: "Rol creado exitosamente.",
+            description: "Rol editado exitosamente.",
           })
         }else{
           console.log(response)
@@ -117,7 +147,7 @@ const RolesCreate = () => {
     <AdminLayout>
       <Card>
         <CardHeader>
-          <CardTitle>Creación de rol</CardTitle>
+          <CardTitle>Edición de rol</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="container space-y-4 mx-auto py-8">
@@ -175,7 +205,7 @@ const RolesCreate = () => {
                             {getPermission(action, entity.english) && (
                                 <Checkbox
                                 id={`permission-${action}-${index}`}
-                                checked={form.permissionIds.includes(
+                                checked={form.permissions.includes(
                                     `${action} ${entity.english}`
                                 )}
                                 onCheckedChange={() =>
@@ -201,11 +231,11 @@ const RolesCreate = () => {
         <CardFooter className="w-full">
           <Button                 
             onClick={handleCreateRole}
-            className="w-full md:w-[100px]" >Crear Rol</Button>
+            className="w-full md:w-[100px]" >Editar Rol</Button>
         </CardFooter>
       </Card>
     </AdminLayout>
   );
 };
 
-export default RolesCreate;
+export default RolesEdit;

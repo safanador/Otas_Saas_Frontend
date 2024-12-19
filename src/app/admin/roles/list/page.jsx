@@ -8,6 +8,7 @@ import AdminLayout from "../../components/SideBar/AdminLayout";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { MoreHorizontal } from "lucide-react";
+import Link from "next/link";
 
 const RolesList = () => {
   const [roles, setRoles] = useState([]);
@@ -100,7 +101,9 @@ const RolesList = () => {
                               >
                               Ver Rol
                               </DropdownMenuItem>
-                              <DropdownMenuItem>Editar Rol</DropdownMenuItem>
+                              <Link href={`/admin/roles/edit/${role.id}`} >
+                                <DropdownMenuItem>Editar Rol</DropdownMenuItem>
+                              </Link>
                               <DropdownMenuSeparator />
                               <DropdownMenuItem>Eliminar Rol</DropdownMenuItem>
                           </DropdownMenuContent>
