@@ -53,9 +53,9 @@ const RolesList = () => {
           <CardTitle>Roles</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="container mx-auto px-4 md:px-6 py-8">
+          <div className="container mx-auto py-8">
             <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
-              <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Lista de roles</h1>
+              <h1 className="text-lg font-bold text-gray-900 dark:text-gray-100">Lista de roles</h1>
               <div className="flex items-center gap-2">
                 <Input 
                 type="search" 
@@ -65,56 +65,60 @@ const RolesList = () => {
                 className="w-full md:w-64" />
               </div>
             </div>
-            <div className="overflow-x-auto bg-white rounded-lg shadow dark:bg-gray-800">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                  <TableHead className="">Item</TableHead>
-                    <TableHead className="">Rol</TableHead>
-                    <TableHead className="">Fecha de Creación</TableHead>
-                    <TableHead className="">Fecha de Actualización</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {filteredRoles.length > 0 ? (filteredRoles.map((role, index) => (
-                    <TableRow key={role.id}>
-                      <TableCell>{index+1}</TableCell>
-                      <TableCell>{role.name}</TableCell>
-                      <TableCell>{new Date(role.createdAt).toLocaleDateString()}</TableCell>
-                      <TableCell>{new Date(role.updatedAt).toLocaleDateString()}</TableCell>
-                      <TableCell>
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" className="h-8 w-8 p-0">
-                            <span className="sr-only">Open menu</span>
-                            <MoreHorizontal className="h-4 w-4" />
-                            </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                            <DropdownMenuLabel>Acciones</DropdownMenuLabel>
-                            <DropdownMenuItem
-                            onClick={() => navigator.clipboard.writeText(payment.id)}
-                            >
-                            Ver Rol
-                            </DropdownMenuItem>
-                            <DropdownMenuItem>Editar Rol</DropdownMenuItem>
-                            <DropdownMenuSeparator />
-                            <DropdownMenuItem>Eliminar Rol</DropdownMenuItem>
-                        </DropdownMenuContent>
-                        </DropdownMenu>
-                      </TableCell>
-                    </TableRow>
-                  ))
-                ) : (
+            <div className="grid w-full items-center gap-1.5">
+              <div className="overflow-x-auto bg-white rounded-lg shadow dark:bg-gray-800">
+                <Table>
+                  <TableHeader>
                     <TableRow>
-                      <TableCell colSpan={5} className="text-center">
-                        No se encontraron roles.
-                      </TableCell>
+                    <TableHead className="text-center">Item</TableHead>
+                      <TableHead className="text-left">Rol</TableHead>
+                      <TableHead className="text-left">Tipo de Rol</TableHead>
+                      <TableHead className="text-left">Fecha de Creación</TableHead>
+                      <TableHead className="text-left">Fecha de Actualización</TableHead>
                     </TableRow>
-                )
-                  }
-                </TableBody>
-              </Table>
+                  </TableHeader>
+                  <TableBody>
+                    {filteredRoles.length > 0 ? (filteredRoles.map((role, index) => (
+                      <TableRow key={role.id}>
+                        <TableCell className="text-center" >{index+1}</TableCell>
+                        <TableCell className="capitalize" >{role.name}</TableCell>
+                        <TableCell className="capitalize" >{role.type == 'ota' ? `OTA's` : "Software"}</TableCell>
+                        <TableCell>{new Date(role.createdAt).toLocaleDateString()}</TableCell>
+                        <TableCell>{new Date(role.updatedAt).toLocaleDateString()}</TableCell>
+                        <TableCell>
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                              <Button variant="ghost" className="h-8 w-8 p-0">
+                              <span className="sr-only">Open menu</span>
+                              <MoreHorizontal className="h-4 w-4" />
+                              </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end">
+                              <DropdownMenuLabel>Acciones</DropdownMenuLabel>
+                              <DropdownMenuItem
+                              onClick={() => navigator.clipboard.writeText(payment.id)}
+                              >
+                              Ver Rol
+                              </DropdownMenuItem>
+                              <DropdownMenuItem>Editar Rol</DropdownMenuItem>
+                              <DropdownMenuSeparator />
+                              <DropdownMenuItem>Eliminar Rol</DropdownMenuItem>
+                          </DropdownMenuContent>
+                          </DropdownMenu>
+                        </TableCell>
+                      </TableRow>
+                    ))
+                  ) : (
+                      <TableRow>
+                        <TableCell colSpan={5} className="text-center">
+                          No se encontraron roles.
+                        </TableCell>
+                      </TableRow>
+                  )
+                    }
+                  </TableBody>
+                </Table>
+              </div>
             </div>
           </div>
         </CardContent>
