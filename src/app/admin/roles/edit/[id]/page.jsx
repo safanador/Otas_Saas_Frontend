@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
 import AdminLayout from "../../../components/SideBar/AdminLayout";
@@ -148,9 +148,10 @@ const RolesEdit = () => {
       <Card>
         <CardHeader>
           <CardTitle>Edición de rol</CardTitle>
+          <CardDescription>A continuación edita toda la información necesaria relacionada al rol.</CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="container space-y-4 mx-auto py-8">
+          <div className="container space-y-4 mx-auto py-2">
           <h1 className="text-lg font-bold text-gray-900 dark:text-gray-100">Rol</h1>
           <div className="grid w-full max-w-lg items-center gap-1.5">
             <Label htmlFor="name">Nombre del rol</Label>

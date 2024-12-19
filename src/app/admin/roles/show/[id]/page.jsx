@@ -4,7 +4,6 @@ import React, { useEffect, useState } from "react";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
-import AdminLayout from "../../components/SideBar/AdminLayout";
 
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -17,22 +16,45 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { Button } from "@/components/ui/button";
-import { useToast } from "@/hooks/use-toast";
+import { useParams } from "next/navigation";
+import AdminLayout from "@/app/admin/components/SideBar/AdminLayout";
 
 
-const RolesCreate = () => {
+const RolesShow = () => {
   const [permissions, setPermissions] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [form, setForm] = useState({name: "", type: "", permissionIds: []});
-  const { toast } = useToast();
+  const [form, setForm] = useState({});
+  const { id } = useParams();
+
+   // Renderiza un estado de carga mientras `id` no esté disponible
+   if (!id) {
+    return (
+    <AdminLayout>
+      <p>Cargando...</p>
+    </AdminLayout>
+    );
+  }
 
   useEffect(() => {
     const fetchPermissions = async () => {
       try {
+        //permisos de la tabla de permisos
         const response = await fetch("http://localhost:3000/api/v1/permissions/");
         const data = await response.json();
         setPermissions(data);
+
+        //role desde base de datos
+        const responseForm = await fetch(`http://localhost:3000/api/v1/roles/${id}`);
+        const dataForm = await responseForm.json();
+
+        //modificar los permisos del form
+        const formattedPermissions = dataForm.permissions.map((p)=> data.find((pDb) => pDb.description === p.description)?.description);
+
+        // Actualizar el formulario con permisos formateados
+      setForm({
+        ...dataForm,
+        permissions: formattedPermissions,
+      });
       } catch (error) {
         console.error("Error fetching roles:", error);
       } finally {
@@ -41,7 +63,7 @@ const RolesCreate = () => {
     };
 
     fetchPermissions();
-  }, []);
+  }, [id]);
 
   if (loading) {
     return (
@@ -52,12 +74,12 @@ const RolesCreate = () => {
         </AdminLayout>
     );
   }
+
   // tabla de permisos
   const entities = [
     { spanish: 'Rol', english: 'role' },
     { spanish: 'Usuario', english: 'user' },
   ];
-
 
   const getPermission = (action, entity) => {
     const permissionString = `${action} ${entity}`;
@@ -67,58 +89,18 @@ const RolesCreate = () => {
   const handleCheckboxChange = (permission) => {
     setForm((prev) => ({
       ...prev,
-      permissionIds: prev.permissionIds.includes(permission)
-        ? prev.permissionIds.filter((perm) => perm !== permission)
-        : [...prev.permissionIds, permission],
+      permissions: prev.permissions.includes(permission)
+        ? prev.permissions.filter((perm) => perm !== permission)
+        : [...prev.permissions, permission],
     }));
   };
-
-    const handleCreateRole = async () => {
-      try {
-        console.log(form)
-        const formattedPermissions = form.permissionIds.map((p)=> permissions.find((pDb) => pDb.description === p)?.id).filter((id) => id !== undefined)
-        console.log(formattedPermissions);
-        
-        // Sobrescribir directamente los permisos en una copia del estado
-        const updatedForm = { ...form, permissionIds: formattedPermissions };
-
-        console.log("Formulario actualizado:", updatedForm);
-        const response = await fetch("http://localhost:3000/api/v1/roles", {
-          method: 'post',
-          headers: {
-            'Content-Type': 'application/json', // Corrección
-          },
-          body: JSON.stringify(updatedForm),
-        });
-
-        if (response.ok) {
-          toast({
-            title: "Realizado!",
-            description: "Rol creado exitosamente.",
-          })
-        }else{
-          console.log(response)
-          toast({
-            title: "Uh oh! Parece que algo salió mal.",
-            description: "Por favor, intenta más tarde.",
-          })
-        }
-        
-      } catch (error) {
-          console.error('Error en la solicitud:', error);
-          toast({
-            title: "Uh oh! Parece que algo salió mal.",
-            description: "Por favor, intenta más tarde.",
-          })
-      }
-    };
 
   return (
     <AdminLayout>
       <Card>
         <CardHeader>
-          <CardTitle>Creación de rol</CardTitle>
-          <CardDescription>A continuación agrega toda la información relacionada al rol.</CardDescription>
+          <CardTitle>Detalles del Rol</CardTitle>
+          <CardDescription>A continuación disponible toda la información relacionada al rol.</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="container space-y-4 mx-auto py-2">
@@ -126,6 +108,7 @@ const RolesCreate = () => {
           <div className="grid w-full max-w-lg items-center gap-1.5">
             <Label htmlFor="name">Nombre del rol</Label>
             <Input 
+              disabled
               type="text" 
               id="name" 
               placeholder="Nombre..." 
@@ -136,6 +119,7 @@ const RolesCreate = () => {
             <div className="grid w-full max-w-lg items-center gap-1.5" >
               <Label htmlFor="user-type" >Tipo de usuario</Label>
               <Select
+                disabled
                 value={form.type}
                 onValueChange={(value) => setForm({...form, type: value})}
               >
@@ -175,8 +159,9 @@ const RolesCreate = () => {
                             <td key={index} className="border p-2 text-center">
                             {getPermission(action, entity.english) && (
                                 <Checkbox
+                                disabled
                                 id={`permission-${action}-${index}`}
-                                checked={form.permissionIds.includes(
+                                checked={form.permissions.includes(
                                     `${action} ${entity.english}`
                                 )}
                                 onCheckedChange={() =>
@@ -199,14 +184,9 @@ const RolesCreate = () => {
 
           </div>
         </CardContent>
-        <CardFooter className="w-full">
-          <Button                 
-            onClick={handleCreateRole}
-            className="w-full md:w-[100px]" >Crear Rol</Button>
-        </CardFooter>
       </Card>
     </AdminLayout>
   );
 };
 
-export default RolesCreate;
+export default RolesShow;

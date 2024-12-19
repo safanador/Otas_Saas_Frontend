@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
 import AdminLayout from "../../components/SideBar/AdminLayout";
@@ -9,11 +9,15 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel,
 import { Button } from "@/components/ui/button";
 import { MoreHorizontal } from "lucide-react";
 import Link from "next/link";
+import { useToast } from "@/hooks/use-toast";
+import { useRouter } from "next/navigation";
 
 const RolesList = () => {
   const [roles, setRoles] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
+  const { toast } = useToast();
+  const router = useRouter();
 
 
   useEffect(() => {
@@ -47,14 +51,50 @@ const RolesList = () => {
     );
   }
 
+  const handleDeleteRole = async (id) => {
+    try {
+      
+      const response = await fetch(`http://localhost:3000/api/v1/roles/${id}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json', // Corrección
+        },
+      });
+
+      if (response.ok) {
+        toast({
+          title: "Realizado!",
+          description: "Rol eliminado exitosamente.",
+        })
+        setTimeout(() => {
+          window.location.reload(); // Recargar la página actual
+        }, 5000);
+      }else{
+        console.log(response)
+        toast({
+          title: "Uh oh! Parece que algo salió mal.",
+          description: "Por favor, intenta más tarde.",
+        })
+      }
+      
+    } catch (error) {
+        console.error('Error en la solicitud:', error);
+        toast({
+          title: "Uh oh! Parece que algo salió mal.",
+          description: "Por favor, intenta más tarde.",
+        })
+    }
+  };
+
   return (
     <AdminLayout>
       <Card>
         <CardHeader>
           <CardTitle>Roles</CardTitle>
+          <CardDescription>A continuación se presenta una lista con aspectos generales de los roles.</CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="container mx-auto py-8">
+          <div className="container mx-auto py-2">
             <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
               <h1 className="text-lg font-bold text-gray-900 dark:text-gray-100">Lista de roles</h1>
               <div className="flex items-center gap-2">
@@ -96,16 +136,16 @@ const RolesList = () => {
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end">
                               <DropdownMenuLabel>Acciones</DropdownMenuLabel>
-                              <DropdownMenuItem
-                              onClick={() => navigator.clipboard.writeText(payment.id)}
-                              >
-                              Ver Rol
+                              <DropdownMenuItem onClick={() => router.push(`/admin/roles/show/${role.id}`)}>
+                                Ver Rol
                               </DropdownMenuItem>
-                              <Link href={`/admin/roles/edit/${role.id}`} >
-                                <DropdownMenuItem>Editar Rol</DropdownMenuItem>
-                              </Link>
+                              <DropdownMenuItem onClick={() => router.push(`/admin/roles/edit/${role.id}`) } >
+                                Editar Rol
+                              </DropdownMenuItem>
                               <DropdownMenuSeparator />
-                              <DropdownMenuItem>Eliminar Rol</DropdownMenuItem>
+                              <DropdownMenuItem onClick={() => handleDeleteRole(role.id)}>
+                                Eliminar Rol
+                              </DropdownMenuItem>
                           </DropdownMenuContent>
                           </DropdownMenu>
                         </TableCell>
