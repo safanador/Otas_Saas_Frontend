@@ -6,11 +6,12 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Input } from "@/components/ui/input";
 import AdminLayout from "../../components/SideBar/AdminLayout";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { MoreHorizontal } from "lucide-react";
 import Link from "next/link";
 import { useToast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 
 const RolesList = () => {
   const [roles, setRoles] = useState([]);
@@ -18,6 +19,8 @@ const RolesList = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const { toast } = useToast();
   const router = useRouter();
+  const [open, setOpen] = useState(false);
+
 
 
   useEffect(() => {
@@ -63,25 +66,27 @@ const RolesList = () => {
 
       if (response.ok) {
         toast({
+          variant: "success",
           title: "Realizado!",
           description: "Rol eliminado exitosamente.",
         })
         setTimeout(() => {
           window.location.reload(); // Recargar la página actual
-        }, 5000);
+        }, 1000);
       }else{
         console.log(response)
         toast({
+          variant: "destructive",
           title: "Uh oh! Parece que algo salió mal.",
           description: "Por favor, intenta más tarde.",
         })
       }
       
     } catch (error) {
-        console.error('Error en la solicitud:', error);
         toast({
+          variant: "destructive",
           title: "Uh oh! Parece que algo salió mal.",
-          description: "Por favor, intenta más tarde.",
+          description: "No se pudo conectar con el servidor. Por favor, intenta más tarde.",
         })
     }
   };
@@ -143,9 +148,29 @@ const RolesList = () => {
                                 Editar Rol
                               </DropdownMenuItem>
                               <DropdownMenuSeparator />
-                              <DropdownMenuItem onClick={() => handleDeleteRole(role.id)}>
+                              <DropdownMenuItem onClick={(e) => {
+                                    e.preventDefault(); // Evita que el menú se cierre automáticamente
+                                    setOpen(true);
+                                  }}>
                                 Eliminar Rol
                               </DropdownMenuItem>
+                              {/** Delete confirmation */}
+
+                              <AlertDialog open={open} onOpenChange={setOpen}>
+                                <AlertDialogContent>
+                                  <AlertDialogHeader>
+                                    <AlertDialogTitle>Estás seguro de eliminar este rol?</AlertDialogTitle>
+                                    <AlertDialogDescription>
+                                      Esta acción no se puede deshacer. Este será permanentemente eliminado de la base de datos.
+                                    </AlertDialogDescription>
+                                  </AlertDialogHeader>
+                                  <AlertDialogFooter>
+                                    <AlertDialogCancel >Cancelar</AlertDialogCancel>
+                                    <AlertDialogAction className={buttonVariants({ variant: "destructive" })} onClick={() => handleDeleteRole(role.id)} >Continuar</AlertDialogAction>
+                                  </AlertDialogFooter>
+                                </AlertDialogContent>
+                              </AlertDialog>
+                              
                           </DropdownMenuContent>
                           </DropdownMenu>
                         </TableCell>

@@ -19,12 +19,16 @@ import {
 } from "@/components/ui/select"
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
+import { Toast, ToastDescription, ToastTitle } from "@/components/ui/toast";
 
 
 const RolesCreate = () => {
   const [permissions, setPermissions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [form, setForm] = useState({name: "", type: "", permissionIds: []});
+  const [open, setOpen] = useState(false);
+  const [errorData, setErrorData] = useState();
   const { toast } = useToast();
 
   useEffect(() => {
@@ -75,14 +79,12 @@ const RolesCreate = () => {
 
     const handleCreateRole = async () => {
       try {
-        console.log(form)
+        setErrorData([])
         const formattedPermissions = form.permissionIds.map((p)=> permissions.find((pDb) => pDb.description === p)?.id).filter((id) => id !== undefined)
-        console.log(formattedPermissions);
         
         // Sobrescribir directamente los permisos en una copia del estado
         const updatedForm = { ...form, permissionIds: formattedPermissions };
 
-        console.log("Formulario actualizado:", updatedForm);
         const response = await fetch("http://localhost:3000/api/v1/roles", {
           method: 'post',
           headers: {
@@ -93,24 +95,31 @@ const RolesCreate = () => {
 
         if (response.ok) {
           toast({
+            variant: "success",
             title: "Realizado!",
             description: "Rol creado exitosamente.",
           })
         }else{
-          console.log(response)
-          toast({
-            title: "Uh oh! Parece que algo salió mal.",
-            description: "Por favor, intenta más tarde.",
-          })
+          const errorData = await response.json(); 
+          setErrorData(errorData.message)
         }
-        
       } catch (error) {
-          console.error('Error en la solicitud:', error);
           toast({
+            variant: "destructive",
             title: "Uh oh! Parece que algo salió mal.",
-            description: "Por favor, intenta más tarde.",
+            description: "No se pudo conectar con el servidor. Por favor, intenta más tarde.",
           })
       }
+    };
+
+    const renderFieldErrors = (fieldName, errors) => {
+      return errors
+        .filter(error => error.property === fieldName)
+        .map((error, index) => (
+          <p key={index} className="text-red-500 text-sm">
+            {error.message}
+          </p>
+        ));
     };
 
   return (
@@ -118,7 +127,9 @@ const RolesCreate = () => {
       <Card>
         <CardHeader>
           <CardTitle>Creación de rol</CardTitle>
-          <CardDescription>A continuación agrega toda la información relacionada al rol.</CardDescription>
+          <CardDescription>
+            Este rol permite gestionar el contenido de la aplicación mediante un sistema de permisos y roles.
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="container space-y-4 mx-auto py-2">
@@ -131,6 +142,7 @@ const RolesCreate = () => {
               placeholder="Nombre..." 
               value={form.name}
               onChange={(e) => setForm({...form, name: e.target.value})} />
+              {errorData && renderFieldErrors('name',errorData)}
           </div>
 
             <div className="grid w-full max-w-lg items-center gap-1.5" >
@@ -150,6 +162,8 @@ const RolesCreate = () => {
                   </SelectGroup>
                 </SelectContent>
               </Select>
+              {errorData && renderFieldErrors('type',errorData)}
+
             </div>
             <div className="grid w-full max-w-lg items-center gap-1.5" >
             <Label htmlFor="permissions" >Selecciona permisos</Label>
@@ -195,14 +209,32 @@ const RolesCreate = () => {
                 </TableBody>
               </Table>
               </div>
+              {errorData &&  renderFieldErrors('permissionIds',errorData)}
             </div>
-
           </div>
         </CardContent>
         <CardFooter className="w-full">
           <Button                 
-            onClick={handleCreateRole}
-            className="w-full md:w-[100px]" >Crear Rol</Button>
+            onClick={() => setOpen(true)}
+            className="w-full md:w-[100px]" >
+              Crear Rol
+          </Button>
+
+          <AlertDialog open={open} onOpenChange={setOpen}>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Estás seguro de crear este rol?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    Este rol permite gestionar el contenido de la aplicación mediante un sistema de permisos y roles.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel >Cancelar</AlertDialogCancel>
+                  <AlertDialogAction onClick={handleCreateRole} >Continuar</AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+          </AlertDialog>
+
         </CardFooter>
       </Card>
     </AdminLayout>

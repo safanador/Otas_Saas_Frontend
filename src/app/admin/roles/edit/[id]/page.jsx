@@ -26,11 +26,9 @@ const RolesEdit = () => {
   const [permissions, setPermissions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [form, setForm] = useState({});
+  const [errorData, setErrorData] = useState([]);
   const { toast } = useToast();
   const { id } = useParams();
-  console.log(id)
-
-
 
    // Renderiza un estado de carga mientras `id` no esté disponible
    if (!id) {
@@ -106,7 +104,7 @@ const RolesEdit = () => {
 
     const handleCreateRole = async () => {
       try {
-
+        setErrorData([]);
         const formattedPermissions = form.permissions.map((p)=> permissions.find((pDb) => pDb.description === p)?.id).filter((id) => id !== undefined)
         
         // Sobrescribir directamente los permisos en una copia del estado
@@ -123,24 +121,33 @@ const RolesEdit = () => {
 
         if (response.ok) {
           toast({
+            variant: "success",
             title: "Realizado!",
             description: "Rol editado exitosamente.",
           })
         }else{
           console.log(response)
-          toast({
-            title: "Uh oh! Parece que algo salió mal.",
-            description: "Por favor, intenta más tarde.",
-          })
+          const errorData = await response.json(); 
+          setErrorData(errorData.message)
         }
         
       } catch (error) {
-          console.error('Error en la solicitud:', error);
           toast({
+            variant: "destructive",
             title: "Uh oh! Parece que algo salió mal.",
-            description: "Por favor, intenta más tarde.",
+            description: "No se pudo conectar con el servidor. Por favor, intenta más tarde.",
           })
       }
+    };
+
+    const renderFieldErrors = (fieldName, errors) => {
+      return errors
+        .filter(error => error.property === fieldName)
+        .map((error, index) => (
+          <p key={index} className="text-red-500 text-sm">
+            {error.message}
+          </p>
+        ));
     };
 
   return (
@@ -161,6 +168,8 @@ const RolesEdit = () => {
               placeholder="Nombre..." 
               value={form.name}
               onChange={(e) => setForm({...form, name: e.target.value})} />
+              {errorData &&  renderFieldErrors('name',errorData)}
+
           </div>
 
             <div className="grid w-full max-w-lg items-center gap-1.5" >
@@ -180,6 +189,8 @@ const RolesEdit = () => {
                   </SelectGroup>
                 </SelectContent>
               </Select>
+              {errorData &&  renderFieldErrors('type',errorData)}
+
             </div>
             <div className="grid w-full max-w-lg items-center gap-1.5" >
             <Label htmlFor="permissions" >Selecciona permisos</Label>
@@ -225,6 +236,7 @@ const RolesEdit = () => {
                 </TableBody>
               </Table>
               </div>
+              {errorData &&  renderFieldErrors('permissionIds',errorData)}
             </div>
 
           </div>
