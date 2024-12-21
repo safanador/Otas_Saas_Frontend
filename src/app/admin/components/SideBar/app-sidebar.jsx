@@ -16,6 +16,7 @@ import {
   Users,
   Puzzle,
   House,
+  Store,
 } from "lucide-react"
 
 //import { NavMain } from "@/components/nav-main"
@@ -115,18 +116,19 @@ const data = {
       ],
     },
     {
-      title: "OTA's",
+      title: "Agencias",
       url: "#",
-      icon: Settings2,
+      icon: Store,
       items: [
         {
-          title: "General",
-          url: "#",
+          title: "Listar",
+          url: "/admin/list",
         },
         {
-          title: "Team",
-          url: "#",
+          title: "Crear",
+          url: "/admin/create",
         },
+        /**
         {
           title: "Billing",
           url: "#",
@@ -134,7 +136,7 @@ const data = {
         {
           title: "Limits",
           url: "#",
-        },
+        }, */
       ],
     },
     {
