@@ -5,7 +5,8 @@ import axios from "axios";
 import { Input } from "@/components/ui/input"; // Importa el componente de ShadcnUI
 import { Button } from "@/components/ui/button"; // Botón de ShadcnUI
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import Link from "next/link";
+import { useDispatch, useSelector } from "react-redux";
+import { setUser } from "@/app/GlobalRedux/Features/auth/authSlice";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -13,6 +14,7 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const router = useRouter();
+  const dispatch = useDispatch();
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -23,13 +25,22 @@ export default function LoginPage() {
       const response = await axios.post("http://localhost:3000/api/v1/auth/login", {
         email,
         password,
-      });
-      
-      // Supongamos que el backend retorna un token o algún dato relevante
-      if (response.data.token) {
-        localStorage.setItem("token", response.data.token); // Almacenar el token
-        router.push("/admin/dashboard"); // Redirigir al dashboard
       }
+      , { withCredentials: true } // Permite envío/recepción de cookies
+    );
+
+    console.log(response);
+    
+      //actualiza el estado global con la información del usuario
+      dispatch(setUser(response.data.user));
+      
+      //Redirige al usuario a la ruta adecuada
+      if (response.data.user.role.scope === 'global') {
+        router.push('/admin/dashboard');
+      } else if (response.data.user.role.scope === 'agency') {
+        router.push('/ota/dashboard');
+      }
+
     } catch (err) {
       setError(err.response?.data?.message || "Error al iniciar sesión");
     } finally {

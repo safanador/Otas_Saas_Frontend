@@ -1,6 +1,7 @@
 import localFont from "next/font/local";
 import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
+import Providers from "./GlobalRedux/provider";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -22,10 +23,11 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        <main>{children}</main>
-        <Toaster />
+        className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+          <Providers>
+            {children}
+            <Toaster />
+         </Providers>
       </body>
     </html>
   );
