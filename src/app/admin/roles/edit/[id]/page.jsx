@@ -20,13 +20,16 @@ import {
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { useParams } from "next/navigation";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 
 
 const RolesEdit = () => {
   const [permissions, setPermissions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [form, setForm] = useState({});
+  const [agencies, setAgencies] = useState([]);
   const [errorData, setErrorData] = useState([]);
+  const [open, setOpen] = useState(false);
   const { toast } = useToast();
   const { id } = useParams();
 
@@ -40,25 +43,36 @@ const RolesEdit = () => {
   }
 
   useEffect(() => {
-    const fetchPermissions = async () => {
+    const fetchPermissionsAndAgencies = async () => {
       try {
         //permisos de la tabla de permisos
-        const response = await fetch("http://localhost:3000/api/v1/permissions/");
-        const data = await response.json();
-        setPermissions(data);
+        const responsePermissions = await fetch("http://localhost:3000/api/v1/permissions/");
+        const permissionsData = await responsePermissions.json();
+        setPermissions(permissionsData);
 
-        //role desde base de datos
-        const responseForm = await fetch(`http://localhost:3000/api/v1/roles/${id}`);
-        const dataForm = await responseForm.json();
+        //Obtener rol desde la base de datos
+        const responseForm = await fetch(`http://localhost:3000/api/v1/roles/${id}`, {
+          credentials: 'include'
+        });
+        const formData = await responseForm.json();
+        console.log(formData);
+        const formattedPermissions = formData.permissions.map((p)=> permissionsData.find((pDb) => pDb.description === p.description)?.description);
 
-        //modificar los permisos del form
-        const formattedPermissions = dataForm.permissions.map((p)=> data.find((pDb) => pDb.description === p.description)?.description);
+        const { agency, createdAt, updatedAt, ...rest } = formData;
 
-        // Actualizar el formulario con permisos formateados
-      setForm({
-        ...dataForm,
-        permissions: formattedPermissions,
-      });
+        setForm({
+          ...rest,
+          agencyId: agency?.id,
+          permissions: formattedPermissions,
+        });
+
+        // Obtener agencias
+        const responseAgencies = await fetch("http://localhost:3000/api/v1/agencies", {
+          credentials: 'include',
+        });
+        const agenciesData = await responseAgencies.json();
+        setAgencies(agenciesData);
+
       } catch (error) {
         console.error("Error fetching roles:", error);
       } finally {
@@ -66,7 +80,8 @@ const RolesEdit = () => {
       }
     };
 
-    fetchPermissions();
+    fetchPermissionsAndAgencies();
+    
   }, [id]);
 
   if (loading) {
@@ -85,8 +100,8 @@ const RolesEdit = () => {
   const entities = [
     { spanish: 'Rol', english: 'role' },
     { spanish: 'Usuario', english: 'user' },
+    { spanish: 'Agencia', english: 'agency' },
   ];
-
 
   const getPermission = (action, entity) => {
     const permissionString = `${action} ${entity}`;
@@ -102,21 +117,34 @@ const RolesEdit = () => {
     }));
   };
 
-    const handleCreateRole = async () => {
+    const handleCreateRole = async (e) => {
       try {
         setErrorData([]);
         const formattedPermissions = form.permissions.map((p)=> permissions.find((pDb) => pDb.description === p)?.id).filter((id) => id !== undefined)
         
-        // Sobrescribir directamente los permisos en una copia del estado
-        const updatedForm = { name: form.name, permissionIds: formattedPermissions , type: form.type };
+        /**
+        const updatedForm = { 
+          name: form.name, 
+          permissions: formattedPermissions , 
+          scope: form.scope }; */
 
-        console.log("Formulario actualizado:", updatedForm);
+        // Sobrescribir directamente los permisos en una copia del estado
+        let updatedForm = { ...form, permissions: formattedPermissions };
+        const { id, ...rest} = updatedForm;
+        updatedForm = rest; //saca el id del form
+
+        if (updatedForm.scope=== 'global') {
+          updatedForm = {...updatedForm, agencyId: null};
+        }
+        console.log(updatedForm);
+        
         const response = await fetch(`http://localhost:3000/api/v1/roles/${id}`, {
           method: 'PATCH',
           headers: {
-            'Content-Type': 'application/json', // Corrección
+            'Content-Type': 'application/json',
           },
           body: JSON.stringify(updatedForm),
+          credentials: 'include'
         });
 
         if (response.ok) {
@@ -130,7 +158,7 @@ const RolesEdit = () => {
           const errorData = await response.json(); 
           setErrorData(errorData.message)
         }
-        
+      
       } catch (error) {
           toast({
             variant: "destructive",
@@ -169,14 +197,13 @@ const RolesEdit = () => {
               value={form.name}
               onChange={(e) => setForm({...form, name: e.target.value})} />
               {errorData &&  renderFieldErrors('name',errorData)}
-
           </div>
 
             <div className="grid w-full max-w-lg items-center gap-1.5" >
               <Label htmlFor="user-type" >Tipo de usuario</Label>
               <Select
-                value={form.type}
-                onValueChange={(value) => setForm({...form, type: value})}
+                value={form.scope}
+                onValueChange={(value) => setForm({...form, scope: value})}
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Tipo de usuario" />
@@ -184,14 +211,40 @@ const RolesEdit = () => {
                 <SelectContent>
                   <SelectGroup>
                     <SelectLabel>Tipos</SelectLabel>
-                    <SelectItem value="ota">OTA's</SelectItem>
-                    <SelectItem value="system">Software</SelectItem>
+                    <SelectItem value="agency">Agencia</SelectItem>
+                    <SelectItem value="global">Empresa desarrolladora</SelectItem>
                   </SelectGroup>
                 </SelectContent>
               </Select>
-              {errorData &&  renderFieldErrors('type',errorData)}
-
+              {errorData &&  renderFieldErrors('scope',errorData)}
             </div>
+
+            { form.scope === 'agency' && (
+              <div className="grid w-full max-w-lg items-center gap-1.5" >
+                <Label htmlFor="user-type" >Agencia asociada</Label>
+                <Select
+                  value={form.agencyId}
+                  onValueChange={(value) => setForm({...form, agencyId: value})}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Selecciona una agencia" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectGroup>
+                      <SelectLabel>Agencias</SelectLabel>
+                      {agencies.map((agency) => (
+                        <SelectItem key={agency.id} value={agency.id} >
+                          {agency.name}
+                        </SelectItem>
+                      ))}
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
+                {errorData && renderFieldErrors('agencyId',errorData)}
+
+              </div>
+            )}
+
             <div className="grid w-full max-w-lg items-center gap-1.5" >
             <Label htmlFor="permissions" >Selecciona permisos</Label>
             <div className="overflow-x-auto bg-white rounded-lg shadow dark:bg-gray-800">
@@ -236,15 +289,32 @@ const RolesEdit = () => {
                 </TableBody>
               </Table>
               </div>
-              {errorData &&  renderFieldErrors('permissionIds',errorData)}
+              {errorData &&  renderFieldErrors('permissions',errorData)}
             </div>
 
           </div>
         </CardContent>
         <CardFooter className="w-full">
-          <Button                 
-            onClick={handleCreateRole}
-            className="w-full md:w-[100px]" >Editar Rol</Button>
+          <Button   
+            onClick={() => setOpen(true)}              
+            className="w-full md:w-[100px]" >
+              Editar Rol
+          </Button>
+
+          <AlertDialog open={open} onOpenChange={setOpen}>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Estás seguro de editar este rol?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    Este rol permite gestionar el contenido de la aplicación mediante un sistema de permisos y roles.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel >Cancelar</AlertDialogCancel>
+                  <AlertDialogAction onClick={handleCreateRole} >Continuar</AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+          </AlertDialog>
         </CardFooter>
       </Card>
     </AdminLayout>

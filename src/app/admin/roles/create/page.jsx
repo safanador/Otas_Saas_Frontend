@@ -26,7 +26,8 @@ import { Toast, ToastDescription, ToastTitle } from "@/components/ui/toast";
 const RolesCreate = () => {
   const [permissions, setPermissions] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [form, setForm] = useState({name: "", type: "", permissionIds: []});
+  const [form, setForm] = useState({name: "", scope: "", permissions: [], agencyId: null});
+  const [agencies, setAgencies] = useState([]);
   const [open, setOpen] = useState(false);
   const [errorData, setErrorData] = useState();
   const { toast } = useToast();
@@ -45,6 +46,23 @@ const RolesCreate = () => {
     };
 
     fetchPermissions();
+
+    const fetchAgencies = async () => {
+      try {
+        const response = await fetch("http://localhost:3000/api/v1/agencies", {
+          credentials: 'include'
+        });
+        const agencies = await response.json();
+        console.log(agencies);
+        setAgencies(agencies);
+      } catch (error) {
+        console.error("Error fetching agencies:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchAgencies();
   }, []);
 
   if (loading) {
@@ -60,6 +78,7 @@ const RolesCreate = () => {
   const entities = [
     { spanish: 'Rol', english: 'role' },
     { spanish: 'Usuario', english: 'user' },
+    { spanish: 'Agencia', english: 'agency' },
   ];
 
 
@@ -71,26 +90,33 @@ const RolesCreate = () => {
   const handleCheckboxChange = (permission) => {
     setForm((prev) => ({
       ...prev,
-      permissionIds: prev.permissionIds.includes(permission)
-        ? prev.permissionIds.filter((perm) => perm !== permission)
-        : [...prev.permissionIds, permission],
+      permissions: prev.permissions.includes(permission)
+        ? prev.permissions.filter((perm) => perm !== permission)
+        : [...prev.permissions, permission],
     }));
   };
 
     const handleCreateRole = async () => {
       try {
         setErrorData([])
-        const formattedPermissions = form.permissionIds.map((p)=> permissions.find((pDb) => pDb.description === p)?.id).filter((id) => id !== undefined)
+        const formattedPermissions = form.permissions.map((p)=> permissions.find((pDb) => pDb.description === p)?.id).filter((id) => id !== undefined)
         
         // Sobrescribir directamente los permisos en una copia del estado
-        const updatedForm = { ...form, permissionIds: formattedPermissions };
-
+        let updatedForm = { ...form, permissions: formattedPermissions };
+        if (updatedForm.scope=== 'global') {
+          const { agencyId, ...rest} = updatedForm;
+          updatedForm = rest; // Actualizar updatedForm sin agencyId
+        }
+        setForm(updatedForm);
+        console.log(updatedForm);
+        
         const response = await fetch("http://localhost:3000/api/v1/roles", {
           method: 'post',
           headers: {
             'Content-Type': 'application/json', // Corrección
           },
           body: JSON.stringify(updatedForm),
+          credentials: 'include'
         });
 
         if (response.ok) {
@@ -148,8 +174,8 @@ const RolesCreate = () => {
             <div className="grid w-full max-w-lg items-center gap-1.5" >
               <Label htmlFor="user-type" >Tipo de usuario</Label>
               <Select
-                value={form.type}
-                onValueChange={(value) => setForm({...form, type: value})}
+                value={form.scope}
+                onValueChange={(value) => setForm({...form, scope: value})}
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Tipo de usuario" />
@@ -157,14 +183,41 @@ const RolesCreate = () => {
                 <SelectContent>
                   <SelectGroup>
                     <SelectLabel>Tipos</SelectLabel>
-                    <SelectItem value="ota">OTA's</SelectItem>
-                    <SelectItem value="system">Software</SelectItem>
+                    <SelectItem value="agency">Agencia</SelectItem>
+                    <SelectItem value="global">Empresa desarrolladora</SelectItem>
                   </SelectGroup>
                 </SelectContent>
               </Select>
-              {errorData && renderFieldErrors('type',errorData)}
+              {errorData && renderFieldErrors('scope',errorData)}
 
             </div>
+
+            { form.scope === 'agency' && (
+              <div className="grid w-full max-w-lg items-center gap-1.5" >
+                <Label htmlFor="user-type" >Agencia asociada</Label>
+                <Select
+                  value={form.agencyId}
+                  onValueChange={(value) => setForm({...form, agencyId: value})}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Selecciona una agencia" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectGroup>
+                      <SelectLabel>Agencias</SelectLabel>
+                      {agencies.map((agency) => (
+                        <SelectItem key={agency.id} value={agency.id} >
+                          {agency.name}
+                        </SelectItem>
+                      ))}
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
+                {errorData && renderFieldErrors('agencyId',errorData)}
+
+              </div>
+            )}
+
             <div className="grid w-full max-w-lg items-center gap-1.5" >
             <Label htmlFor="permissions" >Selecciona permisos</Label>
             <div className="overflow-x-auto bg-white rounded-lg shadow dark:bg-gray-800">
@@ -190,7 +243,7 @@ const RolesCreate = () => {
                             {getPermission(action, entity.english) && (
                                 <Checkbox
                                 id={`permission-${action}-${index}`}
-                                checked={form.permissionIds.includes(
+                                checked={form.permissions.includes(
                                     `${action} ${entity.english}`
                                 )}
                                 onCheckedChange={() =>
@@ -209,7 +262,7 @@ const RolesCreate = () => {
                 </TableBody>
               </Table>
               </div>
-              {errorData &&  renderFieldErrors('permissionIds',errorData)}
+              {errorData &&  renderFieldErrors('permissions',errorData)}
             </div>
           </div>
         </CardContent>

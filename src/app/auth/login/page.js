@@ -5,7 +5,7 @@ import axios from "axios";
 import { Input } from "@/components/ui/input"; // Importa el componente de ShadcnUI
 import { Button } from "@/components/ui/button"; // Botón de ShadcnUI
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { setUser } from "@/app/GlobalRedux/Features/auth/authSlice";
 
 export default function LoginPage() {
@@ -33,7 +33,7 @@ export default function LoginPage() {
     
       //actualiza el estado global con la información del usuario
       dispatch(setUser(response.data.user));
-      
+      sessionStorage.setItem("user", JSON.stringify(response.data.user));
       //Redirige al usuario a la ruta adecuada
       if (response.data.user.role.scope === 'global') {
         router.push('/admin/dashboard');

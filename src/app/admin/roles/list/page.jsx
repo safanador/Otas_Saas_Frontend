@@ -26,7 +26,12 @@ const RolesList = () => {
   useEffect(() => {
     const fetchRoles = async () => {
       try {
-        const response = await fetch("http://localhost:3000/api/v1/roles/");
+        const response = await fetch("http://localhost:3000/api/v1/roles/", {
+          credentials: 'include'
+        });
+        if (response.status === 403) {
+          window.location.href = '/auth/login';
+        }
         const data = await response.json();
         setRoles(data);
       } catch (error) {
@@ -40,7 +45,7 @@ const RolesList = () => {
   }, []);
 
    // Filtrar roles en función del término de búsqueda
-   const filteredRoles = roles.filter((role) =>
+   const filteredRoles = roles?.filter((role) =>
     role.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
@@ -60,8 +65,9 @@ const RolesList = () => {
       const response = await fetch(`http://localhost:3000/api/v1/roles/${id}`, {
         method: 'DELETE',
         headers: {
-          'Content-Type': 'application/json', // Corrección
+          'Content-Type': 'application/json',
         },
+        credentials: 'include'
       });
 
       if (response.ok) {
@@ -119,6 +125,7 @@ const RolesList = () => {
                     <TableHead className="text-center">Item</TableHead>
                       <TableHead className="text-left">Rol</TableHead>
                       <TableHead className="text-left">Tipo de Rol</TableHead>
+                      <TableHead className="text-left">Agencia asociada</TableHead>
                       <TableHead className="text-left">Fecha de Creación</TableHead>
                       <TableHead className="text-left">Fecha de Actualización</TableHead>
                     </TableRow>
@@ -128,7 +135,8 @@ const RolesList = () => {
                       <TableRow key={role.id}>
                         <TableCell className="text-center" >{index+1}</TableCell>
                         <TableCell className="capitalize" >{role.name}</TableCell>
-                        <TableCell className="capitalize" >{role.type == 'ota' ? `OTA's` : "Software"}</TableCell>
+                        <TableCell className="capitalize" >{role.scope === 'agency' ? `Agencias` : "Empresa desarrolladora"}</TableCell>
+                        <TableCell className="capitalize" >{role.agency?.name}</TableCell>
                         <TableCell>{new Date(role.createdAt).toLocaleDateString()}</TableCell>
                         <TableCell>{new Date(role.updatedAt).toLocaleDateString()}</TableCell>
                         <TableCell>

@@ -44,7 +44,9 @@ const RolesShow = () => {
         setPermissions(data);
 
         //role desde base de datos
-        const responseForm = await fetch(`http://localhost:3000/api/v1/roles/${id}`);
+        const responseForm = await fetch(`http://localhost:3000/api/v1/roles/${id}`, {
+          credentials: 'include'
+        });
         const dataForm = await responseForm.json();
 
         //modificar los permisos del form
@@ -63,6 +65,7 @@ const RolesShow = () => {
     };
 
     fetchPermissions();
+    
   }, [id]);
 
   if (loading) {
@@ -79,6 +82,8 @@ const RolesShow = () => {
   const entities = [
     { spanish: 'Rol', english: 'role' },
     { spanish: 'Usuario', english: 'user' },
+    { spanish: 'Agencia', english: 'agency' },
+
   ];
 
   const getPermission = (action, entity) => {
@@ -120,8 +125,8 @@ const RolesShow = () => {
               <Label htmlFor="user-type" >Tipo de usuario</Label>
               <Select
                 disabled
-                value={form.type}
-                onValueChange={(value) => setForm({...form, type: value})}
+                value={form.scope}
+                onValueChange={(value) => setForm({...form, scope: value})}
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Tipo de usuario" />
@@ -129,12 +134,34 @@ const RolesShow = () => {
                 <SelectContent>
                   <SelectGroup>
                     <SelectLabel>Tipos</SelectLabel>
-                    <SelectItem value="ota">OTA's</SelectItem>
-                    <SelectItem value="system">Software</SelectItem>
+                    <SelectItem value="agency">Agencia</SelectItem>
+                    <SelectItem value="global">Empresa desarrolladora</SelectItem>
                   </SelectGroup>
                 </SelectContent>
               </Select>
             </div>
+            
+            { form.scope === 'agency' && (
+              <div className="grid w-full max-w-lg items-center gap-1.5" >
+                <Label htmlFor="user-type" >Agencia asociada</Label>
+                <Select
+                  disabled
+                  value={form.agency.id}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Selecciona una agencia" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectGroup>
+                      <SelectLabel>Agencias</SelectLabel>
+                        <SelectItem key={form.agency.id} value={form.agency.id} >
+                          {form.agency.name}
+                        </SelectItem>
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
+
             <div className="grid w-full max-w-lg items-center gap-1.5" >
             <Label htmlFor="permissions" >Selecciona permisos</Label>
             <div className="overflow-x-auto bg-white rounded-lg shadow dark:bg-gray-800">

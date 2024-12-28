@@ -25,6 +25,7 @@ import { NavUser } from "./nav-user"
 import { TeamSwitcher } from "./team-switcher"
 import { NavMain } from "./nav-main"
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarRail } from "@/components/ui/sidebar"
+import { useSelector } from "react-redux"
 
 
 // This is sample data.
@@ -206,6 +207,9 @@ const data = {
 }
 
 export function AppSidebar({ ...props }) {
+
+  //const user = JSON.parse(sessionStorage.getItem("user"));
+
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
