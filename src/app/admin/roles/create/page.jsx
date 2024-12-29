@@ -52,6 +52,12 @@ const RolesCreate = () => {
         const response = await fetch("http://localhost:3000/api/v1/agencies", {
           credentials: 'include'
         });
+        if (response.status === 401) {
+          window.location.href = '/auth/login';
+        }
+        if (response.status === 403) {
+          window.location.href = '/admin/unauthorized';
+        }
         const agencies = await response.json();
         console.log(agencies);
         setAgencies(agencies);
@@ -118,6 +124,13 @@ const RolesCreate = () => {
           body: JSON.stringify(updatedForm),
           credentials: 'include'
         });
+
+        if (response.status === 403) {
+          window.location.href = '/auth/login';
+        }
+        if (response.status === 401) {
+          window.location.href = '/admin/unauthorized';
+        }
 
         if (response.ok) {
           toast({

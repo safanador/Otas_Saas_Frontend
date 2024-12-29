@@ -8,7 +8,6 @@ import AdminLayout from "../../components/SideBar/AdminLayout";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { MoreHorizontal } from "lucide-react";
-import Link from "next/link";
 import { useToast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
@@ -21,16 +20,18 @@ const RolesList = () => {
   const router = useRouter();
   const [open, setOpen] = useState(false);
 
-
-
   useEffect(() => {
     const fetchRoles = async () => {
       try {
         const response = await fetch("http://localhost:3000/api/v1/roles/", {
           credentials: 'include'
         });
-        if (response.status === 403) {
+        console.log(response)
+        if (response.status === 401) {
           window.location.href = '/auth/login';
+        }
+        if (response.status === 403) {
+          window.location.href = '/admin/unauthorized';
         }
         const data = await response.json();
         setRoles(data);
