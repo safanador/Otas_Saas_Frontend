@@ -18,12 +18,13 @@ import {
   SidebarMenuSubItem,
 } from "@/components/ui/sidebar"
 
-export function NavMain({items}) {
+export function NavMain({items, user}) {
+
   return (
     <SidebarGroup>
       <SidebarGroupLabel>Plataforma</SidebarGroupLabel>
       <SidebarMenu>
-        {items.map((item) => (
+        { user ? items.map((item) => user.role.permissions.some((p) => p.description.includes(item.titleEn)) && (
           <Collapsible
             key={item.title}
             asChild
@@ -40,7 +41,7 @@ export function NavMain({items}) {
               </CollapsibleTrigger>
               <CollapsibleContent>
                 <SidebarMenuSub>
-                  {item.items?.map((subItem) => (
+                  {item.items?.map((subItem) => user.role.permissions.some((perm) => perm.description.includes(subItem.permission)) && (
                     <SidebarMenuSubItem key={subItem.title}>
                       <SidebarMenuSubButton asChild>
                         <a href={subItem.url}>
@@ -53,7 +54,7 @@ export function NavMain({items}) {
               </CollapsibleContent>
             </SidebarMenuItem>
           </Collapsible>
-        ))}
+        )) : <div></div>}
       </SidebarMenu>
     </SidebarGroup>
   )

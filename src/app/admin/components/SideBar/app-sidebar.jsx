@@ -26,6 +26,7 @@ import { TeamSwitcher } from "./team-switcher"
 import { NavMain } from "./nav-main"
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarRail } from "@/components/ui/sidebar"
 import { useSelector } from "react-redux"
+import { Skeleton } from "@/components/ui/skeleton"
 
 
 // This is sample data.
@@ -55,6 +56,7 @@ const data = {
   navMain: [
     {
       title: "Inicio",
+      titleEn: "user",
       url: "#",
       icon: House,
       isActive: true,
@@ -75,16 +77,19 @@ const data = {
     },
     {
       title: "Usuarios",
+      titleEn: "user",
       url: "#",
       icon: Users,
       items: [
         {
-          title: "Genesis",
+          title: "Listar",
           url: "#",
+          permission: "list user",
         },
         {
-          title: "Explorer",
+          title: "Crear",
           url: "#",
+          permission: "create user",
         },
         {
           title: "Quantum",
@@ -94,40 +99,37 @@ const data = {
     },
     {
       title: "Roles",
+      titleEn: "role",
       url: "#",
       icon: Puzzle,
       items: [
         {
           title: "Listar Roles",
           url: "/admin/roles/list",
+          permission: "list role",
         },
         {
           title: "Crear Roles",
           url: "/admin/roles/create",
+          permission: "create role",
         },
-        /**
-        {
-          title: "Tutorials",
-          url: "#",
-        },
-        {
-          title: "Changelog",
-          url: "#",
-        }, */
       ],
     },
     {
       title: "Agencias",
+      titleEn: "agency",
       url: "#",
       icon: Store,
       items: [
         {
           title: "Listar",
-          url: "/admin/list",
+          url: "/admin/agency/list",
+          permission: "list agency",
         },
         {
           title: "Crear",
-          url: "/admin/create",
+          url: "/admin/agency/create",
+          permission: "create agency",
         },
         /**
         {
@@ -142,6 +144,7 @@ const data = {
     },
     {
       title: "Suscripciones",
+      titleEn: "agency",
       url: "#",
       icon: Settings2,
       items: [
@@ -165,6 +168,7 @@ const data = {
     },
     {
       title: "Pagos",
+      titleEn: "agency",
       url: "#",
       icon: Receipt,
       items: [
@@ -206,9 +210,19 @@ const data = {
   ],
 }
 
-export function AppSidebar({ ...props }) {
+const isBrowser = typeof window !== "undefined";
 
-  //const user = JSON.parse(sessionStorage.getItem("user"));
+export function AppSidebar({ ...props }) {
+  const [user, setUser] = React.useState(null);
+
+  React.useEffect(() => {
+    if (isBrowser) {
+      const storedUser = sessionStorage.getItem("user");
+      if (storedUser) {
+        setUser(JSON.parse(storedUser));
+      }
+    }
+  }, []);
 
   return (
     <Sidebar collapsible="icon" {...props}>
@@ -216,13 +230,20 @@ export function AppSidebar({ ...props }) {
         <TeamSwitcher teams={data.teams} />
       </SidebarHeader>
       <SidebarContent>
-        <NavMain items={data.navMain} />
+        <NavMain items={data.navMain} user={user} />
         <NavProjects projects={data.projects} />
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={data.user} />
+        {user ? <NavUser user={user} /> : 
+        <div className="flex items-center space-x-4 p-2">
+          <Skeleton className="h-8 w-8 rounded-lg" />
+          <div className="space-y-2">
+            <Skeleton className="h-4 w-[140px]" />
+            <Skeleton className="h-4 w-[100px]" />
+          </div>
+        </div>}
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>
-  )
+  );
 }
