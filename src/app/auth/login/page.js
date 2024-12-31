@@ -83,12 +83,13 @@ export default function LoginPage() {
               />
             </div>
             {error && <p className="text-red-500 text-sm">{error}</p>}
+            <Button type="submit" className="w-full" disabled={loading}>
+            {loading ? "Cargando..." : "Iniciar sesión"}
+          </Button>
           </form>
         </CardContent>
         <CardFooter className="flex flex-col items-center">
-          <Button onClick={handleLogin} className="w-full" disabled={loading}>
-            {loading ? "Cargando..." : "Iniciar sesión"}
-          </Button>
+          
           <Button variant="link" onClick={() => router.push("/auth/forgot-password")}>
             ¿Olvidaste tu contraseña?
           </Button>
