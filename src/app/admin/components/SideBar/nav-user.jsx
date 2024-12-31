@@ -32,7 +32,26 @@ import {
 
 export function NavUser({user}) {
   const { isMobile } = useSidebar()
-
+  const logout = async () => {
+    try {
+      const response = await fetch('http://localhost:3000/api/v1/auth/logout', {
+        method: "POST",
+        credentials: 'include',
+      });
+      if (response.ok) {
+        sessionStorage.removeItem('user');
+        window.location.href = '/auth/login';
+        console.log(response)
+        console.log('entra')
+      } else {
+        console.log(response)
+        console.log('no entra')
+      }
+      
+    } catch (error) {
+      console.log('Error during logout:', error);
+    }
+  }
   return (
     <SidebarMenu>
       <SidebarMenuItem>
@@ -94,7 +113,7 @@ export function NavUser({user}) {
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>
+            <DropdownMenuItem onClick={() => logout()} > 
               <LogOut />
               Log out
             </DropdownMenuItem>

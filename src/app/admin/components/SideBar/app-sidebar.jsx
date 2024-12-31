@@ -220,6 +220,8 @@ export function AppSidebar({ ...props }) {
       const storedUser = sessionStorage.getItem("user");
       if (storedUser) {
         setUser(JSON.parse(storedUser));
+      } else if (!storedUser) {
+        window.location.href = '/auth/login';
       }
     }
   }, []);
