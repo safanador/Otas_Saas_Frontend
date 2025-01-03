@@ -83,7 +83,7 @@ const data = {
       items: [
         {
           title: "Listar",
-          url: "#",
+          url: "/admin/users/list",
           permission: "list user",
         },
         {

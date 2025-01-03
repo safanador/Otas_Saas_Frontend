@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import AdminLayout from "../../components/SideBar/AdminLayout";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Button, buttonVariants } from "@/components/ui/button";
-import { MoreHorizontal } from "lucide-react";
+import { Eye, MoreHorizontal, Pencil, Trash2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
@@ -151,17 +151,18 @@ const RolesList = () => {
                           <DropdownMenuContent align="end">
                               <DropdownMenuLabel>Acciones</DropdownMenuLabel>
                               <DropdownMenuItem onClick={() => router.push(`/admin/roles/show/${role.id}`)}>
-                                Ver Rol
+                                <Eye />  Ver Rol
                               </DropdownMenuItem>
                               <DropdownMenuItem onClick={() => router.push(`/admin/roles/edit/${role.id}`) } >
-                                Editar Rol
+                                <Pencil /> Editar Rol
                               </DropdownMenuItem>
                               <DropdownMenuSeparator />
                               <DropdownMenuItem onClick={(e) => {
                                     e.preventDefault(); // Evita que el menú se cierre automáticamente
                                     setOpen(true);
                                   }}>
-                                Eliminar Rol
+                               <Trash2 color="red" /> 
+                                <span className="text-red-500" >Eliminar Rol</span>
                               </DropdownMenuItem>
                               {/** Delete confirmation */}
 
