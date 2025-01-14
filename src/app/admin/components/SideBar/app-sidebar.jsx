@@ -88,7 +88,7 @@ const data = {
         },
         {
           title: "Crear",
-          url: "#",
+          url: "/admin/users/create",
           permission: "create user",
         },
         {

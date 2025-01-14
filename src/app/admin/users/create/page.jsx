@@ -2,12 +2,10 @@
 
 import React, { useEffect, useState } from "react";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
 import AdminLayout from "../../components/SideBar/AdminLayout";
 
 import { Label } from "@/components/ui/label";
-import { Checkbox } from "@/components/ui/checkbox";
 import {
   Select,
   SelectContent,
@@ -17,91 +15,79 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import { Country, State, City }  from 'country-state-city';
+import { Calendar } from "@/components/ui/calendar"
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { Toast, ToastDescription, ToastTitle } from "@/components/ui/toast";
+import { CalendarIcon } from "lucide-react";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { format } from "date-fns";
+import { es } from "date-fns/locale";
+
+import { cn } from "@/lib/utils";
+import { Countries } from "../../components/CountryStateCity/Country";
+import { States } from "../../components/CountryStateCity/State";
+import { Cities } from "../../components/CountryStateCity/Cities";
+import { PhoneCodes } from "../../components/CountryStateCity/PhoneCode";
 
 
-const RolesCreate = () => {
-  const [permissions, setPermissions] = useState([]);
+const UsersCreate = () => {
+  const [roles, setRoles] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [form, setForm] = useState({name: "", scope: "", permissions: [], agencyId: null});
-  const [agencies, setAgencies] = useState([]);
+  const [form, setForm] = useState({
+    name: "", 
+    email: "", 
+    password: '', 
+    image: null,
+    corporateEmail: '',
+    dob: '',
+    phone: '',
+    address: '',
+    country: '',
+    state: '',
+    city: '',
+    roleId: null,  
+    agencyId: null,
+  });
   const [open, setOpen] = useState(false);
+  const countries = Country.getAllCountries() // it's an Array
+  const [states, setStates] = useState([]);
+  const [cities, setCities] = useState([]);
+  const [selectedPhoneCode, setSelectedPhoneCode] = useState('');
+
+  const foundRole = roles.find(role => role.id === form.roleId) || null;
   const [errorData, setErrorData] = useState();
   const { toast } = useToast();
-
+  
   useEffect(() => {
-    const fetchPermissions = async () => {
+    const fetchRoles = async () => {
       try {
-        const response = await fetch("http://localhost:3000/api/v1/permissions/");
+        const response = await fetch("http://localhost:3000/api/v1/roles/", {
+          credentials: 'include'
+        });
         const data = await response.json();
-        setPermissions(data);
+        setRoles(data);
       } catch (error) {
         console.error("Error fetching roles:", error);
       } finally {
         setLoading(false);
       }
     };
-
-    fetchPermissions();
-
-    const fetchAgencies = async () => {
-      try {
-        const response = await fetch("http://localhost:3000/api/v1/agencies", {
-          credentials: 'include'
-        });
-        if (response.status === 401) {
-          window.location.href = '/auth/login';
-        }
-        if (response.status === 403) {
-          window.location.href = '/admin/unauthorized';
-        }
-        const agencies = await response.json();
-        console.log(agencies);
-        setAgencies(agencies);
-      } catch (error) {
-        console.error("Error fetching agencies:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchAgencies();
+    fetchRoles();
   }, []);
 
   if (loading) {
     return (
         <AdminLayout>
             <div className="flex items-center justify-center h-full">
-                <p className="text-center">Cargando...</p>
+              <span className="w-8 h-8 border-[3px] border-black border-t-transparent rounded-full animate-spin"></span>
             </div>
         </AdminLayout>
     );
   }
-  // tabla de permisos
-  const entities = [
-    { spanish: 'Rol', english: 'role' },
-    { spanish: 'Usuario', english: 'user' },
-    { spanish: 'Agencia', english: 'agency' },
-  ];
-
-
-  const getPermission = (action, entity) => {
-    const permissionString = `${action} ${entity}`;
-    return permissions.find((p) => p.description === permissionString);
-  };
-
-  const handleCheckboxChange = (permission) => {
-    setForm((prev) => ({
-      ...prev,
-      permissions: prev.permissions.includes(permission)
-        ? prev.permissions.filter((perm) => perm !== permission)
-        : [...prev.permissions, permission],
-    }));
-  };
-
+  
     const handleCreateRole = async () => {
       try {
         setErrorData([])
@@ -150,7 +136,7 @@ const RolesCreate = () => {
           })
       }
     };
-
+  
     const renderFieldErrors = (fieldName, errors) => {
       return errors
         .filter(error => error.property === fieldName)
@@ -165,16 +151,16 @@ const RolesCreate = () => {
     <AdminLayout>
       <Card>
         <CardHeader>
-          <CardTitle>Creación de rol</CardTitle>
+          <CardTitle>Creación de usuario</CardTitle>
           <CardDescription>
-            Este rol permite gestionar el contenido de la aplicación mediante un sistema de permisos y roles.
+            Ventana para crear un nuevo usuario, agregue toda la información del usuario para poder continuar.
           </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="container space-y-4 mx-auto py-2">
-          <h1 className="text-lg font-bold text-gray-900 dark:text-gray-100">Rol</h1>
+          <h1 className="text-lg font-bold text-gray-900 dark:text-gray-100">Nuevo usuario</h1>
           <div className="grid w-full max-w-lg items-center gap-1.5">
-            <Label htmlFor="name">Nombre del rol</Label>
+            <Label htmlFor="name">Nombre del usuario</Label>
             <Input 
               type="text" 
               id="name" 
@@ -184,114 +170,185 @@ const RolesCreate = () => {
               {errorData && renderFieldErrors('name',errorData)}
           </div>
 
-            <div className="grid w-full max-w-lg items-center gap-1.5" >
-              <Label htmlFor="user-type" >Tipo de usuario</Label>
-              <Select
-                value={form.scope}
-                onValueChange={(value) => setForm({...form, scope: value})}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Tipo de usuario" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectGroup>
-                    <SelectLabel>Tipos</SelectLabel>
-                    <SelectItem value="agency">Agencia</SelectItem>
-                    <SelectItem value="global">Empresa desarrolladora</SelectItem>
-                  </SelectGroup>
-                </SelectContent>
-              </Select>
-              {errorData && renderFieldErrors('scope',errorData)}
+          <div className="grid w-full max-w-lg items-center gap-1.5">
+            <Label htmlFor="name">Correo Electronico</Label>
+            <Input 
+              type="email" 
+              id="email" 
+              placeholder="Correo electrónico..." 
+              value={form.email}
+              onChange={(e) => setForm({...form, email: e.target.value})} />
+              {errorData && renderFieldErrors('email',errorData)}
+          </div>
 
-            </div>
+          <div className="grid w-full max-w-lg items-center gap-1.5">
+            <Label htmlFor="name">Contraseña del usuario</Label>
+            <Input 
+              type="password" 
+              id="password" 
+              placeholder="Contraseña..." 
+              value={form.password}
+              onChange={(e) => setForm({...form, password: e.target.value})} /> 
+              {errorData && renderFieldErrors('password',errorData)}
+          </div>
 
-            { form.scope === 'agency' && (
-              <div className="grid w-full max-w-lg items-center gap-1.5" >
-                <Label htmlFor="user-type" >Agencia asociada</Label>
-                <Select
-                  value={form.agencyId}
-                  onValueChange={(value) => setForm({...form, agencyId: value})}
+          <div className="grid w-full max-w-lg items-center gap-1.5">
+            <Label htmlFor="name">Foto del usuario</Label>
+            <Input 
+              type="file" 
+              id="name" 
+              placeholder="Foto..." 
+              value={form.name}
+              onChange={(e) => setForm({...form, name: e.target.value})} />  {/**PENDIENTE */}
+              {errorData && renderFieldErrors('name',errorData)}
+          </div>
+
+          <div className="grid w-full max-w-lg items-center gap-1.5">
+            <Label htmlFor="name">Correo Corporativo</Label>
+            <Input 
+              type="email" 
+              id="corporateEmail" 
+              placeholder="Correo corporativo..." 
+              value={form.corporateEmail}
+              onChange={(e) => setForm({...form, corporateEmail: e.target.value})} />
+              {errorData && renderFieldErrors('corporateEmail',errorData)}
+          </div>
+
+          <div className="grid w-full max-w-lg items-center gap-1.5">
+            <Label htmlFor="phone">Fecha de nacimiento</Label>
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  variant={"outline"}
+                  className={cn(
+                    "w-[240px] justify-start text-left font-normal",
+                    !form.dob && "text-muted-foreground"
+                  )}
                 >
+                  <CalendarIcon />
+                  {form.dob ? format(form.dob, "PPP", { locale: es}) : <span>Selecciona una fecha</span>}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0" align="start">
+                <Calendar
+                  mode="single"
+                  selected={form.dob}
+                  onSelect={(date) => setForm({...form, dob: date})}
+                  initialFocus
+                  locale={es}
+                />
+              </PopoverContent>
+            </Popover>
+            {errorData && renderFieldErrors('dob', errorData)}
+          </div>
+
+          <div className="grid w-full max-w-lg items-center gap-1.5">
+            <Label htmlFor="phone">Número de Teléfono</Label>
+            <div className="flex gap-1">
+              <PhoneCodes countries={countries} onCodeSelect={(code) => setSelectedPhoneCode(code)} selectedPhoneCode={selectedPhoneCode} />
+              <Input
+                type="tel" 
+                id="phone"
+                placeholder="Número de teléfono (10 dígitos)..."
+                value={form.phone}
+                onChange={(e) => {
+                  const phone = e.target.value;
+                  // Permite solo números y restringe la longitud a 10 caracteres
+                  if (/^\d{0,10}$/.test(phone)) {
+                    setForm({ ...form, phone });
+                  }
+                }}
+              />
+            </div>
+            {errorData && renderFieldErrors('phone', errorData)}
+          </div>
+
+          <div className="grid w-full max-w-lg items-center gap-1.5">
+            <Label htmlFor="name">Dirección</Label>
+            <Input 
+              type="text" 
+              id="address" 
+              placeholder="Dirección" 
+              value={form.address}
+              onChange={(e) => setForm({...form, address: e.target.value})} />
+              {errorData && renderFieldErrors('address',errorData)}
+          </div>
+ 
+          {countries && (<div className="grid w-full max-w-lg items-center gap-1.5">
+            <Label htmlFor="name">País</Label>
+            <Countries 
+              countries={countries} 
+              selectedCountry={form.country}
+              onCountryChange={(newCountry) => {
+                setForm({...form, country: newCountry, state: '', city: ''});
+                const fetchedStates = State.getStatesOfCountry(newCountry);
+                setStates(fetchedStates);
+                }}/>
+              {errorData && renderFieldErrors('country',errorData)}
+          </div>)}
+            
+          { form.country && (<div className="grid w-full max-w-lg items-center gap-1.5">
+            <Label htmlFor="name">Estado</Label>
+            <States 
+              states={states} 
+              selectedState={form.state} 
+              onStateChange={(newState) => {
+                setForm({...form, state: newState});
+                const fetchedCities = City.getCitiesOfState(form.country, newState);
+                setCities(fetchedCities);
+                }} />
+              {errorData && renderFieldErrors('state',errorData)}
+          </div>)}
+
+          {cities.length > 0 && (<div className="grid w-full max-w-lg items-center gap-1.5">
+            <Label htmlFor="name">Ciudad</Label>
+            <Cities 
+              cities={cities} 
+              selectedCity={form.city} 
+              onCityChange={(newCity) => {
+                setForm({...form, city: newCity});
+                }}
+              />
+              {errorData && renderFieldErrors('city',errorData)}
+          </div>)}
+
+          <div className="grid w-full max-w-lg items-center gap-1.5" >
+              <Label htmlFor="user-type" >Rol asociado</Label>
+                <Select
+                  value={form.roleId}
+                  onValueChange={(value) => setForm({...form, roleId: value})}>
                   <SelectTrigger>
-                    <SelectValue placeholder="Selecciona una agencia" />
+                    <SelectValue placeholder="Selecciona un rol" />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectGroup>
-                      <SelectLabel>Agencias</SelectLabel>
-                      {agencies.map((agency) => (
-                        <SelectItem key={agency.id} value={agency.id} >
-                          {agency.name}
+                      <SelectLabel>Roles (Rol - Tipo - Agencia)</SelectLabel>
+                      {roles.map((role) => (
+                        <SelectItem key={role.id} value={role.id} >
+                          {role.name} - {role.scope} - {role.agency?.name}
                         </SelectItem>
                       ))}
                     </SelectGroup>
                   </SelectContent>
                 </Select>
-                {errorData && renderFieldErrors('agencyId',errorData)}
+                {errorData && renderFieldErrors('roleId',errorData)}
+          </div>
 
-              </div>
-            )}
-
-            <div className="grid w-full max-w-lg items-center gap-1.5" >
-            <Label htmlFor="permissions" >Selecciona permisos</Label>
-            <div className="overflow-x-auto bg-white rounded-lg shadow dark:bg-gray-800">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead className="text-center">Entidades</TableHead>
-                    <TableHead className="text-center">Ver</TableHead>
-                    <TableHead className="text-center">Listar</TableHead>
-                    <TableHead className="text-center">Crear</TableHead>
-                    <TableHead className="text-center">Actualizar</TableHead>
-                    <TableHead className="text-center">Borrar</TableHead>
-                    <TableHead className="text-center">Desactivar</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {entities.map((entity, index) => (
-                    <TableRow key={index}>
-                      <TableCell className="text-center" >{entity.spanish}</TableCell>
-                      {["show", "list", "create", "update", "delete", "activate"].map(
-                        (action,index) => (
-                            <td key={index} className="border p-2 text-center">
-                            {getPermission(action, entity.english) && (
-                                <Checkbox
-                                id={`permission-${action}-${index}`}
-                                checked={form.permissions.includes(
-                                    `${action} ${entity.english}`
-                                )}
-                                onCheckedChange={() =>
-                                    handleCheckboxChange(
-                                    `${action} ${entity.english}`
-                                    )
-                                }
-                                />
-                            )}
-                            </td>
-                        )
-                        )}
-                    </TableRow>
-                  ))
-                  }
-                </TableBody>
-              </Table>
-              </div>
-              {errorData &&  renderFieldErrors('permissions',errorData)}
-            </div>
           </div>
         </CardContent>
         <CardFooter className="w-full">
           <Button                 
             onClick={() => setOpen(true)}
             className="w-full md:w-[100px]" >
-              Crear Rol
+              Crear Usuario
           </Button>
 
           <AlertDialog open={open} onOpenChange={setOpen}>
               <AlertDialogContent>
                 <AlertDialogHeader>
-                  <AlertDialogTitle>Estás seguro de crear este rol?</AlertDialogTitle>
+                  <AlertDialogTitle>Estás seguro de crear este usuario?</AlertDialogTitle>
                   <AlertDialogDescription>
-                    Este rol permite gestionar el contenido de la aplicación mediante un sistema de permisos y roles.
+                    Una vez creado el usuario va a recibir un correo electronico de confirmación.
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
@@ -307,4 +364,4 @@ const RolesCreate = () => {
   );
 };
 
-export default RolesCreate;
+export default UsersCreate;
