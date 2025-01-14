@@ -158,7 +158,6 @@ const UsersCreate = () => {
         </CardHeader>
         <CardContent>
           <div className="container space-y-4 mx-auto py-2">
-          <h1 className="text-lg font-bold text-gray-900 dark:text-gray-100">Nuevo usuario</h1>
           <div className="grid w-full max-w-lg items-center gap-1.5">
             <Label htmlFor="name">Nombre del usuario</Label>
             <Input 
