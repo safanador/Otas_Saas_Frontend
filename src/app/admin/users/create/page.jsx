@@ -31,6 +31,8 @@ import { Countries } from "../../components/CountryStateCity/Country";
 import { States } from "../../components/CountryStateCity/State";
 import { Cities } from "../../components/CountryStateCity/Cities";
 import { PhoneCodes } from "../../components/CountryStateCity/PhoneCode";
+import { DatePicker } from "@/components/ui/date-picker";
+import AvatarInput from "../../components/Avatar/AvatarInput";
 
 
 const UsersCreate = () => {
@@ -67,6 +69,15 @@ const UsersCreate = () => {
         const response = await fetch("http://localhost:3000/api/v1/roles/", {
           credentials: 'include'
         });
+        // Manejar errores de autenticación/autorización
+      if (response.status === 401) {
+        window.location.href = '/auth/login';
+        return;
+      }
+      if (response.status === 403) {
+        window.location.href = '/admin/unauthorized';
+        return;
+      }
         const data = await response.json();
         setRoles(data);
       } catch (error) {
@@ -88,54 +99,80 @@ const UsersCreate = () => {
     );
   }
   
-    const handleCreateRole = async () => {
-      try {
-        setErrorData([])
-        const formattedPermissions = form.permissions.map((p)=> permissions.find((pDb) => pDb.description === p)?.id).filter((id) => id !== undefined)
-        
-        // Sobrescribir directamente los permisos en una copia del estado
-        let updatedForm = { ...form, permissions: formattedPermissions };
-        if (updatedForm.scope=== 'global') {
-          const { agencyId, ...rest} = updatedForm;
-          updatedForm = rest; // Actualizar updatedForm sin agencyId
-        }
-        setForm(updatedForm);
-        console.log(updatedForm);
-        
-        const response = await fetch("http://localhost:3000/api/v1/roles", {
-          method: 'post',
-          headers: {
-            'Content-Type': 'application/json', // Corrección
-          },
-          body: JSON.stringify(updatedForm),
-          credentials: 'include'
-        });
-
-        if (response.status === 403) {
-          window.location.href = '/auth/login';
-        }
-        if (response.status === 401) {
-          window.location.href = '/admin/unauthorized';
-        }
-
-        if (response.ok) {
-          toast({
-            variant: "success",
-            title: "Realizado!",
-            description: "Rol creado exitosamente.",
-          })
-        }else{
-          const errorData = await response.json(); 
-          setErrorData(errorData.message)
-        }
-      } catch (error) {
-          toast({
-            variant: "destructive",
-            title: "Uh oh! Parece que algo salió mal.",
-            description: "No se pudo conectar con el servidor. Por favor, intenta más tarde.",
-          })
+  const handleCreateUser = async () => {
+    try {
+      setErrorData([]); // Limpiar errores anteriores
+      console.log(form);
+      // 1. Subir la imagen
+      const formData = new FormData();
+      formData.append('file', form.image); // 'file' es el nombre del campo que espera tu backend
+  
+      const imageResponse = await fetch("http://localhost:3000/api/v1/images/upload", {
+        method: 'POST',
+        body: formData, // Envía el FormData
+        credentials: 'include', // Incluye cookies si es necesario
+      });
+  
+      // Manejar errores de autenticación/autorización
+      if (imageResponse.status === 403) {
+        window.location.href = '/auth/login';
+        return;
       }
-    };
+      if (imageResponse.status === 401) {
+        window.location.href = '/admin/unauthorized';
+        return;
+      }
+  
+      // Verificar si la carga de la imagen fue exitosa
+      if (!imageResponse.ok) {
+        const errorData = await imageResponse.json();
+        setErrorData(errorData.message || "Error al subir la imagen");
+        return;
+      }
+  
+      // Obtener la URL de la imagen subida
+      const imageData = await imageResponse.json();
+      const imageUrl = imageData.imageUrl; // Asegúrate de que tu backend devuelva { imageUrl: '...' }
+  
+      // 2. Crear el usuario con la URL de la imagen
+      const updatedForm = {
+        ...form,
+        phone: selectedPhoneCode + form.phone, // Agregar el código de teléfono
+        image: imageUrl, // Usar la URL de la imagen subida
+      };
+      console.log(updatedForm);
+      const userResponse = await fetch("http://localhost:3000/api/v1/auth/register", {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json', // Corrección
+        },
+        body: JSON.stringify(updatedForm),
+        credentials: 'include',
+      });
+  
+      // Verificar si la creación del usuario fue exitosa
+      if (!userResponse.ok) {
+        const errorData = await userResponse.json();
+        setErrorData(errorData.message || "Error al crear el usuario");
+        return;
+      }
+  
+      // Mostrar mensaje de éxito
+      toast({
+        variant: "success",
+        title: "Realizado!",
+        description: "Usuario creado exitosamente.",
+      });
+  
+    } catch (error) {
+      console.error("Error:", error);
+      toast({
+        variant: "destructive",
+        title: "Uh oh! Parece que algo salió mal.",
+        description: "No se pudo conectar con el servidor. Por favor, intenta más tarde.",
+      });
+    }
+  };
   
     const renderFieldErrors = (fieldName, errors) => {
       return errors
@@ -158,6 +195,21 @@ const UsersCreate = () => {
         </CardHeader>
         <CardContent>
           <div className="container space-y-4 mx-auto py-2">
+
+            {/** Profile image Pending*/}
+            <div className="grid w-full max-w-lg items-center gap-1.5">
+            <Label htmlFor="image">Foto del usuario</Label>
+            <AvatarInput
+                image={form.image}
+                onChange={(e) => {
+                  const file = e.target.files?.[0] || null;
+                  setForm({ ...form, image: file });
+                }}
+              />
+              {errorData && renderFieldErrors('image',errorData)}
+          </div>
+
+            {/** Name Done */}
           <div className="grid w-full max-w-lg items-center gap-1.5">
             <Label htmlFor="name">Nombre del usuario</Label>
             <Input 
@@ -169,6 +221,7 @@ const UsersCreate = () => {
               {errorData && renderFieldErrors('name',errorData)}
           </div>
 
+            {/** Email Done*/}
           <div className="grid w-full max-w-lg items-center gap-1.5">
             <Label htmlFor="name">Correo Electronico</Label>
             <Input 
@@ -180,6 +233,7 @@ const UsersCreate = () => {
               {errorData && renderFieldErrors('email',errorData)}
           </div>
 
+            {/** Password Done*/}
           <div className="grid w-full max-w-lg items-center gap-1.5">
             <Label htmlFor="name">Contraseña del usuario</Label>
             <Input 
@@ -191,17 +245,7 @@ const UsersCreate = () => {
               {errorData && renderFieldErrors('password',errorData)}
           </div>
 
-          <div className="grid w-full max-w-lg items-center gap-1.5">
-            <Label htmlFor="name">Foto del usuario</Label>
-            <Input 
-              type="file" 
-              id="name" 
-              placeholder="Foto..." 
-              value={form.name}
-              onChange={(e) => setForm({...form, name: e.target.value})} />  {/**PENDIENTE */}
-              {errorData && renderFieldErrors('name',errorData)}
-          </div>
-
+            {/** Corporate email Done */}
           <div className="grid w-full max-w-lg items-center gap-1.5">
             <Label htmlFor="name">Correo Corporativo</Label>
             <Input 
@@ -213,34 +257,14 @@ const UsersCreate = () => {
               {errorData && renderFieldErrors('corporateEmail',errorData)}
           </div>
 
+            {/** Date of Birth Pending*/}
           <div className="grid w-full max-w-lg items-center gap-1.5">
             <Label htmlFor="phone">Fecha de nacimiento</Label>
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button
-                  variant={"outline"}
-                  className={cn(
-                    "w-[240px] justify-start text-left font-normal",
-                    !form.dob && "text-muted-foreground"
-                  )}
-                >
-                  <CalendarIcon />
-                  {form.dob ? format(form.dob, "PPP", { locale: es}) : <span>Selecciona una fecha</span>}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-0" align="start">
-                <Calendar
-                  mode="single"
-                  selected={form.dob}
-                  onSelect={(date) => setForm({...form, dob: date})}
-                  initialFocus
-                  locale={es}
-                />
-              </PopoverContent>
-            </Popover>
+            <DatePicker onDateChange={(date) => setForm({...form, dob: date})} />
             {errorData && renderFieldErrors('dob', errorData)}
           </div>
 
+            {/** Phone Done*/}
           <div className="grid w-full max-w-lg items-center gap-1.5">
             <Label htmlFor="phone">Número de Teléfono</Label>
             <div className="flex gap-1">
@@ -262,6 +286,7 @@ const UsersCreate = () => {
             {errorData && renderFieldErrors('phone', errorData)}
           </div>
 
+            {/** Address Done*/}
           <div className="grid w-full max-w-lg items-center gap-1.5">
             <Label htmlFor="name">Dirección</Label>
             <Input 
@@ -272,7 +297,8 @@ const UsersCreate = () => {
               onChange={(e) => setForm({...form, address: e.target.value})} />
               {errorData && renderFieldErrors('address',errorData)}
           </div>
- 
+
+             {/** Country Done*/}
           {countries && (<div className="grid w-full max-w-lg items-center gap-1.5">
             <Label htmlFor="name">País</Label>
             <Countries 
@@ -285,7 +311,8 @@ const UsersCreate = () => {
                 }}/>
               {errorData && renderFieldErrors('country',errorData)}
           </div>)}
-            
+
+            {/** State Done*/}  
           { form.country && (<div className="grid w-full max-w-lg items-center gap-1.5">
             <Label htmlFor="name">Estado</Label>
             <States 
@@ -299,6 +326,7 @@ const UsersCreate = () => {
               {errorData && renderFieldErrors('state',errorData)}
           </div>)}
 
+            {/** City Done*/}
           {cities.length > 0 && (<div className="grid w-full max-w-lg items-center gap-1.5">
             <Label htmlFor="name">Ciudad</Label>
             <Cities 
@@ -311,6 +339,7 @@ const UsersCreate = () => {
               {errorData && renderFieldErrors('city',errorData)}
           </div>)}
 
+            {/** Role Done*/}
           <div className="grid w-full max-w-lg items-center gap-1.5" >
               <Label htmlFor="user-type" >Rol asociado</Label>
                 <Select
@@ -352,7 +381,7 @@ const UsersCreate = () => {
                 </AlertDialogHeader>
                 <AlertDialogFooter>
                   <AlertDialogCancel >Cancelar</AlertDialogCancel>
-                  <AlertDialogAction onClick={handleCreateRole} >Continuar</AlertDialogAction>
+                  <AlertDialogAction onClick={handleCreateUser} >Continuar</AlertDialogAction>
                 </AlertDialogFooter>
               </AlertDialogContent>
           </AlertDialog>
