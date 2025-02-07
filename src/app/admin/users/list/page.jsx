@@ -214,7 +214,6 @@ const UsersList = () => {
                       <TableHead className="text-left">Ciudad</TableHead>
                       <TableHead className="text-left">Estado</TableHead>
                       {/** */}<TableHead className="text-left">Fecha de Creación</TableHead>
-                      <TableHead className="text-left">Fecha de Actualización</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -245,7 +244,6 @@ const UsersList = () => {
                               </AlertDialog>
                         </TableCell>
                         <TableCell>{new Date(user.createdAt).toLocaleDateString()}</TableCell>
-                        <TableCell>{new Date(user.updatedAt).toLocaleDateString()}</TableCell>
                         <TableCell>
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>

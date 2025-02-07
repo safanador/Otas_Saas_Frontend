@@ -19,7 +19,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover"
 
-export function States({states, selectedState, onStateChange}) {
+export function States({states, selectedState, onStateChange, disabled=false}) {
   const [open, setOpen] = React.useState(false)
   const [value, setValue] = React.useState(selectedState)
 
@@ -34,6 +34,7 @@ export function States({states, selectedState, onStateChange}) {
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <Button
+          disabled={disabled}
           variant="outline"
           role="combobox"
           aria-expanded={open}

@@ -19,7 +19,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover"
 
-export function Countries({countries, onCountryChange, selectedCountry}) {
+export function Countries({countries, onCountryChange, selectedCountry, disabled = false}) {
   const [open, setOpen] = React.useState(false)
   const [value, setValue] = React.useState(selectedCountry)
 
@@ -34,6 +34,7 @@ export function Countries({countries, onCountryChange, selectedCountry}) {
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <Button
+          disabled={disabled} // Deshabilitar el botón
           variant="outline"
           role="combobox"
           aria-expanded={open}

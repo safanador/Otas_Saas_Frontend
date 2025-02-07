@@ -21,6 +21,7 @@ export function DatePicker({
   endYear = getYear(new Date()) + 100,
   initialDate = new Date(), // Fecha inicial desde el componente padre
   onDateChange, // Función de callback para devolver la fecha modificada
+  disabled=false
 }) {
 
   const [date, setDate] = React.useState(initialDate);
@@ -73,6 +74,7 @@ export function DatePicker({
     <Popover>
       <PopoverTrigger asChild>
         <Button
+          disabled={disabled}
           variant={"outline"}
           className={cn(
             "w-[250px] justify-start text-left font-normal",

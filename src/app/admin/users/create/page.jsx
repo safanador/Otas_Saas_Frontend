@@ -38,6 +38,8 @@ import AvatarInput from "../../components/Avatar/AvatarInput";
 const UsersCreate = () => {
   const [roles, setRoles] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [buttonLoading, setButtonLoading] = useState(false);
+
   const [form, setForm] = useState({
     name: "", 
     email: "", 
@@ -102,45 +104,56 @@ const UsersCreate = () => {
   const handleCreateUser = async () => {
     try {
       setErrorData([]); // Limpiar errores anteriores
+      setButtonLoading(true);
       console.log(form);
-      // 1. Subir la imagen
-      const formData = new FormData();
-      formData.append('file', form.image); // 'file' es el nombre del campo que espera tu backend
   
-      const imageResponse = await fetch("http://localhost:3000/api/v1/images/upload", {
-        method: 'POST',
-        body: formData, // Envía el FormData
-        credentials: 'include', // Incluye cookies si es necesario
-      });
+      let imageUrl = null; // Inicializa imageUrl como null
   
-      // Manejar errores de autenticación/autorización
-      if (imageResponse.status === 403) {
-        window.location.href = '/auth/login';
-        return;
+      // 1. Subir la imagen solo si form.image no es null o undefined
+      if (form.image) {
+        const formData = new FormData();
+        formData.append('file', form.image); // 'file' es el nombre del campo que espera tu backend
+  
+        const imageResponse = await fetch("http://localhost:3000/api/v1/images/upload", {
+          method: 'POST',
+          body: formData, // Envía el FormData
+          credentials: 'include', // Incluye cookies si es necesario
+        });
+  
+        // Manejar errores de autenticación/autorización
+        if (imageResponse.status === 403) {
+          window.location.href = '/auth/login';
+          return;
+        }
+        if (imageResponse.status === 401) {
+          window.location.href = '/admin/unauthorized';
+          return;
+        }
+  
+        // Verificar si la carga de la imagen fue exitosa
+        if (!imageResponse.ok) {
+          toast({
+            variant: "destructive",
+            title: "Uh oh! Parece que algo salió mal.",
+            description: "Hubo un error al subir la imagen. Por favor, intenta más tarde.",
+          });
+          setButtonLoading(false);
+          return;
+        }
+  
+        // Obtener la URL de la imagen subida
+        const imageData = await imageResponse.json();
+        imageUrl = imageData.imageUrl; // Asignar la URL de la imagen
       }
-      if (imageResponse.status === 401) {
-        window.location.href = '/admin/unauthorized';
-        return;
-      }
   
-      // Verificar si la carga de la imagen fue exitosa
-      if (!imageResponse.ok) {
-        const errorData = await imageResponse.json();
-        setErrorData(errorData.message || "Error al subir la imagen");
-        return;
-      }
-  
-      // Obtener la URL de la imagen subida
-      const imageData = await imageResponse.json();
-      const imageUrl = imageData.imageUrl; // Asegúrate de que tu backend devuelva { imageUrl: '...' }
-  
-      // 2. Crear el usuario con la URL de la imagen
+      // 2. Crear el usuario con la URL de la imagen (o null si no se subió ninguna)
       const updatedForm = {
         ...form,
-        phone: selectedPhoneCode + form.phone, // Agregar el código de teléfono
-        image: imageUrl, // Usar la URL de la imagen subida
+        phone: selectedPhoneCode + " " + form.phone, // Agregar el código de teléfono
+        image: imageUrl, // Usar la URL de la imagen subida o null
       };
       console.log(updatedForm);
+  
       const userResponse = await fetch("http://localhost:3000/api/v1/auth/register", {
         method: 'POST',
         headers: {
@@ -153,9 +166,12 @@ const UsersCreate = () => {
       // Verificar si la creación del usuario fue exitosa
       if (!userResponse.ok) {
         const errorData = await userResponse.json();
-        setErrorData(errorData.message || "Error al crear el usuario");
+        setErrorData(errorData.message);
+        setButtonLoading(false);
         return;
       }
+  
+      setButtonLoading(false);
   
       // Mostrar mensaje de éxito
       toast({
@@ -165,6 +181,7 @@ const UsersCreate = () => {
       });
   
     } catch (error) {
+      setButtonLoading(false);
       console.error("Error:", error);
       toast({
         variant: "destructive",
@@ -368,7 +385,9 @@ const UsersCreate = () => {
           <Button                 
             onClick={() => setOpen(true)}
             className="w-full md:w-[100px]" >
-              Crear Usuario
+              { buttonLoading 
+                ? (<span className="w-4 h-4 border-[1.5px] border-white border-t-transparent rounded-full animate-spin"></span>)
+                : (<span>Crear Usuario</span>) }
           </Button>
 
           <AlertDialog open={open} onOpenChange={setOpen}>

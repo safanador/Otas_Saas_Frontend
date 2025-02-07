@@ -23,7 +23,7 @@ import { useParams } from "next/navigation";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 
 
-const RolesEdit = () => {
+const UsersEdit = () => {
   const [permissions, setPermissions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [form, setForm] = useState({});
@@ -94,33 +94,9 @@ const RolesEdit = () => {
     );
   }
 
-  console.log(form)
-
-  // tabla de permisos
-  const entities = [
-    { spanish: 'Rol', english: 'role' },
-    { spanish: 'Usuario', english: 'user' },
-    { spanish: 'Agencia', english: 'agency' },
-  ];
-
-  const getPermission = (action, entity) => {
-    const permissionString = `${action} ${entity}`;
-    return permissions.find((p) => p.description === permissionString);
-  };
-
-  const handleCheckboxChange = (permission) => {
-    setForm((prev) => ({
-      ...prev,
-      permissions: prev.permissions.includes(permission)
-        ? prev.permissions.filter((perm) => perm !== permission)
-        : [...prev.permissions, permission],
-    }));
-  };
-
-    const handleCreateRole = async (e) => {
+    const handleEditUser = async (e) => {
       try {
         setErrorData([]);
-        const formattedPermissions = form.permissions.map((p)=> permissions.find((pDb) => pDb.description === p)?.id).filter((id) => id !== undefined)
         
         /**
         const updatedForm = { 
@@ -182,143 +158,210 @@ const RolesEdit = () => {
     <AdminLayout>
       <Card>
         <CardHeader>
-          <CardTitle>Edición de rol</CardTitle>
-          <CardDescription>A continuación edita toda la información necesaria relacionada al rol.</CardDescription>
+          <CardTitle>Creación de usuario</CardTitle>
+          <CardDescription>
+            Ventana para crear un nuevo usuario, agregue toda la información del usuario para poder continuar.
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="container space-y-4 mx-auto py-2">
-          <h1 className="text-lg font-bold text-gray-900 dark:text-gray-100">Rol</h1>
+
+            {/** Profile image Pending*/}
+            <div className="grid w-full max-w-lg items-center gap-1.5">
+            <Label htmlFor="image">Foto del usuario</Label>
+            <AvatarInput
+                image={form.image}
+                onChange={(e) => {
+                  const file = e.target.files?.[0] || null;
+                  setForm({ ...form, image: file });
+                }}
+              />
+              {errorData && renderFieldErrors('image',errorData)}
+          </div>
+
+            {/** Name Done */}
           <div className="grid w-full max-w-lg items-center gap-1.5">
-            <Label htmlFor="name">Nombre del rol</Label>
+            <Label htmlFor="name">Nombre del usuario</Label>
             <Input 
               type="text" 
               id="name" 
               placeholder="Nombre..." 
               value={form.name}
               onChange={(e) => setForm({...form, name: e.target.value})} />
-              {errorData &&  renderFieldErrors('name',errorData)}
+              {errorData && renderFieldErrors('name',errorData)}
           </div>
 
-            <div className="grid w-full max-w-lg items-center gap-1.5" >
-              <Label htmlFor="user-type" >Tipo de usuario</Label>
-              <Select
-                value={form.scope}
-                onValueChange={(value) => setForm({...form, scope: value})}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Tipo de usuario" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectGroup>
-                    <SelectLabel>Tipos</SelectLabel>
-                    <SelectItem value="agency">Agencia</SelectItem>
-                    <SelectItem value="global">Empresa desarrolladora</SelectItem>
-                  </SelectGroup>
-                </SelectContent>
-              </Select>
-              {errorData &&  renderFieldErrors('scope',errorData)}
-            </div>
+            {/** Email Done*/}
+          <div className="grid w-full max-w-lg items-center gap-1.5">
+            <Label htmlFor="name">Correo Electronico</Label>
+            <Input 
+              type="email" 
+              id="email" 
+              placeholder="Correo electrónico..." 
+              value={form.email}
+              onChange={(e) => setForm({...form, email: e.target.value})} />
+              {errorData && renderFieldErrors('email',errorData)}
+          </div>
 
-            { form.scope === 'agency' && (
-              <div className="grid w-full max-w-lg items-center gap-1.5" >
-                <Label htmlFor="user-type" >Agencia asociada</Label>
+            {/** Password Done*/}
+          <div className="grid w-full max-w-lg items-center gap-1.5">
+            <Label htmlFor="name">Contraseña del usuario</Label>
+            <Input 
+              type="password" 
+              id="password" 
+              placeholder="Contraseña..." 
+              value={form.password}
+              onChange={(e) => setForm({...form, password: e.target.value})} /> 
+              {errorData && renderFieldErrors('password',errorData)}
+          </div>
+
+            {/** Corporate email Done */}
+          <div className="grid w-full max-w-lg items-center gap-1.5">
+            <Label htmlFor="name">Correo Corporativo</Label>
+            <Input 
+              type="email" 
+              id="corporateEmail" 
+              placeholder="Correo corporativo..." 
+              value={form.corporateEmail}
+              onChange={(e) => setForm({...form, corporateEmail: e.target.value})} />
+              {errorData && renderFieldErrors('corporateEmail',errorData)}
+          </div>
+
+            {/** Date of Birth Pending*/}
+          <div className="grid w-full max-w-lg items-center gap-1.5">
+            <Label htmlFor="phone">Fecha de nacimiento</Label>
+            <DatePicker onDateChange={(date) => setForm({...form, dob: date})} />
+            {errorData && renderFieldErrors('dob', errorData)}
+          </div>
+
+            {/** Phone Done*/}
+          <div className="grid w-full max-w-lg items-center gap-1.5">
+            <Label htmlFor="phone">Número de Teléfono</Label>
+            <div className="flex gap-1">
+              <PhoneCodes countries={countries} onCodeSelect={(code) => setSelectedPhoneCode(code)} selectedPhoneCode={selectedPhoneCode} />
+              <Input
+                type="tel" 
+                id="phone"
+                placeholder="Número de teléfono (10 dígitos)..."
+                value={form.phone}
+                onChange={(e) => {
+                  const phone = e.target.value;
+                  // Permite solo números y restringe la longitud a 10 caracteres
+                  if (/^\d{0,10}$/.test(phone)) {
+                    setForm({ ...form, phone });
+                  }
+                }}
+              />
+            </div>
+            {errorData && renderFieldErrors('phone', errorData)}
+          </div>
+
+            {/** Address Done*/}
+          <div className="grid w-full max-w-lg items-center gap-1.5">
+            <Label htmlFor="name">Dirección</Label>
+            <Input 
+              type="text" 
+              id="address" 
+              placeholder="Dirección" 
+              value={form.address}
+              onChange={(e) => setForm({...form, address: e.target.value})} />
+              {errorData && renderFieldErrors('address',errorData)}
+          </div>
+
+             {/** Country Done*/}
+          {countries && (<div className="grid w-full max-w-lg items-center gap-1.5">
+            <Label htmlFor="name">País</Label>
+            <Countries 
+              countries={countries} 
+              selectedCountry={form.country}
+              onCountryChange={(newCountry) => {
+                setForm({...form, country: newCountry, state: '', city: ''});
+                const fetchedStates = State.getStatesOfCountry(newCountry);
+                setStates(fetchedStates);
+                }}/>
+              {errorData && renderFieldErrors('country',errorData)}
+          </div>)}
+
+            {/** State Done*/}  
+          { form.country && (<div className="grid w-full max-w-lg items-center gap-1.5">
+            <Label htmlFor="name">Estado</Label>
+            <States 
+              states={states} 
+              selectedState={form.state} 
+              onStateChange={(newState) => {
+                setForm({...form, state: newState});
+                const fetchedCities = City.getCitiesOfState(form.country, newState);
+                setCities(fetchedCities);
+                }} />
+              {errorData && renderFieldErrors('state',errorData)}
+          </div>)}
+
+            {/** City Done*/}
+          {cities.length > 0 && (<div className="grid w-full max-w-lg items-center gap-1.5">
+            <Label htmlFor="name">Ciudad</Label>
+            <Cities 
+              cities={cities} 
+              selectedCity={form.city} 
+              onCityChange={(newCity) => {
+                setForm({...form, city: newCity});
+                }}
+              />
+              {errorData && renderFieldErrors('city',errorData)}
+          </div>)}
+
+            {/** Role Done*/}
+          <div className="grid w-full max-w-lg items-center gap-1.5" >
+              <Label htmlFor="user-type" >Rol asociado</Label>
                 <Select
-                  value={form.agencyId}
-                  onValueChange={(value) => setForm({...form, agencyId: value})}
-                >
+                  value={form.roleId}
+                  onValueChange={(value) => setForm({...form, roleId: value})}>
                   <SelectTrigger>
-                    <SelectValue placeholder="Selecciona una agencia" />
+                    <SelectValue placeholder="Selecciona un rol" />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectGroup>
-                      <SelectLabel>Agencias</SelectLabel>
-                      {agencies.map((agency) => (
-                        <SelectItem key={agency.id} value={agency.id} >
-                          {agency.name}
+                      <SelectLabel>Roles (Rol - Tipo - Agencia)</SelectLabel>
+                      {roles.map((role) => (
+                        <SelectItem key={role.id} value={role.id} >
+                          {role.name} - {role.scope} - {role.agency?.name}
                         </SelectItem>
                       ))}
                     </SelectGroup>
                   </SelectContent>
                 </Select>
-                {errorData && renderFieldErrors('agencyId',errorData)}
-
-              </div>
-            )}
-
-            <div className="grid w-full max-w-lg items-center gap-1.5" >
-            <Label htmlFor="permissions" >Selecciona permisos</Label>
-            <div className="overflow-x-auto bg-white rounded-lg shadow dark:bg-gray-800">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead className="text-center">Entidades</TableHead>
-                    <TableHead className="text-center">Ver</TableHead>
-                    <TableHead className="text-center">Listar</TableHead>
-                    <TableHead className="text-center">Crear</TableHead>
-                    <TableHead className="text-center">Actualizar</TableHead>
-                    <TableHead className="text-center">Borrar</TableHead>
-                    <TableHead className="text-center">Desactivar</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {entities.map((entity, index) => (
-                    <TableRow key={index}>
-                      <TableCell className="text-center" >{entity.spanish}</TableCell>
-                      {["show", "list", "create", "update", "delete", "activate"].map(
-                        (action,index) => (
-                            <td key={index} className="border p-2 text-center">
-                            {getPermission(action, entity.english) && (
-                                <Checkbox
-                                id={`permission-${action}-${index}`}
-                                checked={form.permissions.includes(
-                                    `${action} ${entity.english}`
-                                )}
-                                onCheckedChange={() =>
-                                    handleCheckboxChange(
-                                    `${action} ${entity.english}`
-                                    )
-                                }
-                                />
-                            )}
-                            </td>
-                        )
-                        )}
-                    </TableRow>
-                  ))
-                  }
-                </TableBody>
-              </Table>
-              </div>
-              {errorData &&  renderFieldErrors('permissions',errorData)}
-            </div>
+                {errorData && renderFieldErrors('roleId',errorData)}
+          </div>
 
           </div>
         </CardContent>
         <CardFooter className="w-full">
-          <Button   
-            onClick={() => setOpen(true)}              
+          <Button                 
+            onClick={() => setOpen(true)}
             className="w-full md:w-[100px]" >
-              Editar Rol
+              { buttonLoading 
+                ? (<span className="w-4 h-4 border-[1.5px] border-white border-t-transparent rounded-full animate-spin"></span>)
+                : (<span>Editar Usuario</span>) }
           </Button>
 
           <AlertDialog open={open} onOpenChange={setOpen}>
               <AlertDialogContent>
                 <AlertDialogHeader>
-                  <AlertDialogTitle>Estás seguro de editar este rol?</AlertDialogTitle>
+                  <AlertDialogTitle>Estás seguro de editar este usuario?</AlertDialogTitle>
                   <AlertDialogDescription>
-                    Este rol permite gestionar el contenido de la aplicación mediante un sistema de permisos y roles.
+                    Las acciones realizadas pueden ser modificadas.
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
                   <AlertDialogCancel >Cancelar</AlertDialogCancel>
-                  <AlertDialogAction onClick={handleCreateRole} >Continuar</AlertDialogAction>
+                  <AlertDialogAction onClick={handleEditUser} >Continuar</AlertDialogAction>
                 </AlertDialogFooter>
               </AlertDialogContent>
           </AlertDialog>
+
         </CardFooter>
       </Card>
     </AdminLayout>
   );
 };
 
-export default RolesEdit;
+export default UsersEdit;
