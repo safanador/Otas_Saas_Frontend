@@ -53,7 +53,9 @@ const UsersShow = () => {
    if (!id) {
     return (
     <AdminLayout>
-      <p>Cargando...</p>
+      <div className="flex items-center justify-center h-full">
+        <span className="w-8 h-8 border-[3px] border-black border-t-transparent rounded-full animate-spin"></span>
+      </div>
     </AdminLayout>
     );
   }
@@ -95,7 +97,7 @@ const UsersShow = () => {
     return (
         <AdminLayout>
             <div className="flex items-center justify-center h-full">
-                <p className="text-center">Cargando...</p>
+              <span className="w-8 h-8 border-[3px] border-black border-t-transparent rounded-full animate-spin"></span>
             </div>
         </AdminLayout>
     );

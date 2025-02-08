@@ -75,11 +75,11 @@ const UsersList = () => {
 
   if (loading) {
     return (
-        <AdminLayout>
-            <div className="flex items-center justify-center h-full">
-                <p className="text-center">Cargando usuarios...</p>
-            </div>
-        </AdminLayout>
+      <AdminLayout>
+          <div className="flex items-center justify-center h-full">
+            <span className="w-8 h-8 border-[3px] border-black border-t-transparent rounded-full animate-spin"></span>
+          </div>
+      </AdminLayout>
     );
   }
 // eliminacion de usuario

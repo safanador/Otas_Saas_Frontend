@@ -7,7 +7,7 @@ const AvatarInput = ({ image, onChange, imageUrl, isEditing=true }) => {
         <div className="relative w-48 h-48 rounded-lg overflow-hidden border-2 border-gray-300">
             {image || imageUrl ? (
                 <img
-                src={imageUrl ? imageUrl  : URL.createObjectURL(image) }
+                src={image ?  URL.createObjectURL(image) : imageUrl }
                 alt="Profile"
                 className="w-full h-full object-cover"
                 />
