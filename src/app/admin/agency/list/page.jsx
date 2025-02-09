@@ -7,15 +7,19 @@ import { Input } from "@/components/ui/input";
 import AdminLayout from "../../components/SideBar/AdminLayout";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Button, buttonVariants } from "@/components/ui/button";
-import { Eye, MoreHorizontal, Pencil, Trash2 } from "lucide-react";
+import { Eye, Globe, MoreHorizontal, Pencil, Trash2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
+import Link from "next/link";
+import { Countries } from "../../components/CountryStateCity/Country";
+import { City, Country, State } from "country-state-city";
+import { States } from "../../components/CountryStateCity/State";
+import { Cities } from "../../components/CountryStateCity/Cities";
 
-const UsersList = () => {
-  const [users, setUsers] = useState([]);
+const AgenciesList = () => {
   const [agencies, setAgencies] = useState([]);
   const [agencyId, setAgencyId] = useState();
   const [loading, setLoading] = useState(true);
@@ -26,26 +30,17 @@ const UsersList = () => {
   const [openT, setOpenT] = useState(false);
 
 
+  const countries = Country.getAllCountries(); // it's an Array
+  const states =  (country) => {
+    return State.getStatesOfCountry(country);
+  } 
+  const cities = (country, state) => {
+    return City.getCitiesOfState(country, state);
+  } 
+
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const url = agencyId 
-        ? `http://localhost:3000/api/v1/users?agencyId=${agencyId}`
-        : "http://localhost:3000/api/v1/users";
-
-        const response = await fetch(url, {
-          credentials: 'include'
-        });
-        console.log(response)
-        if (response.status === 401) {
-          window.location.href = '/auth/login';
-        }
-        if (response.status === 403) {
-          window.location.href = '/admin/unauthorized';
-        }
-        const data = await response.json();
-        setUsers(data);
-
         // fetch agencies
         const agenciesData = await fetch("http://localhost:3000/api/v1/agencies", {
           credentials: 'include'
@@ -59,18 +54,18 @@ const UsersList = () => {
         const agencies = await agenciesData.json();
         setAgencies(agencies);
       } catch (error) {
-        console.error("Error fetching users:", error);
+        console.error("Error fetching Agencies:", error);
       } finally {
         setLoading(false);
       }
     };
 
     fetchData();
-  }, [agencyId]);
+  }, []);
 
    // Filtrar roles en función del término de búsqueda
-   const filteredUsers = users?.filter((user) =>
-    user.name.toLowerCase().includes(searchTerm.toLowerCase())
+   const filteredAgencies = agencies?.filter((agency) =>
+    agency.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   if (loading) {
@@ -83,10 +78,10 @@ const UsersList = () => {
     );
   }
 // eliminacion de usuario
-  const handleDeleteUser = async (id) => {
+  const handleDeleteAgency = async (id) => {
     try {
       
-      const response = await fetch(`http://localhost:3000/api/v1/users/${id}`, {
+      const response = await fetch(`http://localhost:3000/api/v1/agencies/${id}`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
@@ -98,7 +93,7 @@ const UsersList = () => {
         toast({
           variant: "success",
           title: "Realizado!",
-          description: "Usuario eliminado exitosamente.",
+          description: "Agencia eliminada exitosamente.",
         })
         setTimeout(() => {
           window.location.reload(); // Recargar la página actual
@@ -121,11 +116,11 @@ const UsersList = () => {
     }
   };
 
-  // toggle user state
-  const handleToggleUserState = async (id) => {
+  // toggle Agency state
+  const handleToggleAgencyState = async (id) => {
     try {
       
-      const response = await fetch(`http://localhost:3000/api/v1/users/${id}/toggle-status`, {
+      const response = await fetch(`http://localhost:3000/api/v1/agencies/${id}/toggle-state`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
@@ -137,7 +132,7 @@ const UsersList = () => {
         toast({
           variant: "success",
           title: "Realizado!",
-          description: "El estatus del usuario ha sido cambiado exitosamente.",
+          description: "El estatus de la agencia ha sido cambiado exitosamente.",
         })
         setTimeout(() => {
           window.location.reload(); // Recargar la página actual
@@ -164,17 +159,17 @@ const UsersList = () => {
     <AdminLayout>
       <Card>
         <CardHeader>
-          <CardTitle>Usuarios</CardTitle>
-          <CardDescription>A continuación se presenta una lista con aspectos generales de los usuarios.</CardDescription>
+          <CardTitle>Agencias</CardTitle>
+          <CardDescription>A continuación se presenta una lista con aspectos generales de las agencias.</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="container mx-auto py-2">
             <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
-              <h1 className="text-lg font-bold text-gray-900 dark:text-gray-100">Lista de usuarios</h1>
+              <h1 className="text-lg font-bold text-gray-900 dark:text-gray-100">Lista de agencias</h1>
               <div className="flex items-center gap-2">
                 <Input 
                 type="search" 
-                placeholder="Buscar usuarios..." 
+                placeholder="Buscar nombre..." 
                 value={searchTerm} 
                 onChange={(e) => setSearchTerm(e.target.value)} // Actualiza el estado al escribir
                 className="w-full md:w-64" />
@@ -208,42 +203,74 @@ const UsersList = () => {
                     <TableRow>
                       <TableHead className="text-center">Item</TableHead>
                       <TableHead className="text-left">Nombre</TableHead>
-                      <TableHead className="text-left">Rol</TableHead>
-                      <TableHead className="text-left">Tipo de Rol</TableHead>
-                      <TableHead className="text-left">Agencia asociada</TableHead>
+                      <TableHead className="text-left">Correo</TableHead>
+                      <TableHead className="text-left">Teléfono</TableHead>
+                      <TableHead className="text-left">Dirección</TableHead>
                       <TableHead className="text-left">Ciudad</TableHead>
                       <TableHead className="text-left">Estado</TableHead>
-                      {/** */}<TableHead className="text-left">Fecha de Creación</TableHead>
+                      <TableHead className="text-left">País</TableHead>
+                      <TableHead className="text-left">Web</TableHead>
+                      <TableHead className="text-left">Estatus</TableHead>
+                      <TableHead className="text-left">Creación</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {filteredUsers.length > 0 ? (filteredUsers.map((user, index) => (
-                      <TableRow key={user.id}>
+                    {filteredAgencies.length > 0 ? (filteredAgencies.map((agency, index) => (
+                      <TableRow key={agency.id}>
                         <TableCell className="text-center" >{index+1}</TableCell>
-                        <TableCell className="capitalize" >{user.name}</TableCell>
-                        <TableCell className="capitalize" >{user.role.name}</TableCell>
-                        <TableCell className="capitalize" >{user.role.scope === 'agency' ? `Agencias` : "Empresa desarrolladora"}</TableCell>
-                        <TableCell className="capitalize" >{user.agency?.name}</TableCell>
-                        <TableCell className="capitalize" >{user.city}</TableCell>
+                        <TableCell className="capitalize" >{agency.name}</TableCell>
+                        <TableCell className="capitalize" >{agency.email}</TableCell>
+                        <TableCell className="capitalize" >{agency.phone}</TableCell>
+                        <TableCell className="capitalize" >{agency.address}</TableCell>
+
                         <TableCell className="capitalize" >
-                          <Switch checked={user.isActive} onCheckedChange={() => setOpenT(true) } />
-                            {/** Toggle user state confirmation */}
+                          {agency.country && agency.state && agency.city && (<div className="grid w-full max-w-lg items-center gap-1.5">
+                            <Cities
+                              disabled={true}
+                              cities={cities(agency.country, agency.state)} 
+                              selectedCity={agency.city} 
+                              />
+                          </div>)}
+                        </TableCell>
+                        <TableCell className="capitalize" >
+                          { agency.country && agency.state && (<div className="grid w-full max-w-lg items-center gap-1.5">
+                            <States 
+                              disabled={true}
+                              states={states(agency.country)} 
+                              selectedState={agency.state} 
+                              />
+                          </div>)}
+                        </TableCell>
+                        <TableCell className="capitalize" >
+                          {agency.country && (<div className="grid w-full max-w-lg items-center gap-1.5">
+                          <Countries 
+                            disabled={true}
+                            countries={countries} 
+                            selectedCountry={agency.country}
+                            />
+                        </div>)}
+                        </TableCell>
+
+                        <TableCell className="capitalize" >{ agency.url && (<Link target="_blank" href={agency.url}><Globe/></Link>)}</TableCell>
+                        <TableCell className="capitalize" >
+                          <Switch checked={agency.isActive} onCheckedChange={() => setOpenT(true) } />
+                            {/** Toggle Agency state confirmation */}
                               <AlertDialog open={openT} onOpenChange={setOpenT}>
                                 <AlertDialogContent>
                                   <AlertDialogHeader>
-                                    <AlertDialogTitle>Estás seguro de cambiar el estado de este usuario?</AlertDialogTitle>
+                                    <AlertDialogTitle>Estás seguro de cambiar el estado de esta agencia?</AlertDialogTitle>
                                     <AlertDialogDescription>
-                                      Esta acción {user.isActive ? 'desactivará' : 'activará' } el usuario en la base de datos, este {user.isActive ? 'no podrá' : 'podrá' } utilizar sus credenciales y utilizar la plataforma.
+                                      Esta acción {agency.isActive ? 'desactivará' : 'activará' } la agencia en la base de datos, sus usuarios {agency.isActive ? 'no podrán' : 'podrán' } utilizar sus credenciales y utilizar la plataforma.
                                     </AlertDialogDescription>
                                   </AlertDialogHeader>
                                   <AlertDialogFooter>
                                     <AlertDialogCancel >Cancelar</AlertDialogCancel>
-                                    <AlertDialogAction className={buttonVariants({ variant: "destructive" })} onClick={() => handleToggleUserState(user.id)} >Continuar</AlertDialogAction>
+                                    <AlertDialogAction className={buttonVariants({ variant: "destructive" })} onClick={() => handleToggleAgencyState(agency.id)} >Continuar</AlertDialogAction>
                                   </AlertDialogFooter>
                                 </AlertDialogContent>
                               </AlertDialog>
                         </TableCell>
-                        <TableCell>{new Date(user.createdAt).toLocaleDateString()}</TableCell>
+                        <TableCell>{new Date(agency.createdAt).toLocaleDateString()}</TableCell>
                         <TableCell>
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
@@ -254,11 +281,11 @@ const UsersList = () => {
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end">
                               <DropdownMenuLabel>Acciones</DropdownMenuLabel>
-                              <DropdownMenuItem onClick={() => router.push(`/admin/users/show/${user.id}`)}>
-                              <Eye /> Ver Usuario
+                              <DropdownMenuItem onClick={() => router.push(`/admin/agency/show/${agency.id}`)}>
+                              <Eye /> Ver Agencia
                               </DropdownMenuItem>
-                              <DropdownMenuItem onClick={() => router.push(`/admin/users/edit/${user.id}`) } >
-                               <Pencil/> Editar Usuario
+                              <DropdownMenuItem onClick={() => router.push(`/admin/agency/edit/${agency.id}`) } >
+                               <Pencil/> Editar Agencia
                               </DropdownMenuItem>
                               <DropdownMenuSeparator />
                               <DropdownMenuItem onClick={(e) => {
@@ -266,21 +293,21 @@ const UsersList = () => {
                                     setOpen(true);
                                   }}>
                                 <Trash2 color="red" />
-                                <span className="text-red-500" >Eliminar Usuario</span>
+                                <span className="text-red-500" >Eliminar Agencia</span>
                               </DropdownMenuItem>
                               {/** Delete confirmation */}
 
                               <AlertDialog open={open} onOpenChange={setOpen}>
                                 <AlertDialogContent>
                                   <AlertDialogHeader>
-                                    <AlertDialogTitle>Estás seguro de eliminar este usuario?</AlertDialogTitle>
+                                    <AlertDialogTitle>Estás seguro de eliminar esta agencia?</AlertDialogTitle>
                                     <AlertDialogDescription>
-                                      Esta acción no se puede deshacer. El usuario será permanentemente eliminado de la base de datos.
+                                      Esta acción no se puede deshacer. La agencia será permanentemente eliminada de la base de datos, por favor verifique esta acción antes de realizarla.
                                     </AlertDialogDescription>
                                   </AlertDialogHeader>
                                   <AlertDialogFooter>
                                     <AlertDialogCancel >Cancelar</AlertDialogCancel>
-                                    <AlertDialogAction className={buttonVariants({ variant: "destructive" })} onClick={() => handleDeleteUser(user.id)} >Continuar</AlertDialogAction>
+                                    <AlertDialogAction className={buttonVariants({ variant: "destructive" })} onClick={() => handleDeleteAgency(agency.id)} >Continuar</AlertDialogAction>
                                   </AlertDialogFooter>
                                 </AlertDialogContent>
                               </AlertDialog>
@@ -291,8 +318,8 @@ const UsersList = () => {
                     ))
                   ) : (
                       <TableRow>
-                        <TableCell colSpan={9} className="text-center">
-                          No se encontraron usuarios.
+                        <TableCell colSpan={12} className="text-center">
+                          No se encontraron agencias.
                         </TableCell>
                       </TableRow>
                   )
@@ -308,4 +335,4 @@ const UsersList = () => {
   );
 };
 
-export default UsersList;
+export default AgenciesList;

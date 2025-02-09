@@ -38,7 +38,7 @@ export function States({states, selectedState, onStateChange, disabled=false}) {
           variant="outline"
           role="combobox"
           aria-expanded={open}
-          className="w-[200px] justify-between"
+          className="w-full justify-between"
         >
           {value
             ? states.find((s) => s.isoCode === value)?.name
@@ -46,7 +46,7 @@ export function States({states, selectedState, onStateChange, disabled=false}) {
           <ChevronsUpDown className="opacity-50" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-[200px] p-0">
+      <PopoverContent className="w-full p-0" align="start">
         <Command>
           <CommandInput placeholder="Busca un estado..." className="h-9" />
           <CommandList>
