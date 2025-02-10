@@ -16,26 +16,19 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { Country, State, City }  from 'country-state-city';
-import { Calendar } from "@/components/ui/calendar"
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
-import { Toast, ToastDescription, ToastTitle } from "@/components/ui/toast";
-import { CalendarIcon } from "lucide-react";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { format } from "date-fns";
-import { es } from "date-fns/locale";
 
-import { cn } from "@/lib/utils";
+
 import { Countries } from "../../components/CountryStateCity/Country";
 import { States } from "../../components/CountryStateCity/State";
 import { Cities } from "../../components/CountryStateCity/Cities";
 import { PhoneCodes } from "../../components/CountryStateCity/PhoneCode";
-import { DatePicker } from "@/components/ui/date-picker";
 import AvatarInput from "../../components/Avatar/AvatarInput";
 
 
-const UsersCreate = () => {
+const AgencyCreate = () => {
   const [roles, setRoles] = useState([]);
   const [loading, setLoading] = useState(true);
   const [buttonLoading, setButtonLoading] = useState(false);
@@ -43,28 +36,27 @@ const UsersCreate = () => {
   const [form, setForm] = useState({
     name: "", 
     email: "", 
-    password: '', 
-    image: null,
-    corporateEmail: '',
-    dob: '',
+    logo: null,
     phone: '',
+    url: '',
+    rnt: '',
+    phone2: '',
     address: '',
     country: '',
     state: '',
     city: '',
-    roleId: null,  
-    agencyId: null,
   });
   const [open, setOpen] = useState(false);
   const countries = Country.getAllCountries() // it's an Array
   const [states, setStates] = useState([]);
   const [cities, setCities] = useState([]);
   const [selectedPhoneCode, setSelectedPhoneCode] = useState('');
+  const [selectedPhoneCode2, setSelectedPhoneCode2] = useState('');
 
   const foundRole = roles.find(role => role.id === form.roleId) || null;
   const [errorData, setErrorData] = useState();
   const { toast } = useToast();
-  
+  {/**
   useEffect(() => {
     const fetchRoles = async () => {
       try {
@@ -100,8 +92,8 @@ const UsersCreate = () => {
         </AdminLayout>
     );
   }
-  
-  const handleCreateUser = async () => {
+   */}
+  const handleCreateAgency = async () => {
     try {
       setErrorData([]); // Limpiar errores anteriores
       setButtonLoading(true);
@@ -110,9 +102,9 @@ const UsersCreate = () => {
       let imageUrl = null; // Inicializa imageUrl como null
   
       // 1. Subir la imagen solo si form.image no es null o undefined
-      if (form.image) {
+      if (form.logo) {
         const formData = new FormData();
-        formData.append('file', form.image); // 'file' es el nombre del campo que espera tu backend
+        formData.append('file', form.logo); // 'file' es el nombre del campo que espera tu backend
   
         const imageResponse = await fetch("http://localhost:3000/api/v1/images/upload", {
           method: 'POST',
@@ -150,11 +142,12 @@ const UsersCreate = () => {
       const updatedForm = {
         ...form,
         phone: selectedPhoneCode + " " + form.phone, // Agregar el código de teléfono
+        phone2: selectedPhoneCode2 + " " + form.phone2, // Agregar el código de teléfono
         image: imageUrl, // Usar la URL de la imagen subida o null
       };
       console.log(updatedForm);
   
-      const userResponse = await fetch("http://localhost:3000/api/v1/auth/register", {
+      const agencyResponse = await fetch("http://localhost:3000/api/v1/agencies", {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json', // Corrección
@@ -164,8 +157,8 @@ const UsersCreate = () => {
       });
   
       // Verificar si la creación del usuario fue exitosa
-      if (!userResponse.ok) {
-        const errorData = await userResponse.json();
+      if (!agencyResponse.ok) {
+        const errorData = await agencyResponse.json();
         setErrorData(errorData.message);
         setButtonLoading(false);
         return;
@@ -205,30 +198,29 @@ const UsersCreate = () => {
     <AdminLayout>
       <Card>
         <CardHeader>
-          <CardTitle>Creación de usuario</CardTitle>
+          <CardTitle>Creación de agencia</CardTitle>
           <CardDescription>
-            Ventana para crear un nuevo usuario, agregue toda la información del usuario para poder continuar.
+            Ventana para crear una agencia, agregue toda la información para poder continuar.
           </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="container space-y-4 mx-auto py-2">
 
-            {/** Profile image Pending*/}
+            {/** logo image */}
             <div className="grid w-full max-w-lg items-center gap-1.5">
-            <Label htmlFor="image">Foto del usuario</Label>
             <AvatarInput
-                image={form.image}
+                image={form.logo}
                 onChange={(e) => {
                   const file = e.target.files?.[0] || null;
-                  setForm({ ...form, image: file });
+                  setForm({ ...form, logo: file });
                 }}
               />
-              {errorData && renderFieldErrors('image',errorData)}
+              {errorData && renderFieldErrors('logo',errorData)}
           </div>
 
-            {/** Name Done */}
+            {/** Name  */}
           <div className="grid w-full max-w-lg items-center gap-1.5">
-            <Label htmlFor="name">Nombre del usuario</Label>
+            <Label htmlFor="name">Nombre</Label>
             <Input 
               type="text" 
               id="name" 
@@ -238,7 +230,7 @@ const UsersCreate = () => {
               {errorData && renderFieldErrors('name',errorData)}
           </div>
 
-            {/** Email Done*/}
+            {/** Email */}
           <div className="grid w-full max-w-lg items-center gap-1.5">
             <Label htmlFor="name">Correo Electronico</Label>
             <Input 
@@ -250,38 +242,7 @@ const UsersCreate = () => {
               {errorData && renderFieldErrors('email',errorData)}
           </div>
 
-            {/** Password Done*/}
-          <div className="grid w-full max-w-lg items-center gap-1.5">
-            <Label htmlFor="name">Contraseña del usuario</Label>
-            <Input 
-              type="password" 
-              id="password" 
-              placeholder="Contraseña..." 
-              value={form.password}
-              onChange={(e) => setForm({...form, password: e.target.value})} /> 
-              {errorData && renderFieldErrors('password',errorData)}
-          </div>
-
-            {/** Corporate email Done */}
-          <div className="grid w-full max-w-lg items-center gap-1.5">
-            <Label htmlFor="name">Correo Corporativo</Label>
-            <Input 
-              type="email" 
-              id="corporateEmail" 
-              placeholder="Correo corporativo..." 
-              value={form.corporateEmail}
-              onChange={(e) => setForm({...form, corporateEmail: e.target.value})} />
-              {errorData && renderFieldErrors('corporateEmail',errorData)}
-          </div>
-
-            {/** Date of Birth Pending*/}
-          <div className="grid w-full max-w-lg items-center gap-1.5">
-            <Label htmlFor="phone">Fecha de nacimiento</Label>
-            <DatePicker onDateChange={(date) => setForm({...form, dob: date})} />
-            {errorData && renderFieldErrors('dob', errorData)}
-          </div>
-
-            {/** Phone Done*/}
+            {/** Phone */}
           <div className="grid w-full max-w-lg items-center gap-1.5">
             <Label htmlFor="phone">Número de Teléfono</Label>
             <div className="flex gap-1">
@@ -301,6 +262,53 @@ const UsersCreate = () => {
               />
             </div>
             {errorData && renderFieldErrors('phone', errorData)}
+          </div>
+
+
+          {/** Phone2 */}
+          <div className="grid w-full max-w-lg items-center gap-1.5">
+            <Label htmlFor="phone">Teléfono alternativo</Label>
+            <div className="flex gap-1">
+              <PhoneCodes countries={countries} onCodeSelect={(code) => setSelectedPhoneCode2(code)} selectedPhoneCode={selectedPhoneCode2} />
+              <Input
+                type="tel" 
+                id="phone2"
+                placeholder="Número de teléfono (10 dígitos)..."
+                value={form.phone2}
+                onChange={(e) => {
+                  const phone = e.target.value;
+                  // Permite solo números y restringe la longitud a 10 caracteres
+                  if (/^\d{0,10}$/.test(phone)) {
+                    setForm({ ...form, phone2: phone });
+                  }
+                }}
+              />
+            </div>
+            {errorData && renderFieldErrors('phone2', errorData)}
+          </div>
+
+            {/** url  */}
+            <div className="grid w-full max-w-lg items-center gap-1.5">
+            <Label htmlFor="name">Enlace página web</Label>
+            <Input 
+              type="text" 
+              id="name" 
+              placeholder="Página web..." 
+              value={form.url}
+              onChange={(e) => setForm({...form, url: e.target.value})} />
+              {errorData && renderFieldErrors('url',errorData)}
+          </div>
+
+            {/** RNT  */}
+            <div className="grid w-full max-w-lg items-center gap-1.5">
+            <Label htmlFor="name">Registro Nacional de Turismo</Label>
+            <Input 
+              type="text" 
+              id="name" 
+              placeholder="RNT..." 
+              value={form.rnt}
+              onChange={(e) => setForm({...form, rnt: e.target.value})} />
+              {errorData && renderFieldErrors('rnt',errorData)}
           </div>
 
             {/** Address Done*/}
@@ -356,28 +364,7 @@ const UsersCreate = () => {
               {errorData && renderFieldErrors('city',errorData)}
           </div>)}
 
-            {/** Role Done*/}
-          <div className="grid w-full max-w-lg items-center gap-1.5" >
-              <Label htmlFor="user-type" >Rol asociado</Label>
-                <Select
-                  value={form.roleId}
-                  onValueChange={(value) => setForm({...form, roleId: value})}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Selecciona un rol" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectGroup>
-                      <SelectLabel>Roles (Rol - Tipo - Agencia)</SelectLabel>
-                      {roles.map((role) => (
-                        <SelectItem key={role.id} value={role.id} >
-                          {role.name} - {role.scope} - {role.agency?.name}
-                        </SelectItem>
-                      ))}
-                    </SelectGroup>
-                  </SelectContent>
-                </Select>
-                {errorData && renderFieldErrors('roleId',errorData)}
-          </div>
+           
 
           </div>
         </CardContent>
@@ -387,20 +374,20 @@ const UsersCreate = () => {
             className="w-full md:w-[100px]" >
               { buttonLoading 
                 ? (<span className="w-4 h-4 border-[1.5px] border-white border-t-transparent rounded-full animate-spin"></span>)
-                : (<span>Crear Usuario</span>) }
+                : (<span>Crear Agencia</span>) }
           </Button>
 
           <AlertDialog open={open} onOpenChange={setOpen}>
               <AlertDialogContent>
                 <AlertDialogHeader>
-                  <AlertDialogTitle>Estás seguro de crear este usuario?</AlertDialogTitle>
+                  <AlertDialogTitle>Estás seguro de crear esta agencia?</AlertDialogTitle>
                   <AlertDialogDescription>
-                    Una vez creado el usuario va a recibir un correo electronico de confirmación.
+                    Una vez creada la agencia podrá crear roles a usar dentro de la misma.
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
                   <AlertDialogCancel >Cancelar</AlertDialogCancel>
-                  <AlertDialogAction onClick={handleCreateUser} >Continuar</AlertDialogAction>
+                  <AlertDialogAction onClick={handleCreateAgency} >Continuar</AlertDialogAction>
                 </AlertDialogFooter>
               </AlertDialogContent>
           </AlertDialog>
@@ -411,4 +398,4 @@ const UsersCreate = () => {
   );
 };
 
-export default UsersCreate;
+export default AgencyCreate;

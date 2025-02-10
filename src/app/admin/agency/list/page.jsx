@@ -159,13 +159,13 @@ const AgenciesList = () => {
     <AdminLayout>
       <Card>
         <CardHeader>
-          <CardTitle>Agencias</CardTitle>
+          <CardTitle>Lista de agencias</CardTitle>
           <CardDescription>A continuación se presenta una lista con aspectos generales de las agencias.</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="container mx-auto py-2">
             <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
-              <h1 className="text-lg font-bold text-gray-900 dark:text-gray-100">Lista de agencias</h1>
+              <div></div>
               <div className="flex items-center gap-2">
                 <Input 
                 type="search" 
