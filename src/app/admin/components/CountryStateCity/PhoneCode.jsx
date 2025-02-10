@@ -19,7 +19,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover"
 
-export function PhoneCodes({countries, onCodeSelect, selectedPhoneCode}) {
+export function PhoneCodes({countries, onCodeSelect, selectedPhoneCode, disabled = false }) {
   const [open, setOpen] = React.useState(false)
   const [value, setValue] = React.useState(selectedPhoneCode || '')
   const filteredCountries = countries.filter(country => !country.phonecode.includes('+'));
@@ -37,6 +37,7 @@ export function PhoneCodes({countries, onCodeSelect, selectedPhoneCode}) {
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <Button
+          disabled={disabled}
           variant="outline"
           role="combobox"
           aria-expanded={open}

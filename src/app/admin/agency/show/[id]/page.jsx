@@ -32,23 +32,22 @@ const UsersShow = () => {
   const [form, setForm] = useState({
     name: "",
     email: "",
-    corporateEmail: "",
-    dob: new Date(),
+    rnt: "",
+    url: "",
     phone: "",
+    phone2: "",
     address: "",
     country: "",
     state: "",
     city: "",
-    role: { id: "" },
-    image: "https://example.com/user_images/john_doe.jpg"
+    logo: null
   });
   const { id } = useParams();
   const countries = Country.getAllCountries(); // it's an Array
-  //const [states, setStates] = useState([]);
-  //const [cities, setCities] = useState([]);
-  const [roles, setRoles] = useState([]);
   const states = State.getStatesOfCountry(form.country);
   const cities = City.getCitiesOfState(form.country, form.state);
+  const [selectedPhoneCode, setSelectedPhoneCode] = useState('');
+  const [selectedPhoneCode2, setSelectedPhoneCode2] = useState('');
    // Renderiza un estado de carga mientras `id` no esté disponible
    if (!id) {
     return (
@@ -63,26 +62,28 @@ const UsersShow = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const responseForm = await fetch(`http://localhost:3000/api/v1/users/${id}`, {
+        const responseForm = await fetch(`http://localhost:3000/api/v1/agencies/${id}`, {
           credentials: 'include'
         });
         const dataForm = await responseForm.json();
         console.log(dataForm);
-        setForm(dataForm);
 
-        const roleResponse = await fetch("http://localhost:3000/api/v1/roles/", {
-            credentials: 'include'
-          });
-        if (roleResponse.status === 401) {
+        const phoneParts = dataForm.phone.trim().split(" ");
+        const phone2Parts = dataForm.phone2.trim().split(" ");
+
+        setForm({...dataForm, phone: phoneParts[1], phone2: phone2Parts[1]});
+        setSelectedPhoneCode(phoneParts[0])
+        setSelectedPhoneCode2(phone2Parts[0])
+
+        if (responseForm.status === 401) {
           window.location.href = '/auth/login';
           return;
         }
-        if (roleResponse.status === 403) {
+        if (responseForm.status === 403) {
           window.location.href = '/admin/unauthorized';
           return;
         }
-          const roleData = await roleResponse.json();
-          setRoles(roleData);
+
       } catch (error) {
         console.error("Error fetching users:", error);
       } finally {
@@ -107,9 +108,9 @@ const UsersShow = () => {
     <AdminLayout>
       <Card>
         <CardHeader>
-          <CardTitle>Información de usuario</CardTitle>
+          <CardTitle>Información de la agencia</CardTitle>
           <CardDescription>
-            En esta ventana puedes ver toda la información relacionada al usuario.
+            En esta ventana puedes ver toda la información relacionada a la agencia.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -117,15 +118,14 @@ const UsersShow = () => {
 
             {/** Profile image */}
             <div className="grid w-full max-w-lg items-center gap-1.5">
-              <Label htmlFor="image">Foto del usuario</Label>
               <AvatarInput
-                  imageUrl={form.image} isEditing={false}
+                  imageUrl={form.logo} isEditing={false}
                 />
             </div>
 
               {/** Name Done */}
             <div className="grid w-full max-w-lg items-center gap-1.5">
-              <Label htmlFor="name">Nombre del usuario</Label>
+              <Label htmlFor="name">Nombre</Label>
               <Input
                 disabled
                 type="text" 
@@ -145,35 +145,70 @@ const UsersShow = () => {
                 value={form.email}/>
             </div>
 
-              {/** Corporate email Done */}
-            <div className="grid w-full max-w-lg items-center gap-1.5">
-              <Label htmlFor="name">Correo Corporativo</Label>
-              <Input 
-                disabled
-                type="email" 
-                id="corporateEmail" 
-                placeholder="Correo corporativo..." 
-                value={form.corporateEmail === null? '' : form.corporateEmail}/>
-            </div>
-
-              {/** Date of Birth Pending*/}
-            <div className="grid w-full max-w-lg items-center gap-1.5">
-              <Label htmlFor="phone">Fecha de nacimiento</Label>
-              <DatePicker disabled={true} initialDate={form.dob}  onDateChange={(date) => setForm({...form, dob: date})} />
-            </div>
-
               {/** Phone Done*/}
             <div className="grid w-full max-w-lg items-center gap-1.5">
               <Label htmlFor="phone">Número de Teléfono</Label>
               <div className="flex gap-1">
+                <PhoneCodes disabled={true} countries={countries} onCodeSelect={(code) => setSelectedPhoneCode(code)} selectedPhoneCode={selectedPhoneCode} />
                 <Input
                   disabled
                   type="tel" 
                   id="phone"
                   placeholder="Número de teléfono (10 dígitos)..."
                   value={form.phone}
+                  onChange={(e) => {
+                    const phone = e.target.value;
+                    // Permite solo números y restringe la longitud a 10 caracteres
+                    if (/^\d{0,10}$/.test(phone)) {
+                      setForm({ ...form, phone });
+                    }
+                  }}
                 />
               </div>
+            </div>
+
+              {/** Phone2 */}
+            <div className="grid w-full max-w-lg items-center gap-1.5">
+              <Label htmlFor="phone">Teléfono alternativo</Label>
+              <div className="flex gap-1">
+                <PhoneCodes disabled={true} countries={countries} onCodeSelect={(code) => setSelectedPhoneCode2(code)} selectedPhoneCode={selectedPhoneCode2} />
+                <Input
+                  disabled
+                  type="tel" 
+                  id="phone2"
+                  placeholder="Número de teléfono (10 dígitos)..."
+                  value={form.phone2}
+                  onChange={(e) => {
+                    const phone = e.target.value;
+                    // Permite solo números y restringe la longitud a 10 caracteres
+                    if (/^\d{0,10}$/.test(phone)) {
+                      setForm({ ...form, phone2: phone });
+                    }
+                  }}
+                />
+              </div>
+            </div>
+
+             {/** RNT Done */}
+             <div className="grid w-full max-w-lg items-center gap-1.5">
+              <Label htmlFor="name">Registro Nacional de Turismo</Label>
+              <Input
+                disabled
+                type="text" 
+                id="name" 
+                placeholder="Nombre..." 
+                value={form.rnt}/>
+            </div>
+
+             {/** URL Done */}
+             <div className="grid w-full max-w-lg items-center gap-1.5">
+              <Label htmlFor="name">Enlace página web</Label>
+              <Input
+                disabled
+                type="text" 
+                id="name" 
+                placeholder="Nombre..." 
+                value={form.url}/>
             </div>
 
               {/** Address Done*/}
@@ -216,28 +251,7 @@ const UsersShow = () => {
                 />
             </div>)}{/***/}
 
-              {/** Role Done*/}
-            <div className="grid w-full max-w-lg items-center gap-1.5" >
-                <Label htmlFor="user-type" >Rol asociado</Label>
-                  <Select
-                    disabled
-                    value={form.role.id}
-                    onValueChange={(value) => setForm({...form, role: value})}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Selecciona un rol" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectGroup>
-                        <SelectLabel>Roles (Rol - Tipo - Agencia)</SelectLabel>
-                        {roles.map((role) => (
-                          <SelectItem key={role.id} value={role.id} >
-                            {role.name} - {role.scope} - {role.agency?.name}
-                          </SelectItem>
-                        ))}
-                      </SelectGroup>
-                    </SelectContent>
-                  </Select>
-            </div>
+             
         </div>
         </CardContent>
       </Card>
