@@ -211,7 +211,6 @@ const AgenciesList = () => {
                       <TableHead className="text-left">País</TableHead>
                       <TableHead className="text-left">Web</TableHead>
                       <TableHead className="text-left">Estatus</TableHead>
-                      <TableHead className="text-left">Creación</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -270,7 +269,6 @@ const AgenciesList = () => {
                                 </AlertDialogContent>
                               </AlertDialog>
                         </TableCell>
-                        <TableCell>{new Date(agency.createdAt).toLocaleDateString()}</TableCell>
                         <TableCell>
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
