@@ -83,6 +83,9 @@ const RolesShow = () => {
     { spanish: 'Rol', english: 'role' },
     { spanish: 'Usuario', english: 'user' },
     { spanish: 'Agencia', english: 'agency' },
+    { spanish: 'Planes', english: 'plan' },
+    { spanish: 'Suscripciones', english: 'subscription' },
+    { spanish: 'Pagos', english: 'payment' },
 
   ];
 

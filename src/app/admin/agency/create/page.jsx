@@ -102,7 +102,10 @@ const AgencyCreate = () => {
       let imageUrl = null; // Inicializa imageUrl como null
   
       // 1. Subir la imagen solo si form.image no es null o undefined
+      console.log('No entra a form.logo')
+
       if (form.logo) {
+        console.log(' entra a form.logo')
         const formData = new FormData();
         formData.append('file', form.logo); // 'file' es el nombre del campo que espera tu backend
   
@@ -143,7 +146,7 @@ const AgencyCreate = () => {
         ...form,
         phone: selectedPhoneCode + " " + form.phone, // Agregar el código de teléfono
         phone2: selectedPhoneCode2 + " " + form.phone2, // Agregar el código de teléfono
-        image: imageUrl, // Usar la URL de la imagen subida o null
+        logo: imageUrl, // Usar la URL de la imagen subida o null
       };
       console.log(updatedForm);
   

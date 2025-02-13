@@ -143,50 +143,56 @@ const data = {
       ],
     },
     {
-      title: "Suscripciones",
-      titleEn: "agency",
+      title: "Planes",
+      titleEn: "plan",
       url: "#",
       icon: Settings2,
       items: [
         {
-          title: "General",
-          url: "#",
+          title: "Listar",
+          url: "/admin/plan/list",
+          permission: "list plan",
         },
         {
-          title: "Team",
-          url: "#",
+          title: "Crear",
+          url: "/admin/plan/create",
+          permission: "create plan",
+        },
+      ],
+    },
+    {
+      title: "Suscripciones",
+      titleEn: "subscription",
+      url: "#",
+      icon: Settings2,
+      items: [
+        {
+          title: "Listar",
+          url: "/admin/subscription/list",
+          permission: "list subscription",
         },
         {
-          title: "Billing",
-          url: "#",
-        },
-        {
-          title: "Limits",
-          url: "#",
+          title: "Crear",
+          url: "/admin/subscription/create",
+          permission: "create subscription",
         },
       ],
     },
     {
       title: "Pagos",
-      titleEn: "agency",
+      titleEn: "payment",
       url: "#",
       icon: Receipt,
       items: [
         {
-          title: "General",
-          url: "#",
+          title: "Listar",
+          url: "/admin/payment/list",
+          permission: "list payment",
         },
         {
-          title: "Team",
-          url: "#",
-        },
-        {
-          title: "Billing",
-          url: "#",
-        },
-        {
-          title: "Limits",
-          url: "#",
+          title: "Crear",
+          url: "/admin/payment/create",
+          permission: "create payment",
         },
       ],
     },
