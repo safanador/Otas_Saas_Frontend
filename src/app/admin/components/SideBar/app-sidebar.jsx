@@ -150,12 +150,12 @@ const data = {
       items: [
         {
           title: "Listar",
-          url: "/admin/plan/list",
+          url: "/admin/plans/list",
           permission: "list plan",
         },
         {
           title: "Crear",
-          url: "/admin/plan/create",
+          url: "/admin/plans/create",
           permission: "create plan",
         },
       ],
@@ -168,12 +168,12 @@ const data = {
       items: [
         {
           title: "Listar",
-          url: "/admin/subscription/list",
+          url: "/admin/subscriptions/list",
           permission: "list subscription",
         },
         {
           title: "Crear",
-          url: "/admin/subscription/create",
+          url: "/admin/subscriptions/create",
           permission: "create subscription",
         },
       ],
