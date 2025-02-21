@@ -186,12 +186,12 @@ const data = {
       items: [
         {
           title: "Listar",
-          url: "/admin/payment/list",
+          url: "/admin/payments/list",
           permission: "list payment",
         },
         {
           title: "Crear",
-          url: "/admin/payment/create",
+          url: "/admin/payments/create",
           permission: "create payment",
         },
       ],

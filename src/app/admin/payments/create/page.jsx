@@ -1,13 +1,14 @@
 "use client";
 
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import React, { useEffect, useState } from "react";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Input } from "@/components/ui/input";
 import AdminLayout from "../../components/SideBar/AdminLayout";
-
+import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { Checkbox } from "@/components/ui/checkbox";
+import { Input } from "@/components/ui/input";
+import { useToast } from "@/hooks/use-toast";
+
 import {
   Select,
   SelectContent,
@@ -17,115 +18,68 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { Button } from "@/components/ui/button";
-import { useToast } from "@/hooks/use-toast";
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
-import { Toast, ToastDescription, ToastTitle } from "@/components/ui/toast";
 
 
-const RolesCreate = () => {
-  const [permissions, setPermissions] = useState([]);
+const PaymentCreate = () => {
+  const [subscriptions, setSubscriptions] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [form, setForm] = useState({name: "", scope: "", permissions: [], agencyId: null});
-  const [agencies, setAgencies] = useState([]);
-  const [open, setOpen] = useState(false);
+  const [form, setForm] = useState({
+    subscriptionId: null,
+    amount: 0,
+    paymentMethod: "",
+    transactionId: "",
+    status: ""
+  });
+  const [buttonLoading, setButtonLoading] = useState(false);
   const [errorData, setErrorData] = useState();
+  const [open, setOpen] = useState(false);
   const { toast } = useToast();
 
+
   useEffect(() => {
-    const fetchPermissions = async () => {
+    const fetchData = async () => {
       try {
-        const response = await fetch("http://localhost:3000/api/v1/permissions/");
-        const data = await response.json();
-        setPermissions(data);
-      } catch (error) {
-        console.error("Error fetching roles:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchPermissions();
-
-    const fetchAgencies = async () => {
-      try {
-        const response = await fetch("http://localhost:3000/api/v1/agencies", {
-          credentials: 'include'
+        const response = await fetch("http://localhost:3000/api/v1/subscriptions", {
+          credentials: 'include',
         });
-        if (response.status === 401) {
+        if (response.status === 403) {
           window.location.href = '/auth/login';
         }
-        if (response.status === 403) {
+        if (response.status === 401) {
           window.location.href = '/admin/unauthorized';
         }
-        const agencies = await response.json();
-        console.log(agencies);
-        setAgencies(agencies);
+        const data = await response.json();
+        let noFreeTrialSubscriptions = data.filter((sub) => !sub.plan.isTrial)
+        setSubscriptions(noFreeTrialSubscriptions);
       } catch (error) {
-        console.error("Error fetching agencies:", error);
+        console.error("Error fetching subscriptions:", error);
       } finally {
         setLoading(false);
       }
     };
-
-    fetchAgencies();
+    fetchData();
   }, []);
 
   if (loading) {
     return (
-        <AdminLayout>
-            <div className="flex items-center justify-center h-full">
-                <p className="text-center">Cargando...</p>
-            </div>
-        </AdminLayout>
+      <AdminLayout>
+        <div className="flex items-center justify-center h-full">
+          <span className="w-8 h-8 border-[3px] border-black border-t-transparent rounded-full animate-spin"></span>
+        </div>
+      </AdminLayout>
     );
   }
-  // tabla de permisos
-  const entities = [
-    { spanish: 'Rol', english: 'role' },
-    { spanish: 'Usuario', english: 'user' },
-    { spanish: 'Agencia', english: 'agency' },
-    { spanish: 'Planes', english: 'plan' },
-    { spanish: 'Suscripciones', english: 'subscription' },
-    { spanish: 'Pagos', english: 'payment' },
-
-  ];
-
-
-  const getPermission = (action, entity) => {
-    const permissionString = `${action} ${entity}`;
-    return permissions.find((p) => p.description === permissionString);
-  };
-
-  const handleCheckboxChange = (permission) => {
-    setForm((prev) => ({
-      ...prev,
-      permissions: prev.permissions.includes(permission)
-        ? prev.permissions.filter((perm) => perm !== permission)
-        : [...prev.permissions, permission],
-    }));
-  };
-
-    const handleCreateRole = async () => {
+    const handleCreate = async () => {
       try {
+        setButtonLoading(true);
         setErrorData([])
-        const formattedPermissions = form.permissions.map((p)=> permissions.find((pDb) => pDb.description === p)?.id).filter((id) => id !== undefined)
         
-        // Sobrescribir directamente los permisos en una copia del estado
-        let updatedForm = { ...form, permissions: formattedPermissions };
-        if (updatedForm.scope=== 'global') {
-          const { agencyId, ...rest} = updatedForm;
-          updatedForm = rest; // Actualizar updatedForm sin agencyId
-        }
-        setForm(updatedForm);
-        console.log(updatedForm);
-        
-        const response = await fetch("http://localhost:3000/api/v1/roles", {
-          method: 'post',
+        const response = await fetch("http://localhost:3000/api/v1/payments", {
+          method: 'POST',
           headers: {
-            'Content-Type': 'application/json', // Corrección
+            'Content-Type': 'application/json',
           },
-          body: JSON.stringify(updatedForm),
+          body: JSON.stringify(form),
           credentials: 'include'
         });
 
@@ -137,16 +91,19 @@ const RolesCreate = () => {
         }
 
         if (response.ok) {
+          setButtonLoading(false);
           toast({
             variant: "success",
             title: "Realizado!",
-            description: "Rol creado exitosamente.",
+            description: "Suscripción creada exitosamente.",
           })
         }else{
+          setButtonLoading(false);
           const errorData = await response.json(); 
           setErrorData(errorData.message)
         }
       } catch (error) {
+          setButtonLoading(false);
           toast({
             variant: "destructive",
             title: "Uh oh! Parece que algo salió mal.",
@@ -169,138 +126,103 @@ const RolesCreate = () => {
     <AdminLayout>
       <Card>
         <CardHeader>
-          <CardTitle>Creación de rol</CardTitle>
+          <CardTitle>Creación de pago</CardTitle>
           <CardDescription>
-            Este rol permite gestionar el contenido de la aplicación mediante un sistema de permisos y roles.
+            Esta ventana permite registrar manualmente el pago asociado a una suscripción  <span className="text-gray-600 font-semibold">NO Free Trial</span>.
           </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="container space-y-4 mx-auto py-2">
-          <h1 className="text-lg font-bold text-gray-900 dark:text-gray-100">Rol</h1>
-          <div className="grid w-full max-w-lg items-center gap-1.5">
-            <Label htmlFor="name">Nombre del rol</Label>
-            <Input 
-              type="text" 
-              id="name" 
-              placeholder="Nombre..." 
-              value={form.name}
-              onChange={(e) => setForm({...form, name: e.target.value})} />
-              {errorData && renderFieldErrors('name',errorData)}
-          </div>
-
             <div className="grid w-full max-w-lg items-center gap-1.5" >
-              <Label htmlFor="user-type" >Tipo de usuario</Label>
+              <Label htmlFor="user-type" >Agencia suscrita</Label>
               <Select
-                value={form.scope}
-                onValueChange={(value) => setForm({...form, scope: value})}
+                value={form.subscriptionId}
+                onValueChange={(value) => setForm({...form, subscriptionId: value})}
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="Tipo de usuario" />
+                  <SelectValue placeholder="Agencias..." />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectGroup>
-                    <SelectLabel>Tipos</SelectLabel>
-                    <SelectItem value="agency">Agencia</SelectItem>
-                    <SelectItem value="global">Empresa desarrolladora</SelectItem>
+                    <SelectLabel>Suscriptores</SelectLabel>
+                      {subscriptions.map((subscription) => (
+                          <SelectItem key={subscription.id} value={subscription.id} >
+                            {subscription.agency.name}
+                          </SelectItem>
+                        ))}
                   </SelectGroup>
                 </SelectContent>
               </Select>
-              {errorData && renderFieldErrors('scope',errorData)}
-
+              {errorData && renderFieldErrors('subscriptionId',errorData)}
             </div>
 
-            { form.scope === 'agency' && (
-              <div className="grid w-full max-w-lg items-center gap-1.5" >
-                <Label htmlFor="user-type" >Agencia asociada</Label>
-                <Select
-                  value={form.agencyId}
-                  onValueChange={(value) => setForm({...form, agencyId: value})}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Selecciona una agencia" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectGroup>
-                      <SelectLabel>Agencias</SelectLabel>
-                      {agencies.map((agency) => (
-                        <SelectItem key={agency.id} value={agency.id} >
-                          {agency.name}
-                        </SelectItem>
-                      ))}
-                    </SelectGroup>
-                  </SelectContent>
-                </Select>
-                {errorData && renderFieldErrors('agencyId',errorData)}
-
+            {/** price Done */}
+            <div className="grid w-full max-w-lg items-center gap-1.5">
+                <Label htmlFor="name">Monto</Label>
+                <Input 
+                  type="number" 
+                  id="corporateEmail" 
+                  placeholder="Monto..." 
+                  value={form.amount}
+                  onChange={(e) => setForm({...form, amount: e.target.value})} 
+                />
+                {errorData && renderFieldErrors('amount',errorData)}
               </div>
-            )}
 
-            <div className="grid w-full max-w-lg items-center gap-1.5" >
-            <Label htmlFor="permissions" >Selecciona permisos</Label>
-            <div className="overflow-x-auto bg-white rounded-lg shadow dark:bg-gray-800">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead className="text-center">Entidades</TableHead>
-                    <TableHead className="text-center">Ver</TableHead>
-                    <TableHead className="text-center">Listar</TableHead>
-                    <TableHead className="text-center">Crear</TableHead>
-                    <TableHead className="text-center">Actualizar</TableHead>
-                    <TableHead className="text-center">Borrar</TableHead>
-                    <TableHead className="text-center">Desactivar</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {entities.map((entity, index) => (
-                    <TableRow key={index}>
-                      <TableCell className="text-center" >{entity.spanish}</TableCell>
-                      {["show", "list", "create", "update", "delete", "activate"].map(
-                        (action,index) => (
-                            <td key={index} className="border p-2 text-center">
-                            {getPermission(action, entity.english) && (
-                                <Checkbox
-                                id={`permission-${action}-${index}`}
-                                checked={form.permissions.includes(
-                                    `${action} ${entity.english}`
-                                )}
-                                onCheckedChange={() =>
-                                    handleCheckboxChange(
-                                    `${action} ${entity.english}`
-                                    )
-                                }
-                                />
-                            )}
-                            </td>
-                        )
-                        )}
-                    </TableRow>
-                  ))
-                  }
-                </TableBody>
-              </Table>
+              <div className="grid w-full max-w-lg items-center gap-1.5">
+                <Label htmlFor="name">Método de pago</Label>
+                <Input 
+                  type="text" 
+                  id="name" 
+                  placeholder="Metodo de pago..." 
+                  value={form.transactionId}
+                  onChange={(e) => setForm({...form, transactionId: e.target.value})} />
+                  {errorData && renderFieldErrors('paymentMethod',errorData)}
               </div>
-              {errorData &&  renderFieldErrors('permissions',errorData)}
-            </div>
+
+              <div className="grid w-full max-w-lg items-center gap-1.5">
+                <Label htmlFor="name">Id del pago</Label>
+                <Input 
+                  type="text" 
+                  id="name" 
+                  placeholder="Referencia de pago..." 
+                  value={form.transactionId}
+                  onChange={(e) => setForm({...form, transactionId: e.target.value})} />
+                  {errorData && renderFieldErrors('transactionId',errorData)}
+              </div>
+
+              <div className="grid w-full max-w-lg items-center gap-1.5">
+                <Label htmlFor="name">Estado de la transacción</Label>
+                <Input 
+                  type="text" 
+                  id="name" 
+                  placeholder="Estatus de pago..." 
+                  value={form.status}
+                  onChange={(e) => setForm({...form, status: e.target.value})} />
+                  {errorData && renderFieldErrors('status',errorData)}
+              </div>
           </div>
         </CardContent>
         <CardFooter className="w-full">
           <Button                 
             onClick={() => setOpen(true)}
-            className="w-full md:w-[100px]" >
-              Crear Rol
+            className="w-full md:w-auto" >
+              { buttonLoading 
+                ? (<span className="w-4 h-4 border-[1.5px] border-white border-t-transparent rounded-full animate-spin"></span>)
+                : (<span>Crear Pago</span>) }
           </Button>
 
           <AlertDialog open={open} onOpenChange={setOpen}>
               <AlertDialogContent>
                 <AlertDialogHeader>
-                  <AlertDialogTitle>Estás seguro de crear este rol?</AlertDialogTitle>
+                  <AlertDialogTitle>Estás seguro de crear este pago?</AlertDialogTitle>
                   <AlertDialogDescription>
-                    Este rol permite gestionar el contenido de la aplicación mediante un sistema de permisos y roles.
+                    Este pago se asociará a la suscripción que tiene registrada actualmente la agencia en la plataforma.
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
                   <AlertDialogCancel >Cancelar</AlertDialogCancel>
-                  <AlertDialogAction onClick={handleCreateRole} >Continuar</AlertDialogAction>
+                  <AlertDialogAction onClick={handleCreate} >Continuar</AlertDialogAction>
                 </AlertDialogFooter>
               </AlertDialogContent>
           </AlertDialog>
@@ -311,4 +233,4 @@ const RolesCreate = () => {
   );
 };
 
-export default RolesCreate;
+export default PaymentCreate;

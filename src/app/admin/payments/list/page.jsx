@@ -12,18 +12,24 @@ import { useToast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 
-const RolesList = () => {
-  const [roles, setRoles] = useState([]);
+const PaymentsList = () => {
+  const [payments, setPayments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const { toast } = useToast();
   const router = useRouter();
   const [open, setOpen] = useState(false);
-
+  const formattedDate = (date) => {
+    return new Date(date).toLocaleDateString('es-ES', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+    });
+  } 
   useEffect(() => {
-    const fetchRoles = async () => {
+    const fetchData = async () => {
       try {
-        const response = await fetch("http://localhost:3000/api/v1/roles/", {
+        const response = await fetch("http://localhost:3000/api/v1/payments/", {
           credentials: 'include'
         });
         console.log(response)
@@ -34,7 +40,7 @@ const RolesList = () => {
           window.location.href = '/admin/unauthorized';
         }
         const data = await response.json();
-        setRoles(data);
+        setPayments(data);
       } catch (error) {
         console.error("Error fetching roles:", error);
       } finally {
@@ -42,28 +48,28 @@ const RolesList = () => {
       }
     };
 
-    fetchRoles();
+    fetchData();
   }, []);
 
    // Filtrar roles en función del término de búsqueda
-   const filteredRoles = roles?.filter((role) =>
-    role.name.toLowerCase().includes(searchTerm.toLowerCase())
+   const filteredPayments = payments?.filter((payment) =>
+    payment.subscription.agency.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   if (loading) {
     return (
-        <AdminLayout>
-            <div className="flex items-center justify-center h-full">
-                <p className="text-center">Cargando roles...</p>
-            </div>
-        </AdminLayout>
+      <AdminLayout>
+        <div className="flex items-center justify-center h-full">
+          <span className="w-8 h-8 border-[3px] border-black border-t-transparent rounded-full animate-spin"></span>
+        </div>
+      </AdminLayout>
     );
   }
 
-  const handleDeleteRole = async (id) => {
+  const handleDelete = async (id) => {
     try {
       
-      const response = await fetch(`http://localhost:3000/api/v1/roles/${id}`, {
+      const response = await fetch(`http://localhost:3000/api/v1/payments/${id}`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
@@ -75,7 +81,7 @@ const RolesList = () => {
         toast({
           variant: "success",
           title: "Realizado!",
-          description: "Rol eliminado exitosamente.",
+          description: "Pago eliminado exitosamente.",
         })
         setTimeout(() => {
           window.location.reload(); // Recargar la página actual
@@ -102,17 +108,16 @@ const RolesList = () => {
     <AdminLayout>
       <Card>
         <CardHeader>
-          <CardTitle>Roles</CardTitle>
-          <CardDescription>A continuación se presenta una lista con aspectos generales de los roles.</CardDescription>
+          <CardTitle>Pagos</CardTitle>
+          <CardDescription>A continuación se presenta una lista con los pagos que han realizado las agencias a la plataforma.</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="container mx-auto py-2">
             <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
-              <h1 className="text-lg font-bold text-gray-900 dark:text-gray-100">Lista de roles</h1>
               <div className="flex items-center gap-2">
                 <Input 
                 type="search" 
-                placeholder="Buscar roles..." 
+                placeholder="Buscar agencia..." 
                 value={searchTerm} 
                 onChange={(e) => setSearchTerm(e.target.value)} // Actualiza el estado al escribir
                 className="w-full md:w-64" />
@@ -124,22 +129,27 @@ const RolesList = () => {
                   <TableHeader>
                     <TableRow>
                     <TableHead className="text-center">Item</TableHead>
-                      <TableHead className="text-left">Rol</TableHead>
-                      <TableHead className="text-left">Tipo de Rol</TableHead>
-                      <TableHead className="text-left">Agencia asociada</TableHead>
-                      <TableHead className="text-left">Fecha de Creación</TableHead>
-                      <TableHead className="text-left">Fecha de Actualización</TableHead>
+                      <TableHead className="text-left">Agencia</TableHead>
+                      <TableHead className="text-left">Plan</TableHead>
+                      <TableHead className="text-left">Pago</TableHead>
+                      <TableHead className="text-left">Estatus</TableHead>
+                      <TableHead className="text-left">Metodo de pago</TableHead>
+                      <TableHead className="text-left">Id de pago</TableHead>
+                      <TableHead className="text-left">Fecha de pago</TableHead>
+                      <TableHead className="text-left"></TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {filteredRoles.length > 0 ? (filteredRoles.map((role, index) => (
-                      <TableRow key={role.id}>
+                    {filteredPayments.length > 0 ? (filteredPayments.map((payment, index) => (
+                      <TableRow key={payment.id}>
                         <TableCell className="text-center" >{index+1}</TableCell>
-                        <TableCell className="capitalize" >{role.name}</TableCell>
-                        <TableCell className="capitalize" >{role.scope === 'agency' ? `Agencias` : "Empresa desarrolladora"}</TableCell>
-                        <TableCell className="capitalize" >{role.agency?.name}</TableCell>
-                        <TableCell>{new Date(role.createdAt).toLocaleDateString()}</TableCell>
-                        <TableCell>{new Date(role.updatedAt).toLocaleDateString()}</TableCell>
+                        <TableCell className="capitalize" >{payment.subscription.agency.name}</TableCell>
+                        <TableCell className="capitalize" >{payment.subscription.plan.name}</TableCell>
+                        <TableCell className="capitalize" >{payment.amount}</TableCell>
+                        <TableCell className="capitalize" >{payment.status}</TableCell>
+                        <TableCell className="capitalize" >{payment.paymentMethod}</TableCell>
+                        <TableCell className="capitalize" >{payment.transactionId}</TableCell>
+                        <TableCell className="capitalize" >{formattedDate(payment.createdAt)}</TableCell>
                         <TableCell>
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
@@ -150,11 +160,8 @@ const RolesList = () => {
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end">
                               <DropdownMenuLabel>Acciones</DropdownMenuLabel>
-                              <DropdownMenuItem onClick={() => router.push(`/admin/roles/show/${role.id}`)}>
-                                <Eye />  Ver Rol
-                              </DropdownMenuItem>
-                              <DropdownMenuItem onClick={() => router.push(`/admin/roles/edit/${role.id}`) } >
-                                <Pencil /> Editar Rol
+                              <DropdownMenuItem onClick={() => router.push(`/admin/payments/edit/${payment.id}`) } >
+                                <Pencil /> Editar Pago
                               </DropdownMenuItem>
                               <DropdownMenuSeparator />
                               <DropdownMenuItem onClick={(e) => {
@@ -162,21 +169,21 @@ const RolesList = () => {
                                     setOpen(true);
                                   }}>
                                <Trash2 color="red" /> 
-                                <span className="text-red-500" >Eliminar Rol</span>
+                                <span className="text-red-500" >Eliminar Pago</span>
                               </DropdownMenuItem>
                               {/** Delete confirmation */}
 
                               <AlertDialog open={open} onOpenChange={setOpen}>
                                 <AlertDialogContent>
                                   <AlertDialogHeader>
-                                    <AlertDialogTitle>Estás seguro de eliminar este rol?</AlertDialogTitle>
+                                    <AlertDialogTitle>Estás seguro de eliminar este pago?</AlertDialogTitle>
                                     <AlertDialogDescription>
                                       Esta acción no se puede deshacer. Este será permanentemente eliminado de la base de datos.
                                     </AlertDialogDescription>
                                   </AlertDialogHeader>
                                   <AlertDialogFooter>
                                     <AlertDialogCancel >Cancelar</AlertDialogCancel>
-                                    <AlertDialogAction className={buttonVariants({ variant: "destructive" })} onClick={() => handleDeleteRole(role.id)} >Continuar</AlertDialogAction>
+                                    <AlertDialogAction className={buttonVariants({ variant: "destructive" })} onClick={() => handleDelete(payment.id)} >Continuar</AlertDialogAction>
                                   </AlertDialogFooter>
                                 </AlertDialogContent>
                               </AlertDialog>
@@ -188,8 +195,8 @@ const RolesList = () => {
                     ))
                   ) : (
                       <TableRow>
-                        <TableCell colSpan={5} className="text-center">
-                          No se encontraron roles.
+                        <TableCell colSpan={8} className="text-center">
+                          No se encontraron pagos.
                         </TableCell>
                       </TableRow>
                   )
@@ -205,4 +212,4 @@ const RolesList = () => {
   );
 };
 
-export default RolesList;
+export default PaymentsList;
