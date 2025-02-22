@@ -18,6 +18,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import endpoints from "@/lib/endpoints";
 
 
 const PaymentCreate = () => {
@@ -74,7 +75,7 @@ const PaymentCreate = () => {
         setButtonLoading(true);
         setErrorData([])
         
-        const response = await fetch("http://localhost:3000/api/v1/payments", {
+        const response = await fetch(endpoints.createPayment, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
