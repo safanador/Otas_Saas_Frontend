@@ -1,5 +1,5 @@
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000/api/v1';
+const API_BASE_URL = /*process.env.NEXT_PUBLIC_API_BASE_URL || */'http://localhost:3000/api/v1';
 
 const endpoints = {
   // Obtener roles por agencia
@@ -46,7 +46,26 @@ const endpoints = {
 
   // Plans
 
-  // Subscriptions
+
+  // SUBSCRIPTIONS //
+
+  // Create Subscriptions
+  createSubscription: () => `${API_BASE_URL}/subscriptions`,
+
+  // Get Subscriptions
+  getSubscriptions: () => `${API_BASE_URL}/subscriptions`,
+
+  // Get Subscription
+  getOneSubscription: (subscriptionId) => `${API_BASE_URL}/subscriptions/${subscriptionId}`,
+
+  // Update Subscriptions
+  updateSubscription: (subscriptionId) => `${API_BASE_URL}/subscriptions/${subscriptionId}`,
+  
+  // Delete Subscriptions
+  deleteSubscription: (subscriptionId) => `${API_BASE_URL}/subscriptions/${subscriptionId}`,
+
+
+  // PAYMENTS //
 
   // Create Payment
   createPayment: () => `${API_BASE_URL}/payments`,

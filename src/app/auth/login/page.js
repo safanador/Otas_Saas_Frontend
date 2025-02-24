@@ -29,18 +29,17 @@ export default function LoginPage() {
       , { withCredentials: true } // Permite envío/recepción de cookies
     );
 
-    console.log(response);
+    //console.log(response);
     
       //actualiza el estado global con la información del usuario
       dispatch(setUser(response.data.user));
-      sessionStorage.setItem("user", JSON.stringify(response.data.user));
+      //sessionStorage.setItem("user", JSON.stringify(response.data.user));
       //Redirige al usuario a la ruta adecuada
       if (response.data.user.role.scope === 'global') {
         router.push('/admin/dashboard');
       } else if (response.data.user.role.scope === 'agency') {
         router.push('/ota/dashboard');
       }
-
     } catch (err) {
       setError(err.response?.data?.message || "Error al iniciar sesión");
     } finally {
@@ -84,7 +83,7 @@ export default function LoginPage() {
             </div>
             {error && <p className="text-red-500 text-sm">{error}</p>}
             <Button type="submit" className="w-full" disabled={loading}>
-            {loading ? "Cargando..." : "Iniciar sesión"}
+            {loading ? (<span className="w-4 h-4 border-[1.5px] border-white border-t-transparent rounded-full animate-spin"></span>) : "Iniciar sesión"}
           </Button>
           </form>
         </CardContent>

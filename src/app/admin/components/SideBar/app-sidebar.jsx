@@ -1,6 +1,5 @@
 "use client"
 
-import * as React from "react"
 import {
   AudioWaveform,
   BookOpen,
@@ -25,8 +24,9 @@ import { NavUser } from "./nav-user"
 import { TeamSwitcher } from "./team-switcher"
 import { NavMain } from "./nav-main"
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarRail } from "@/components/ui/sidebar"
-import { useSelector } from "react-redux"
 import { Skeleton } from "@/components/ui/skeleton"
+import { useSelector, useDispatch } from "react-redux";
+import { useEffect, useState } from "react"
 
 
 // This is sample data.
@@ -219,18 +219,19 @@ const data = {
 const isBrowser = typeof window !== "undefined";
 
 export function AppSidebar({ ...props }) {
-  const [user, setUser] = React.useState(null);
-
-  React.useEffect(() => {
+  const user = useSelector((state) => state.auth.user);
+/*
+  useEffect(() => {
     if (isBrowser) {
-      const storedUser = sessionStorage.getItem("user");
-      if (storedUser) {
-        setUser(JSON.parse(storedUser));
+      const userData = useSelector((state) => state.auth.user);
+      //const storedUser = sessionStorage.getItem("user");
+      if (userData) {
+        setUser(userData);
       } else if (!storedUser) {
         window.location.href = '/auth/login';
       }
     }
-  }, []);
+  }, []); */
 
   return (
     <Sidebar collapsible="icon" {...props}>

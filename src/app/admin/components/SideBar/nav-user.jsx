@@ -29,8 +29,11 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar"
+import { clearUser } from "@/app/GlobalRedux/Features/auth/authSlice"
+import { useDispatch } from "react-redux"
 
 export function NavUser({user}) {
+  const dispatch = useDispatch();
   const { isMobile } = useSidebar()
   const logout = async () => {
     try {
@@ -39,7 +42,8 @@ export function NavUser({user}) {
         credentials: 'include',
       });
       if (response.ok) {
-        sessionStorage.removeItem('user');
+        //sessionStorage.removeItem('user');
+        dispatch(clearUser());
         window.location.href = '/auth/login';
         console.log(response)
         console.log('entra')

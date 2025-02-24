@@ -11,6 +11,9 @@ import { Eye, MoreHorizontal, Pencil, Trash2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
+import withAuth from "@/app/middleware/withAuth";
+import PermissionGuard from "@/components/PermissionGuard";
+import permissions from "@/lib/permissions";
 
 const PaymentsList = () => {
   const [payments, setPayments] = useState([]);
@@ -42,7 +45,7 @@ const PaymentsList = () => {
         const data = await response.json();
         setPayments(data);
       } catch (error) {
-        console.error("Error fetching roles:", error);
+        console.log("Error fetching roles:", error);
       } finally {
         setLoading(false);
       }
@@ -160,17 +163,23 @@ const PaymentsList = () => {
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end">
                               <DropdownMenuLabel>Acciones</DropdownMenuLabel>
-                              <DropdownMenuItem onClick={() => router.push(`/admin/payments/edit/${payment.id}`) } >
-                                <Pencil /> Editar Pago
-                              </DropdownMenuItem>
+                              <PermissionGuard requiredPermission={permissions.payment_update}>
+                                <DropdownMenuItem onClick={() => router.push(`/admin/payments/edit/${payment.id}`) } >
+                                  <Pencil /> Editar Pago
+                                </DropdownMenuItem>
+                              </PermissionGuard>
+                              
                               <DropdownMenuSeparator />
-                              <DropdownMenuItem onClick={(e) => {
-                                    e.preventDefault(); // Evita que el menú se cierre automáticamente
-                                    setOpen(true);
-                                  }}>
-                               <Trash2 color="red" /> 
-                                <span className="text-red-500" >Eliminar Pago</span>
-                              </DropdownMenuItem>
+                              <PermissionGuard requiredPermission={permissions.payment_delete}>
+                                <DropdownMenuItem onClick={(e) => {
+                                      e.preventDefault(); // Evita que el menú se cierre automáticamente
+                                      setOpen(true);
+                                    }}>
+                                <Trash2 color="red" /> 
+                                  <span className="text-red-500" >Eliminar Pago</span>
+                                </DropdownMenuItem>
+                              </PermissionGuard>
+
                               {/** Delete confirmation */}
 
                               <AlertDialog open={open} onOpenChange={setOpen}>
@@ -212,4 +221,4 @@ const PaymentsList = () => {
   );
 };
 
-export default PaymentsList;
+export default withAuth(PaymentsList, permissions.payment_list) ;

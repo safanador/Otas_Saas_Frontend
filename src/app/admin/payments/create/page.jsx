@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
-
+import { fetchData } from "@/services/api";
 import {
   Select,
   SelectContent,
@@ -38,8 +38,14 @@ const PaymentCreate = () => {
 
 
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchSubscriptions = async () => {
       try {
+        const data = await fetchData(endpoints.getSubscriptions());
+
+        if (data.error) {
+          return
+        }
+        /*
         const response = await fetch("http://localhost:3000/api/v1/subscriptions", {
           credentials: 'include',
         });
@@ -48,17 +54,17 @@ const PaymentCreate = () => {
         }
         if (response.status === 401) {
           window.location.href = '/admin/unauthorized';
-        }
-        const data = await response.json();
-        let noFreeTrialSubscriptions = data.filter((sub) => !sub.plan.isTrial)
-        setSubscriptions(noFreeTrialSubscriptions);
+        } */
+        //const data = await response.json();
+        //let noFreeTrialSubscriptions = data.filter((sub) => !sub.plan.isTrial)
+        setSubscriptions(data.filter((sub) => !sub.plan.isTrial));
       } catch (error) {
-        console.error("Error fetching subscriptions:", error);
+        console.log("Error fetching subscriptions:", error);
       } finally {
         setLoading(false);
       }
     };
-    fetchData();
+    fetchSubscriptions();
   }, []);
 
   if (loading) {
@@ -75,15 +81,19 @@ const PaymentCreate = () => {
         setButtonLoading(true);
         setErrorData([])
         
-        const response = await fetch(endpoints.createPayment, {
+        const data = await fetchData(endpoints.createPayment(), {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
           body: JSON.stringify(form),
-          credentials: 'include'
         });
 
+        if (data.error) {
+          setErrorData(data.error);
+          return
+        }
+
+        toast({ variant: "success", title: "Realizado!", description: "Pago creado exitosamente." });
+
+        /*
         if (response.status === 403) {
           window.location.href = '/auth/login';
         }
@@ -102,14 +112,17 @@ const PaymentCreate = () => {
           setButtonLoading(false);
           const errorData = await response.json(); 
           setErrorData(errorData.message)
-        }
+        } */
       } catch (error) {
-          setButtonLoading(false);
+        //console.log(error);
+        /** 
           toast({
             variant: "destructive",
             title: "Uh oh! Parece que algo salió mal.",
             description: "No se pudo conectar con el servidor. Por favor, intenta más tarde.",
-          })
+          })*/
+      } finally{
+        setButtonLoading(false);
       }
     };
 
@@ -165,7 +178,7 @@ const PaymentCreate = () => {
                   id="corporateEmail" 
                   placeholder="Monto..." 
                   value={form.amount}
-                  onChange={(e) => setForm({...form, amount: e.target.value})} 
+                  onChange={(e) => setForm({...form, amount: Number(e.target.value)})} 
                 />
                 {errorData && renderFieldErrors('amount',errorData)}
               </div>
@@ -176,8 +189,8 @@ const PaymentCreate = () => {
                   type="text" 
                   id="name" 
                   placeholder="Metodo de pago..." 
-                  value={form.transactionId}
-                  onChange={(e) => setForm({...form, transactionId: e.target.value})} />
+                  value={form.paymentMethod}
+                  onChange={(e) => setForm({...form, paymentMethod: e.target.value})} />
                   {errorData && renderFieldErrors('paymentMethod',errorData)}
               </div>
 
