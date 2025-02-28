@@ -13,6 +13,8 @@ import { useRouter } from "next/navigation";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
+import withAuth from "@/app/middleware/withAuth";
+import permissions from "@/lib/permissions";
 
 const UsersList = () => {
   const [users, setUsers] = useState([]);
@@ -308,4 +310,4 @@ const UsersList = () => {
   );
 };
 
-export default UsersList;
+export default withAuth(UsersList, permissions.user_list);

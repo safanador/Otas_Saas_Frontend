@@ -9,6 +9,8 @@ import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { Checkbox } from "@/components/ui/checkbox";
+import withAuth from "@/app/middleware/withAuth";
+import permissions from "@/lib/permissions";
 
 
 const UsersCreate = () => {
@@ -181,4 +183,4 @@ const UsersCreate = () => {
   );
 };
 
-export default UsersCreate;
+export default withAuth(UsersCreate, permissions.user_create) ;

@@ -28,6 +28,8 @@ import { Countries } from "@/app/admin/components/CountryStateCity/Country";
 import { States } from "@/app/admin/components/CountryStateCity/State";
 import { Cities } from "@/app/admin/components/CountryStateCity/Cities";
 import { PhoneCodes } from "@/app/admin/components/CountryStateCity/PhoneCode";
+import withAuth from "@/app/middleware/withAuth";
+import permissions from "@/lib/permissions";
 
 
 const UsersEdit = () => {
@@ -424,4 +426,4 @@ const UsersEdit = () => {
   );
 };
 
-export default UsersEdit;
+export default withAuth(UsersEdit, permissions.user_update);

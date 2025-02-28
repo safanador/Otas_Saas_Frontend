@@ -1,5 +1,7 @@
 "use client";
 
+import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import React, { useEffect, useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -10,14 +12,14 @@ import { Button, buttonVariants } from "@/components/ui/button";
 import { Eye, Globe, MoreHorizontal, Pencil, Trash2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { Switch } from "@/components/ui/switch";
-import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
 import Link from "next/link";
 import { Countries } from "../../components/CountryStateCity/Country";
 import { City, Country, State } from "country-state-city";
 import { States } from "../../components/CountryStateCity/State";
 import { Cities } from "../../components/CountryStateCity/Cities";
+import withAuth from "@/app/middleware/withAuth";
+import permissions from "@/lib/permissions";
 
 const AgenciesList = () => {
   const [agencies, setAgencies] = useState([]);
@@ -28,7 +30,6 @@ const AgenciesList = () => {
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [openT, setOpenT] = useState(false);
-
 
   const countries = Country.getAllCountries(); // it's an Array
   const states =  (country) => {
@@ -173,6 +174,7 @@ const AgenciesList = () => {
                 value={searchTerm} 
                 onChange={(e) => setSearchTerm(e.target.value)} // Actualiza el estado al escribir
                 className="w-full md:w-64" />
+                {/*
                 <Select
                   value={agencyId}
                   onValueChange={(value) => setAgencyId(value)}
@@ -193,7 +195,7 @@ const AgenciesList = () => {
                       ))}
                     </SelectGroup>
                   </SelectContent>
-                </Select>
+                </Select> */}
               </div>
             </div>
             <div className="grid w-full items-center gap-1.5">
@@ -333,4 +335,4 @@ const AgenciesList = () => {
   );
 };
 
-export default AgenciesList;
+export default withAuth(AgenciesList, permissions.agency_list);

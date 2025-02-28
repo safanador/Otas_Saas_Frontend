@@ -12,6 +12,8 @@ import { useToast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { Checkbox } from "@/components/ui/checkbox";
+import withAuth from "@/app/middleware/withAuth";
+import permissions from "@/lib/permissions";
 
 
 const PlansList = () => {
@@ -247,4 +249,4 @@ const PlansList = () => {
   );
 };
 
-export default PlansList;
+export default withAuth(PlansList, permissions.plan_list);

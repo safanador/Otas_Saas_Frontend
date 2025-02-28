@@ -25,9 +25,11 @@ import { States } from "@/app/admin/components/CountryStateCity/State";
 import { Cities } from "@/app/admin/components/CountryStateCity/Cities";
 import AvatarInput from "@/app/admin/components/Avatar/AvatarInput";
 import { PhoneCodes } from "@/app/admin/components/CountryStateCity/PhoneCode";
+import withAuth from "@/app/middleware/withAuth";
+import permissions from "@/lib/permissions";
 
 
-const UsersShow = () => {
+const AgencyShow = () => {
   const [loading, setLoading] = useState(true);
   const [form, setForm] = useState({
     name: "",
@@ -259,4 +261,4 @@ const UsersShow = () => {
   );
 };
 
-export default UsersShow;
+export default withAuth(AgencyShow, permissions.agency_show);

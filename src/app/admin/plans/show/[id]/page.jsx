@@ -6,6 +6,8 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useParams } from "next/navigation";
 import AdminLayout from "@/app/admin/components/SideBar/AdminLayout";
+import withAuth from "@/app/middleware/withAuth";
+import permissions from "@/lib/permissions";
 
 const PlanShow = () => {
   const [loading, setLoading] = useState(true);
@@ -133,4 +135,4 @@ const PlanShow = () => {
   );
 };
 
-export default PlanShow;
+export default withAuth(PlanShow, permissions.plan_show);

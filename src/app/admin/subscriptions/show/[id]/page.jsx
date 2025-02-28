@@ -16,6 +16,8 @@ import {
 } from "@/components/ui/select"
 import { useParams } from "next/navigation";
 import AdminLayout from "@/app/admin/components/SideBar/AdminLayout";
+import withAuth from "@/app/middleware/withAuth";
+import permissions from "@/lib/permissions";
 
 const SubscriptionShow = () => {
   const [plans, setPlans] = useState([]);
@@ -209,4 +211,4 @@ const SubscriptionShow = () => {
   );
 };
 
-export default SubscriptionShow;
+export default withAuth(SubscriptionShow, permissions.subscription_show);

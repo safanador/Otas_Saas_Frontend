@@ -7,10 +7,12 @@ import { Input } from "@/components/ui/input";
 import AdminLayout from "../../components/SideBar/AdminLayout";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Button, buttonVariants } from "@/components/ui/button";
-import { ArrowLeftRight, Eye, MoreHorizontal, Pencil, Trash2 } from "lucide-react";
+import { ArrowLeftRight, Eye, MoreHorizontal, Pencil, ReceiptEuro, Repeat, Trash2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
+import withAuth from "@/app/middleware/withAuth";
+import permissions from "@/lib/permissions";
 
 const SubscritionList = () => {
   const [subscriptions, setSubscriptions] = useState([]);
@@ -180,7 +182,7 @@ const SubscritionList = () => {
                                     e.preventDefault(); // Evita que el menú se cierre automáticamente
                                     setOpen(true);
                                   }}>
-                               <Trash2 color="red" /> 
+                               <Repeat color="red" /> 
                                 <span className="text-red-500" >Cambiar status</span>
                               </DropdownMenuItem>
                               {/** Delete confirmation */}
@@ -224,4 +226,4 @@ const SubscritionList = () => {
   );
 };
 
-export default SubscritionList;
+export default withAuth(SubscritionList, permissions.subscription_list);

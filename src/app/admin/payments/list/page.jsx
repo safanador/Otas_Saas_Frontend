@@ -1,27 +1,29 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Input } from "@/components/ui/input";
-import AdminLayout from "../../components/SideBar/AdminLayout";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { Button, buttonVariants } from "@/components/ui/button";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Eye, MoreHorizontal, Pencil, Trash2 } from "lucide-react";
+import { Button, buttonVariants } from "@/components/ui/button";
+import AdminLayout from "../../components/SideBar/AdminLayout";
+import PermissionGuard from "@/components/PermissionGuard";
+import React, { useEffect, useState } from "react";
+import withAuth from "@/app/middleware/withAuth";
+import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
-import withAuth from "@/app/middleware/withAuth";
-import PermissionGuard from "@/components/PermissionGuard";
 import permissions from "@/lib/permissions";
+import { fetchData } from "@/services/api";
+import endpoints from "@/lib/endpoints";
 
 const PaymentsList = () => {
+  const [searchTerm, setSearchTerm] = useState("");
   const [payments, setPayments] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [searchTerm, setSearchTerm] = useState("");
+  const [open, setOpen] = useState(false);
   const { toast } = useToast();
   const router = useRouter();
-  const [open, setOpen] = useState(false);
   const formattedDate = (date) => {
     return new Date(date).toLocaleDateString('es-ES', {
       year: 'numeric',
@@ -30,19 +32,14 @@ const PaymentsList = () => {
     });
   } 
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchPayments = async () => {
       try {
-        const response = await fetch("http://localhost:3000/api/v1/payments/", {
-          credentials: 'include'
-        });
-        console.log(response)
-        if (response.status === 401) {
-          window.location.href = '/auth/login';
+        const data = await fetchData(endpoints.payment_getAll());
+
+        if (data.error) {
+          return
         }
-        if (response.status === 403) {
-          window.location.href = '/admin/unauthorized';
-        }
-        const data = await response.json();
+
         setPayments(data);
       } catch (error) {
         console.log("Error fetching roles:", error);
@@ -51,10 +48,9 @@ const PaymentsList = () => {
       }
     };
 
-    fetchData();
+    fetchPayments();
   }, []);
 
-   // Filtrar roles en función del término de búsqueda
    const filteredPayments = payments?.filter((payment) =>
     payment.subscription.agency.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
@@ -71,32 +67,19 @@ const PaymentsList = () => {
 
   const handleDelete = async (id) => {
     try {
-      
-      const response = await fetch(`http://localhost:3000/api/v1/payments/${id}`, {
+
+      const data = await fetchData(endpoints.payment_delete(id), {
         method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        credentials: 'include'
       });
 
-      if (response.ok) {
-        toast({
-          variant: "success",
-          title: "Realizado!",
-          description: "Pago eliminado exitosamente.",
-        })
-        setTimeout(() => {
-          window.location.reload(); // Recargar la página actual
-        }, 1000);
-      }else{
-        console.log(response)
-        toast({
-          variant: "destructive",
-          title: "Uh oh! Parece que algo salió mal.",
-          description: "Por favor, intenta más tarde.",
-        })
+      if (data.error) {
+        return
       }
+
+      toast({ variant: "success", title: "Realizado!", description: "Pago eliminado exitosamente." });
+      setTimeout(() => {
+        window.location.reload(); // Recargar la página actual
+      }, 1000);
       
     } catch (error) {
         toast({
@@ -181,7 +164,6 @@ const PaymentsList = () => {
                               </PermissionGuard>
 
                               {/** Delete confirmation */}
-
                               <AlertDialog open={open} onOpenChange={setOpen}>
                                 <AlertDialogContent>
                                   <AlertDialogHeader>

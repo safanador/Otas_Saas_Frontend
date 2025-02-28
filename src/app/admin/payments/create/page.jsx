@@ -1,14 +1,17 @@
 "use client";
 
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
-import React, { useEffect, useState } from "react";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import AdminLayout from "../../components/SideBar/AdminLayout";
+import React, { useEffect, useState } from "react";
+import withAuth from "@/app/middleware/withAuth";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
+import permissions from "@/lib/permissions";
 import { fetchData } from "@/services/api";
+import endpoints from "@/lib/endpoints";
 import {
   Select,
   SelectContent,
@@ -18,8 +21,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import endpoints from "@/lib/endpoints";
-
 
 const PaymentCreate = () => {
   const [subscriptions, setSubscriptions] = useState([]);
@@ -45,18 +46,7 @@ const PaymentCreate = () => {
         if (data.error) {
           return
         }
-        /*
-        const response = await fetch("http://localhost:3000/api/v1/subscriptions", {
-          credentials: 'include',
-        });
-        if (response.status === 403) {
-          window.location.href = '/auth/login';
-        }
-        if (response.status === 401) {
-          window.location.href = '/admin/unauthorized';
-        } */
-        //const data = await response.json();
-        //let noFreeTrialSubscriptions = data.filter((sub) => !sub.plan.isTrial)
+
         setSubscriptions(data.filter((sub) => !sub.plan.isTrial));
       } catch (error) {
         console.log("Error fetching subscriptions:", error);
@@ -93,34 +83,8 @@ const PaymentCreate = () => {
 
         toast({ variant: "success", title: "Realizado!", description: "Pago creado exitosamente." });
 
-        /*
-        if (response.status === 403) {
-          window.location.href = '/auth/login';
-        }
-        if (response.status === 401) {
-          window.location.href = '/admin/unauthorized';
-        }
-
-        if (response.ok) {
-          setButtonLoading(false);
-          toast({
-            variant: "success",
-            title: "Realizado!",
-            description: "Suscripción creada exitosamente.",
-          })
-        }else{
-          setButtonLoading(false);
-          const errorData = await response.json(); 
-          setErrorData(errorData.message)
-        } */
       } catch (error) {
-        //console.log(error);
-        /** 
-          toast({
-            variant: "destructive",
-            title: "Uh oh! Parece que algo salió mal.",
-            description: "No se pudo conectar con el servidor. Por favor, intenta más tarde.",
-          })*/
+        
       } finally{
         setButtonLoading(false);
       }
@@ -247,4 +211,4 @@ const PaymentCreate = () => {
   );
 };
 
-export default PaymentCreate;
+export default withAuth(PaymentCreate, permissions.payment_create) ;

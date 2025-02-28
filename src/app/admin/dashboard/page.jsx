@@ -1,8 +1,10 @@
 "use client"
 import { useSelector, useDispatch } from "react-redux";
 import AdminLayout from "../components/SideBar/AdminLayout";
+import withAuth from "@/app/middleware/withAuth";
+import permissions from "@/lib/permissions";
 
-export default function Dashboard() {
+const Dashboard = () => {
     const user = useSelector((state) => state.auth.user);
     console.log(user);
 
@@ -13,3 +15,5 @@ export default function Dashboard() {
         </AdminLayout>
     )
 }
+
+export default withAuth( Dashboard, permissions.dashboard_show);

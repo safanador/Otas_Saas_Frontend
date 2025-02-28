@@ -10,6 +10,8 @@ import { Checkbox } from "@/components/ui/checkbox";
 import AdminLayout from "../../../components/SideBar/AdminLayout";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
+import withAuth from "@/app/middleware/withAuth";
+import permissions from "@/lib/permissions";
 
 const PlanEdit = () => {
   const { id } = useParams();
@@ -228,4 +230,4 @@ const PlanEdit = () => {
   );
 };
 
-export default PlanEdit;
+export default withAuth(PlanEdit, permissions.plan_update) ;

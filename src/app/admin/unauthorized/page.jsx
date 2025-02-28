@@ -34,9 +34,7 @@ export default function UnauthorizedPage() {
                     </p>            
             </CardContent>
             <CardFooter>
-                <Button onClick={() => router.push('admin/dashboard')}>
-                    Volver al Inicio
-                </Button>
+                
             </CardFooter>
         </Card>
     </AdminLayout>

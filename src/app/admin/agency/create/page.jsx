@@ -1,32 +1,21 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import AdminLayout from "../../components/SideBar/AdminLayout";
-
-import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectLabel,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
-import { Country, State, City }  from 'country-state-city';
-import { Button } from "@/components/ui/button";
-import { useToast } from "@/hooks/use-toast";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
-
-
-import { Countries } from "../../components/CountryStateCity/Country";
-import { States } from "../../components/CountryStateCity/State";
-import { Cities } from "../../components/CountryStateCity/Cities";
 import { PhoneCodes } from "../../components/CountryStateCity/PhoneCode";
+import { Countries } from "../../components/CountryStateCity/Country";
+import { Cities } from "../../components/CountryStateCity/Cities";
+import { States } from "../../components/CountryStateCity/State";
+import AdminLayout from "../../components/SideBar/AdminLayout";
 import AvatarInput from "../../components/Avatar/AvatarInput";
-
+import { Country, State, City }  from 'country-state-city';
+import React, { useEffect, useState } from "react";
+import withAuth from "@/app/middleware/withAuth";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { useToast } from "@/hooks/use-toast";
+import permissions from "@/lib/permissions";
 
 const AgencyCreate = () => {
   const [roles, setRoles] = useState([]);
@@ -401,4 +390,4 @@ const AgencyCreate = () => {
   );
 };
 
-export default AgencyCreate;
+export default withAuth(AgencyCreate, permissions.agency_create);

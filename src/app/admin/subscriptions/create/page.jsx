@@ -20,6 +20,8 @@ import {
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
+import withAuth from "@/app/middleware/withAuth";
+import permissions from "@/lib/permissions";
 
 
 const SubscriptionCreate = () => {
@@ -272,4 +274,4 @@ const SubscriptionCreate = () => {
   );
 };
 
-export default SubscriptionCreate;
+export default withAuth(SubscriptionCreate, permissions.subscription_create);

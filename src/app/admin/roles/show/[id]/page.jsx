@@ -18,6 +18,8 @@ import {
 } from "@/components/ui/select"
 import { useParams } from "next/navigation";
 import AdminLayout from "@/app/admin/components/SideBar/AdminLayout";
+import withAuth from "@/app/middleware/withAuth";
+import permissions from "@/lib/permissions";
 
 
 const RolesShow = () => {
@@ -80,6 +82,7 @@ const RolesShow = () => {
 
   // tabla de permisos
   const entities = [
+    { spanish: 'Dashboard', english: 'dashboard' },
     { spanish: 'Rol', english: 'role' },
     { spanish: 'Usuario', english: 'user' },
     { spanish: 'Agencia', english: 'agency' },
@@ -219,4 +222,4 @@ const RolesShow = () => {
   );
 };
 
-export default RolesShow;
+export default withAuth(RolesShow, permissions.role_show);

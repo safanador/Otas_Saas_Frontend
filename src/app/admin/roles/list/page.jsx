@@ -11,6 +11,8 @@ import { Eye, MoreHorizontal, Pencil, Trash2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
+import withAuth from "@/app/middleware/withAuth";
+import permissions from "@/lib/permissions";
 
 const RolesList = () => {
   const [roles, setRoles] = useState([]);
@@ -205,4 +207,4 @@ const RolesList = () => {
   );
 };
 
-export default RolesList;
+export default withAuth(RolesList, permissions.role_list);

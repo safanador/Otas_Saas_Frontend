@@ -33,6 +33,8 @@ import { Cities } from "../../components/CountryStateCity/Cities";
 import { PhoneCodes } from "../../components/CountryStateCity/PhoneCode";
 import { DatePicker } from "@/components/ui/date-picker";
 import AvatarInput from "../../components/Avatar/AvatarInput";
+import withAuth from "@/app/middleware/withAuth";
+import permissions from "@/lib/permissions";
 
 
 const UsersCreate = () => {
@@ -411,4 +413,4 @@ const UsersCreate = () => {
   );
 };
 
-export default UsersCreate;
+export default withAuth(UsersCreate, permissions.user_create);

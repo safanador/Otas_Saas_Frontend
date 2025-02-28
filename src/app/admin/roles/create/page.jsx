@@ -21,6 +21,8 @@ import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { Toast, ToastDescription, ToastTitle } from "@/components/ui/toast";
+import withAuth from "@/app/middleware/withAuth";
+import permissions from "@/lib/permissions";
 
 
 const RolesCreate = () => {
@@ -82,6 +84,7 @@ const RolesCreate = () => {
   }
   // tabla de permisos
   const entities = [
+    { spanish: 'Dashboard', english: 'dashboard' },
     { spanish: 'Rol', english: 'role' },
     { spanish: 'Usuario', english: 'user' },
     { spanish: 'Agencia', english: 'agency' },
@@ -311,4 +314,4 @@ const RolesCreate = () => {
   );
 };
 
-export default RolesCreate;
+export default withAuth(RolesCreate, permissions.role_create);

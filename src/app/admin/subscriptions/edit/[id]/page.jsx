@@ -21,9 +21,11 @@ import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { useParams } from "next/navigation";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
+import withAuth from "@/app/middleware/withAuth";
+import permissions from "@/lib/permissions";
 
 
-const RolesEdit = () => {
+const SubscriptionEdit = () => {
   const [plans, setPlans] = useState([]);
   const [loading, setLoading] = useState(true);
   const [form, setForm] = useState({});
@@ -296,4 +298,4 @@ const RolesEdit = () => {
   );
 };
 
-export default RolesEdit;
+export default withAuth(SubscriptionEdit, permissions.subscription_update);

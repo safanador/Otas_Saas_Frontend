@@ -15,6 +15,8 @@ import { Countries } from "@/app/admin/components/CountryStateCity/Country";
 import { States } from "@/app/admin/components/CountryStateCity/State";
 import { Cities } from "@/app/admin/components/CountryStateCity/Cities";
 import { PhoneCodes } from "@/app/admin/components/CountryStateCity/PhoneCode";
+import withAuth from "@/app/middleware/withAuth";
+import permissions from "@/lib/permissions";
 
 const AgencyEdit = () => {
   const [loading, setLoading] = useState(true);
@@ -410,4 +412,4 @@ const AgencyEdit = () => {
   );
 };
 
-export default AgencyEdit;
+export default withAuth(AgencyEdit, permissions.agency_update);

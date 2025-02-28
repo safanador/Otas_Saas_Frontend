@@ -19,6 +19,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import withAuth from "@/app/middleware/withAuth";
+import permissions from "@/lib/permissions";
 
 
 const PaymentEdit = () => {
@@ -259,4 +261,4 @@ const PaymentEdit = () => {
   );
 };
 
-export default PaymentEdit;
+export default withAuth(PaymentEdit, permissions.payment_update) ;

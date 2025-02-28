@@ -21,6 +21,8 @@ import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { useParams } from "next/navigation";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
+import withAuth from "@/app/middleware/withAuth";
+import permissions from "@/lib/permissions";
 
 
 const RolesEdit = () => {
@@ -98,6 +100,7 @@ const RolesEdit = () => {
 
   // tabla de permisos
   const entities = [
+    { spanish: 'Dashboard', english: 'dashboard' },
     { spanish: 'Rol', english: 'role' },
     { spanish: 'Usuario', english: 'user' },
     { spanish: 'Agencia', english: 'agency' },
@@ -324,4 +327,4 @@ const RolesEdit = () => {
   );
 };
 
-export default RolesEdit;
+export default withAuth(RolesEdit, permissions.role_update);
