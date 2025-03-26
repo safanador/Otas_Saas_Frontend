@@ -21,6 +21,8 @@ import {
 } from "@/components/ui/select"
 import withAuth from "@/app/middleware/withAuth";
 import permissions from "@/lib/permissions";
+import { fetchData } from "@/services/api";
+import endpoints from "@/lib/endpoints";
 
 
 const PaymentEdit = () => {
@@ -46,32 +48,20 @@ const PaymentEdit = () => {
   useEffect(() => {
     const fetchPaymentAndSubscriptions = async () => {
       try {
-        const responseSubscriptions = await fetch("http://localhost:3000/api/v1/subscriptions/", {
-          credentials: 'include'
-        });
-        if (responseSubscriptions.status === 403) {
-          window.location.href = '/auth/login';
-        }
-        if (responseSubscriptions.status === 401) {
-          window.location.href = '/admin/unauthorized';
-        }
-        const subscriptionsData = await responseSubscriptions.json();
-        let noFreeTrialSubscriptions = subscriptionsData.filter((sub) => !sub.plan.isTrial)
-        setSubscriptions(noFreeTrialSubscriptions);
+        const responseSubscriptions = await fetchData(endpoints.subscription_getAll());
 
-        const responseForm = await fetch(`http://localhost:3000/api/v1/payments/${id}`, {
-          credentials: 'include'
-        });
-        if (responseForm.status === 403) {
-          window.location.href = '/auth/login';
+        if (responseSubscriptions.error) {
+          return console.log(responseSubscriptions.error);
         }
-        if (responseForm.status === 401) {
-          window.location.href = '/admin/unauthorized';
+        setSubscriptions(responseSubscriptions.filter((sub) => !sub.plan.isTrial));
+
+        const responseForm = await fetchData(endpoints.payment_getOne(id));
+        if (responseForm.error) {
+          return console.log(responseForm.error);
         }
-        const formData = await responseForm.json();
-        const { amount , paymentMethod,transactionId, status, ...rest} = formData;
+        const { amount , paymentMethod,transactionId, status, ...rest} = responseForm;
         setForm({
-          subscriptionId: formData.subscription.id,
+          subscriptionId: responseForm.subscription.id,
           amount: amount  ,
           paymentMethod: paymentMethod,
           transactionId: transactionId, 
@@ -105,41 +95,28 @@ const PaymentEdit = () => {
         setErrorData([])
         const {status, ...rest} = form;
         let updatedForm = {status: status};
-        const response = await fetch(`http://localhost:3000/api/v1/payments/${id}`, {
+
+        const data = await fetchData(endpoints.payment_update(id), {
           method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json',
-          },
           body: JSON.stringify(updatedForm),
-          credentials: 'include'
         });
 
-        if (response.status === 403) {
-          window.location.href = '/auth/login';
-        }
-        if (response.status === 401) {
-          window.location.href = '/admin/unauthorized';
+        if (data.error) {
+          setErrorData(data.error);
+          return
         }
 
-        if (response.ok) {
-          setButtonLoading(false);
-          toast({
-            variant: "success",
-            title: "Realizado!",
-            description: "Pago editado exitosamente.",
-          })
-        }else{
-          setButtonLoading(false);
-          const errorData = await response.json(); 
-          setErrorData(errorData.message)
-        }
+        toast({ variant: "success", title: "Realizado!", description: "Pago creado exitosamente." });
       } catch (error) {
         setButtonLoading(false);
+        console.log(error);
         toast({
           variant: "destructive",
           title: "Uh oh! Parece que algo salió mal.",
           description: "No se pudo conectar con el servidor. Por favor, intenta más tarde.",
         })
+      } finally {
+        setButtonLoading(false);
       }
     };
 

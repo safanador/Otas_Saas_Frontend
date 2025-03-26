@@ -37,7 +37,7 @@ const PaymentsList = () => {
         const data = await fetchData(endpoints.payment_getAll());
 
         if (data.error) {
-          return
+          return console.log(data.error);
         }
 
         setPayments(data);

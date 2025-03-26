@@ -41,47 +41,9 @@ const AgencyCreate = () => {
   const [cities, setCities] = useState([]);
   const [selectedPhoneCode, setSelectedPhoneCode] = useState('');
   const [selectedPhoneCode2, setSelectedPhoneCode2] = useState('');
-
-  const foundRole = roles.find(role => role.id === form.roleId) || null;
   const [errorData, setErrorData] = useState();
   const { toast } = useToast();
-  {/**
-  useEffect(() => {
-    const fetchRoles = async () => {
-      try {
-        const response = await fetch("http://localhost:3000/api/v1/roles/", {
-          credentials: 'include'
-        });
-        // Manejar errores de autenticación/autorización
-      if (response.status === 401) {
-        window.location.href = '/auth/login';
-        return;
-      }
-      if (response.status === 403) {
-        window.location.href = '/admin/unauthorized';
-        return;
-      }
-        const data = await response.json();
-        setRoles(data);
-      } catch (error) {
-        console.error("Error fetching roles:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchRoles();
-  }, []);
 
-  if (loading) {
-    return (
-        <AdminLayout>
-            <div className="flex items-center justify-center h-full">
-              <span className="w-8 h-8 border-[3px] border-black border-t-transparent rounded-full animate-spin"></span>
-            </div>
-        </AdminLayout>
-    );
-  }
-   */}
   const handleCreateAgency = async () => {
     try {
       setErrorData([]); // Limpiar errores anteriores

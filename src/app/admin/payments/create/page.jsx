@@ -41,12 +41,12 @@ const PaymentCreate = () => {
   useEffect(() => {
     const fetchSubscriptions = async () => {
       try {
-        const data = await fetchData(endpoints.getSubscriptions());
+        const data = await fetchData(endpoints.subscription_getAll());
 
         if (data.error) {
           return
         }
-
+        
         setSubscriptions(data.filter((sub) => !sub.plan.isTrial));
       } catch (error) {
         console.log("Error fetching subscriptions:", error);
@@ -71,7 +71,7 @@ const PaymentCreate = () => {
         setButtonLoading(true);
         setErrorData([])
         
-        const data = await fetchData(endpoints.createPayment(), {
+        const data = await fetchData(endpoints.payment_create(), {
           method: 'POST',
           body: JSON.stringify(form),
         });
@@ -84,7 +84,12 @@ const PaymentCreate = () => {
         toast({ variant: "success", title: "Realizado!", description: "Pago creado exitosamente." });
 
       } catch (error) {
-        
+        console.log("Error fetching subscriptions:", error);
+        toast({
+          variant: "destructive",
+          title: "Uh oh! Parece que algo salió mal.",
+          description: "No se pudo conectar con el servidor. Por favor, intenta más tarde.",
+        })
       } finally{
         setButtonLoading(false);
       }
