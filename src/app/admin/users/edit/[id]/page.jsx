@@ -30,6 +30,7 @@ import { Cities } from "@/app/admin/components/CountryStateCity/Cities";
 import { PhoneCodes } from "@/app/admin/components/CountryStateCity/PhoneCode";
 import withAuth from "@/app/middleware/withAuth";
 import permissions from "@/lib/permissions";
+import endpoints from "@/lib/endpoints";
 
 
 const UsersEdit = () => {
@@ -77,30 +78,29 @@ const UsersEdit = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const responseForm = await fetch(`http://localhost:3000/api/v1/users/${id}`, {
-          credentials: 'include'
-        });
-        const dataForm = await responseForm.json();
+    
+        const dataForm = await fetchData(endpoints.user_getOne(id));
+
+        if (dataForm.error) {
+          return console.log(dataForm.error);
+        }
+
         let updatedForm = { ...dataForm, roleId: dataForm.role.id, agencyId: dataForm.role.agency ? dataForm.role.agency.id: null };
+
         const {id: userId, isActive,createdAt, updatedAt, role, ...rest} = updatedForm;
         updatedForm = rest;
+
         const phoneParts = updatedForm.phone.trim().split(" ");
+
         setForm({...updatedForm, phone: phoneParts[1]});
         setSelectedPhoneCode(phoneParts[0])
-        
-        const roleResponse = await fetch("http://localhost:3000/api/v1/roles/", {
-            credentials: 'include'
-          });
-        if (roleResponse.status === 401) {
-          window.location.href = '/auth/login';
-          return;
+      
+        const roleData = await fetchData(endpoints.role_getAll());
+
+        if (roleData.error) {
+          return console.log(roleData.error);
         }
-        if (roleResponse.status === 403) {
-          window.location.href = '/admin/unauthorized';
-          return;
-        }
-          const roleData = await roleResponse.json();
-          setRoles(roleData);
+        setRoles(roleData);
       } catch (error) {
         console.error("Error fetching users:", error);
       } finally {
@@ -144,25 +144,13 @@ const UsersEdit = () => {
         if (imageFromLocal) {
           const formData = new FormData();
           formData.append('file', imageFromLocal); // 'file' es el nombre del campo que espera tu backend
-    
-          const imageResponse = await fetch("http://localhost:3000/api/v1/images/upload", {
+
+          const imageData = await fetchData(endpoints.images_upload(), {
             method: 'POST',
-            body: formData, // Envía el FormData
-            credentials: 'include', // Incluye cookies si es necesario
+            body: formData,
           });
-    
-          // Manejar errores de autenticación/autorización
-          if (imageResponse.status === 403) {
-            window.location.href = '/auth/login';
-            return;
-          }
-          if (imageResponse.status === 401) {
-            window.location.href = '/admin/unauthorized';
-            return;
-          }
-    
-          // Verificar si la carga de la imagen fue exitosa
-          if (!imageResponse.ok) {
+  
+          if (imageData.error) {
             toast({
               variant: "destructive",
               title: "Uh oh! Parece que algo salió mal.",
@@ -172,8 +160,6 @@ const UsersEdit = () => {
             return;
           }
     
-          // Obtener la URL de la imagen subida
-          const imageData = await imageResponse.json();
           imageUrl = imageData.imageUrl; // Asignar la URL de la imagen
         }
     
@@ -183,28 +169,18 @@ const UsersEdit = () => {
           phone: selectedPhoneCode + " " + form.phone, // Agregar el código de teléfono
           image: imageUrl, // Usar la URL de la imagen subida o null
         };
-        console.log(updatedForm);
-    
-        const userResponse = await fetch(`http://localhost:3000/api/v1/users/${id}`, {
+
+        const userResponse = await fetchData(endpoints.user_update(id), {
           method: 'PATCH',
-          headers: {
-            'Content-Type': 'application/json', // Corrección
-          },
           body: JSON.stringify(updatedForm),
-          credentials: 'include',
         });
-    
-        // Verificar si la creación del usuario fue exitosa
-        if (!userResponse.ok) {
-          const errorData = await userResponse.json();
-          setErrorData(errorData.message);
+
+        if (userResponse.error) {
+          setErrorData(userResponse.error);
           setButtonLoading(false);
-          return;
+          return
         }
     
-        setButtonLoading(false);
-    
-        // Mostrar mensaje de éxito
         toast({
           variant: "success",
           title: "Realizado!",
@@ -212,13 +188,14 @@ const UsersEdit = () => {
         });
     
       } catch (error) {
-        setButtonLoading(false);
-        console.error("Error:", error);
+        console.log("Error:", error);
         toast({
           variant: "destructive",
           title: "Uh oh! Parece que algo salió mal.",
           description: "No se pudo conectar con el servidor. Por favor, intenta más tarde.",
         });
+      } finally {
+        setButtonLoading(false);
       }
     };
 

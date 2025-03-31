@@ -15,6 +15,8 @@ import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
 import withAuth from "@/app/middleware/withAuth";
 import permissions from "@/lib/permissions";
+import endpoints from "@/lib/endpoints";
+import { fetchData } from "@/services/api";
 
 const UsersList = () => {
   const [users, setUsers] = useState([]);
@@ -32,36 +34,26 @@ const UsersList = () => {
     const fetchData = async () => {
       try {
         const url = agencyId 
-        ? `http://localhost:3000/api/v1/users?agencyId=${agencyId}`
-        : "http://localhost:3000/api/v1/users";
+        ? endpoints.user_getAllByAgency(agencyId)
+        : endpoints.user_getAll();
 
-        const response = await fetch(url, {
-          credentials: 'include'
-        });
-        console.log(response)
-        if (response.status === 401) {
-          window.location.href = '/auth/login';
+        const data = await fetchData(url);
+
+        if (data.error) {
+          return console.log(data.error);
         }
-        if (response.status === 403) {
-          window.location.href = '/admin/unauthorized';
-        }
-        const data = await response.json();
+
         setUsers(data);
 
         // fetch agencies
-        const agenciesData = await fetch("http://localhost:3000/api/v1/agencies", {
-          credentials: 'include'
-        });
-        if (agenciesData.status === 401) {
-          window.location.href = '/auth/login';
+        const agenciesData = await fetchData(endpoints.agency_getAll());
+
+        if (agenciesData.error) {
+          return console.log(agenciesData.error);
         }
-        if (agenciesData.status === 403) {
-          window.location.href = '/admin/unauthorized';
-        }
-        const agencies = await agenciesData.json();
-        setAgencies(agencies);
+        setAgencies(agenciesData);
       } catch (error) {
-        console.error("Error fetching users:", error);
+        console.log("Error fetching users:", error);
       } finally {
         setLoading(false);
       }
@@ -87,32 +79,27 @@ const UsersList = () => {
 // eliminacion de usuario
   const handleDeleteUser = async (id) => {
     try {
-      
-      const response = await fetch(`http://localhost:3000/api/v1/users/${id}`, {
+      const data = await fetchData(endpoints.user_delete(id), {
         method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        credentials: 'include'
       });
 
-      if (response.ok) {
-        toast({
-          variant: "success",
-          title: "Realizado!",
-          description: "Usuario eliminado exitosamente.",
-        })
-        setTimeout(() => {
-          window.location.reload(); // Recargar la página actual
-        }, 1000);
-      }else{
-        console.log(response)
+      if (data.error) {
         toast({
           variant: "destructive",
           title: "Uh oh! Parece que algo salió mal.",
           description: "Por favor, intenta más tarde.",
         })
+        return
       }
+
+      toast({
+        variant: "success",
+        title: "Realizado!",
+        description: "Usuario eliminado exitosamente.",
+      })
+      setTimeout(() => {
+        window.location.reload();
+      }, 1000);
       
     } catch (error) {
         toast({
@@ -126,33 +113,28 @@ const UsersList = () => {
   // toggle user state
   const handleToggleUserState = async (id) => {
     try {
-      
-      const response = await fetch(`http://localhost:3000/api/v1/users/${id}/toggle-status`, {
+
+      const data = await fetchData(endpoints.user_toogleStatus(id), {
         method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        credentials: 'include'
       });
 
-      if (response.ok) {
-        toast({
-          variant: "success",
-          title: "Realizado!",
-          description: "El estatus del usuario ha sido cambiado exitosamente.",
-        })
-        setTimeout(() => {
-          window.location.reload(); // Recargar la página actual
-        }, 1000);
-      }else{
-        console.log(response)
+      if (data.error) {
         toast({
           variant: "destructive",
           title: "Uh oh! Parece que algo salió mal.",
           description: "Por favor, intenta más tarde.",
         })
+        return
       }
-      
+
+      toast({
+        variant: "success",
+        title: "Realizado!",
+        description: "El estatus del usuario ha sido cambiado exitosamente.",
+      })
+      setTimeout(() => {
+        window.location.reload(); // Recargar la página actual
+      }, 1000);
     } catch (error) {
         toast({
           variant: "destructive",

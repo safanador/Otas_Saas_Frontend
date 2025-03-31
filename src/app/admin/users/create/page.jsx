@@ -4,7 +4,6 @@ import React, { useEffect, useState } from "react";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import AdminLayout from "../../components/SideBar/AdminLayout";
-
 import { Label } from "@/components/ui/label";
 import {
   Select,
@@ -16,17 +15,9 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { Country, State, City }  from 'country-state-city';
-import { Calendar } from "@/components/ui/calendar"
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
-import { Toast, ToastDescription, ToastTitle } from "@/components/ui/toast";
-import { CalendarIcon } from "lucide-react";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { format } from "date-fns";
-import { es } from "date-fns/locale";
-
-import { cn } from "@/lib/utils";
 import { Countries } from "../../components/CountryStateCity/Country";
 import { States } from "../../components/CountryStateCity/State";
 import { Cities } from "../../components/CountryStateCity/Cities";
@@ -35,6 +26,8 @@ import { DatePicker } from "@/components/ui/date-picker";
 import AvatarInput from "../../components/Avatar/AvatarInput";
 import withAuth from "@/app/middleware/withAuth";
 import permissions from "@/lib/permissions";
+import endpoints from "@/lib/endpoints";
+import { fetchData } from "@/services/api";
 
 
 const UsersCreate = () => {
@@ -70,22 +63,15 @@ const UsersCreate = () => {
   useEffect(() => {
     const fetchRoles = async () => {
       try {
-        const response = await fetch("http://localhost:3000/api/v1/roles/", {
-          credentials: 'include'
-        });
-        // Manejar errores de autenticación/autorización
-      if (response.status === 401) {
-        window.location.href = '/auth/login';
-        return;
-      }
-      if (response.status === 403) {
-        window.location.href = '/admin/unauthorized';
-        return;
-      }
-        const data = await response.json();
+        const data = await fetchData(endpoints.role_getAll());
+
+        if (data.error) {
+          return
+        }
+
         setRoles(data);
       } catch (error) {
-        console.error("Error fetching roles:", error);
+        console.log("Error fetching roles:", error);
       } finally {
         setLoading(false);
       }
@@ -107,33 +93,20 @@ const UsersCreate = () => {
     try {
       setErrorData([]); // Limpiar errores anteriores
       setButtonLoading(true);
-      console.log(form);
   
       let imageUrl = null; // Inicializa imageUrl como null
   
       // 1. Subir la imagen solo si form.image no es null o undefined
       if (form.image) {
         const formData = new FormData();
-        formData.append('file', form.image); // 'file' es el nombre del campo que espera tu backend
-  
-        const imageResponse = await fetch("http://localhost:3000/api/v1/images/upload", {
+        formData.append('file', form.image); // 'file' es el nombre del campo que espera el backend
+        
+        const imageResponse = await fetchData(endpoints.images_upload(), {
           method: 'POST',
-          body: formData, // Envía el FormData
-          credentials: 'include', // Incluye cookies si es necesario
+          body: formData,
         });
-  
-        // Manejar errores de autenticación/autorización
-        if (imageResponse.status === 403) {
-          window.location.href = '/auth/login';
-          return;
-        }
-        if (imageResponse.status === 401) {
-          window.location.href = '/admin/unauthorized';
-          return;
-        }
-  
-        // Verificar si la carga de la imagen fue exitosa
-        if (!imageResponse.ok) {
+
+        if (imageResponse.error) {
           toast({
             variant: "destructive",
             title: "Uh oh! Parece que algo salió mal.",
@@ -143,9 +116,7 @@ const UsersCreate = () => {
           return;
         }
   
-        // Obtener la URL de la imagen subida
-        const imageData = await imageResponse.json();
-        imageUrl = imageData.imageUrl; // Asignar la URL de la imagen
+        imageUrl = imageResponse.imageUrl; // Asignar la URL de la imagen
       }
   
       // 2. Crear el usuario con la URL de la imagen (o null si no se subió ninguna)
@@ -153,29 +124,19 @@ const UsersCreate = () => {
         ...form,
         phone: selectedPhoneCode + " " + form.phone, // Agregar el código de teléfono
         image: imageUrl, // Usar la URL de la imagen subida o null
-      };
-      console.log(updatedForm);
-  
-      const userResponse = await fetch("http://localhost:3000/api/v1/auth/register", {
+      };  
+
+      const userResponse = await fetchData(endpoints.user_create(), {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json', // Corrección
-        },
         body: JSON.stringify(updatedForm),
-        credentials: 'include',
       });
-  
-      // Verificar si la creación del usuario fue exitosa
-      if (!userResponse.ok) {
-        const errorData = await userResponse.json();
-        setErrorData(errorData.message);
+
+      if (userResponse.error) {
+        setErrorData(data.error);
         setButtonLoading(false);
         return;
       }
-  
-      setButtonLoading(false);
-  
-      // Mostrar mensaje de éxito
+
       toast({
         variant: "success",
         title: "Realizado!",
@@ -183,13 +144,14 @@ const UsersCreate = () => {
       });
   
     } catch (error) {
-      setButtonLoading(false);
-      console.error("Error:", error);
+      console.log("Error:", error);
       toast({
         variant: "destructive",
         title: "Uh oh! Parece que algo salió mal.",
         description: "No se pudo conectar con el servidor. Por favor, intenta más tarde.",
       });
+    } finally { 
+      setButtonLoading(false);
     }
   };
   

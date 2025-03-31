@@ -27,6 +27,7 @@ import AvatarInput from "@/app/admin/components/Avatar/AvatarInput";
 import { PhoneCodes } from "@/app/admin/components/CountryStateCity/PhoneCode";
 import withAuth from "@/app/middleware/withAuth";
 import permissions from "@/lib/permissions";
+import endpoints from "@/lib/endpoints";
 
 
 const UsersShow = () => {
@@ -46,13 +47,11 @@ const UsersShow = () => {
   });
   const { id } = useParams();
   const countries = Country.getAllCountries(); // it's an Array
-  //const [states, setStates] = useState([]);
-  //const [cities, setCities] = useState([]);
   const [roles, setRoles] = useState([]);
   const states = State.getStatesOfCountry(form.country);
   const cities = City.getCitiesOfState(form.country, form.state);
-   // Renderiza un estado de carga mientras `id` no esté disponible
-   if (!id) {
+
+  if (!id) {
     return (
     <AdminLayout>
       <div className="flex items-center justify-center h-full">
@@ -65,26 +64,22 @@ const UsersShow = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const responseForm = await fetch(`http://localhost:3000/api/v1/users/${id}`, {
-          credentials: 'include'
-        });
-        const dataForm = await responseForm.json();
-        console.log(dataForm);
-        setForm(dataForm);
+        const data = await fetchData(endpoints.user_getOne(id));
 
-        const roleResponse = await fetch("http://localhost:3000/api/v1/roles/", {
-            credentials: 'include'
-          });
-        if (roleResponse.status === 401) {
-          window.location.href = '/auth/login';
-          return;
+        if (data.error) {
+          return console.log(data.error);
         }
-        if (roleResponse.status === 403) {
-          window.location.href = '/admin/unauthorized';
-          return;
+
+        setForm(data);
+
+        
+        const roleData = await fetchData(endpoints.role_getAll());
+
+        if (roleData.error) {
+          return console.log(roleData.error);
         }
-          const roleData = await roleResponse.json();
-          setRoles(roleData);
+
+        setRoles(roleData);
       } catch (error) {
         console.error("Error fetching users:", error);
       } finally {

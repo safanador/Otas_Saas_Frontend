@@ -38,7 +38,7 @@ const data = {
   },
   teams: [
     {
-      name: "Acme Inc",
+      name: "TourFlow.io",
       logo: GalleryVerticalEnd,
       plan: "Enterprise",
     },
@@ -62,16 +62,14 @@ const data = {
       isActive: true,
       items: [
         {
-          title: "History",
-          url: "#",
+          title: "Dashboard",
+          url: "/admin/dashboard",
+          permission: "show dashboard",
         },
         {
-          title: "Starred",
-          url: "#",
-        },
-        {
-          title: "Settings",
-          url: "#",
+          title: "Logs",
+          url: "/admin/logs/list",
+          permission: "",
         },
       ],
     },

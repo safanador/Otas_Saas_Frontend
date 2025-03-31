@@ -1,7 +1,8 @@
 
 const permissions = {
-      // Dashboard
+      // home
     dashboard_show: 'show dashboard',
+    logs_list: 'list log',
 
       //user
     user_list:  'list user',
