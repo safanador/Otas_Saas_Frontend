@@ -28,21 +28,22 @@ const UsersList = () => {
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [openT, setOpenT] = useState(false);
-
+  const [selectedUser, setSelectedUser] = useState();
+  console.log("Users:", users);
 
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchInfo = async () => {
       try {
         const url = agencyId 
         ? endpoints.user_getAllByAgency(agencyId)
         : endpoints.user_getAll();
-
+        console.log("URL:", url);
         const data = await fetchData(url);
 
         if (data.error) {
           return console.log(data.error);
         }
-
+        console.log("Data:", data);
         setUsers(data);
 
         // fetch agencies
@@ -51,6 +52,7 @@ const UsersList = () => {
         if (agenciesData.error) {
           return console.log(agenciesData.error);
         }
+        console.log("Agencies Data:", agenciesData);
         setAgencies(agenciesData);
       } catch (error) {
         console.log("Error fetching users:", error);
@@ -59,7 +61,7 @@ const UsersList = () => {
       }
     };
 
-    fetchData();
+    fetchInfo();
   }, [agencyId]);
 
    // Filtrar roles en función del término de búsqueda
@@ -111,10 +113,10 @@ const UsersList = () => {
   };
 
   // toggle user state
-  const handleToggleUserState = async (id) => {
+  const handleToggleUserState = async (userId) => {
     try {
-
-      const data = await fetchData(endpoints.user_toogleStatus(id), {
+      console.log("Toggling user state for userId:", userId);
+      const data = await fetchData(endpoints.user_toogleStatus(userId), {
         method: 'PATCH',
       });
 
@@ -210,22 +212,10 @@ const UsersList = () => {
                         <TableCell className="capitalize" >{user.agency?.name}</TableCell>
                         <TableCell className="capitalize" >{user.city}</TableCell>
                         <TableCell className="capitalize" >
-                          <Switch checked={user.isActive} onCheckedChange={() => setOpenT(true) } />
-                            {/** Toggle user state confirmation */}
-                              <AlertDialog open={openT} onOpenChange={setOpenT}>
-                                <AlertDialogContent>
-                                  <AlertDialogHeader>
-                                    <AlertDialogTitle>Estás seguro de cambiar el estado de este usuario?</AlertDialogTitle>
-                                    <AlertDialogDescription>
-                                      Esta acción {user.isActive ? 'desactivará' : 'activará' } el usuario en la base de datos, este {user.isActive ? 'no podrá' : 'podrá' } utilizar sus credenciales y utilizar la plataforma.
-                                    </AlertDialogDescription>
-                                  </AlertDialogHeader>
-                                  <AlertDialogFooter>
-                                    <AlertDialogCancel >Cancelar</AlertDialogCancel>
-                                    <AlertDialogAction className={buttonVariants({ variant: "destructive" })} onClick={() => handleToggleUserState(user.id)} >Continuar</AlertDialogAction>
-                                  </AlertDialogFooter>
-                                </AlertDialogContent>
-                              </AlertDialog>
+                          <Switch checked={user.isActive} onCheckedChange={() => {
+                            setOpenT(true);
+                            setSelectedUser(user);
+                            }} />
                         </TableCell>
                         <TableCell>{new Date(user.createdAt).toLocaleDateString()}</TableCell>
                         <TableCell>
@@ -248,26 +238,11 @@ const UsersList = () => {
                               <DropdownMenuItem onClick={(e) => {
                                     e.preventDefault(); // Evita que el menú se cierre automáticamente
                                     setOpen(true);
+                                    setSelectedUser(user);
                                   }}>
                                 <Trash2 color="red" />
                                 <span className="text-red-500" >Eliminar Usuario</span>
                               </DropdownMenuItem>
-                              {/** Delete confirmation */}
-
-                              <AlertDialog open={open} onOpenChange={setOpen}>
-                                <AlertDialogContent>
-                                  <AlertDialogHeader>
-                                    <AlertDialogTitle>Estás seguro de eliminar este usuario?</AlertDialogTitle>
-                                    <AlertDialogDescription>
-                                      Esta acción no se puede deshacer. El usuario será permanentemente eliminado de la base de datos.
-                                    </AlertDialogDescription>
-                                  </AlertDialogHeader>
-                                  <AlertDialogFooter>
-                                    <AlertDialogCancel >Cancelar</AlertDialogCancel>
-                                    <AlertDialogAction className={buttonVariants({ variant: "destructive" })} onClick={() => handleDeleteUser(user.id)} >Continuar</AlertDialogAction>
-                                  </AlertDialogFooter>
-                                </AlertDialogContent>
-                              </AlertDialog>
                           </DropdownMenuContent>
                           </DropdownMenu>
                         </TableCell>
@@ -283,6 +258,40 @@ const UsersList = () => {
                     }
                   </TableBody>
                 </Table>
+                {/** Toggle user state confirmation */}
+                <AlertDialog open={openT} onOpenChange={setOpenT}>
+                  <AlertDialogContent>
+                  <AlertDialogHeader>
+                      <AlertDialogTitle>Estás seguro de cambiar el estado de este usuario?</AlertDialogTitle>
+                      <AlertDialogDescription>
+                        Esta acción {selectedUser?.isActive ? 'desactivará' : 'activará' } el usuario en la base de datos, este {selectedUser?.isActive ? 'no podrá' : 'podrá' } utilizar sus credenciales y utilizar la plataforma.
+                      </AlertDialogDescription>
+                  </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel >Cancelar</AlertDialogCancel>
+                      <AlertDialogAction className={buttonVariants({ variant: "destructive" })} onClick={() => handleToggleUserState(selectedUser?.id)} >Continuar
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                    </AlertDialogContent>
+                </AlertDialog>
+
+                {/** Delete confirmation */}
+                <AlertDialog open={open} onOpenChange={setOpen}>
+                    <AlertDialogContent>
+                        <AlertDialogHeader>
+                            <AlertDialogTitle>
+                              Estás seguro de eliminar este usuario?
+                            </AlertDialogTitle>
+                            <AlertDialogDescription>
+                              Esta acción no se puede deshacer. El usuario será permanentemente eliminado de la base de datos.
+                            </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel >Cancelar</AlertDialogCancel>
+                          <AlertDialogAction className={buttonVariants({ variant: "destructive" })} onClick={() => handleDeleteUser(selectedUser?.id)} >Continuar</AlertDialogAction>
+                        </AlertDialogFooter>
+                    </AlertDialogContent>
+                </AlertDialog>
               </div>
             </div>
           </div>
