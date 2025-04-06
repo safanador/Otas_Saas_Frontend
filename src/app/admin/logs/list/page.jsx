@@ -240,64 +240,65 @@ const LogsList = () => {
                 </Select>
               </div>
             </div>
-            
-            <div className="overflow-x-auto bg-white rounded-lg shadow dark:bg-gray-800">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead className="w-[100px]">ID</TableHead>
-                    <TableHead>Usuario</TableHead>
-                    <TableHead>Acción</TableHead>
-                    <TableHead>Entidad</TableHead>
-                    <TableHead>Detalles</TableHead>
-                    <TableHead>Dirección IP</TableHead>
-                    <TableHead>Dispositivo</TableHead>
-                    <TableHead>Fecha/Hora</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {logs.length > 0 ? (
-                    logs.map((log) => (
-                      <TableRow key={log.id}>
-                        <TableCell className="font-medium">#{log.id}</TableCell>
-                        <TableCell className="capitalize">
-                          {log.user?.name || 'Usuario eliminado'}
-                          {log.user?.email && <div className="text-sm text-gray-500">{log.user.email}</div>}
-                        </TableCell>
-                        <TableCell>
-                          <Badge variant={getBadgeVariant(log.actionType)}>
-                            {log.actionType}
-                          </Badge>
-                        </TableCell>
-                        <TableCell>{log.entityType}</TableCell>
-                        <TableCell className="max-w-xs truncate" title={log.details}>
-                          {log.details}
-                        </TableCell>
-                        <TableCell>{log.ipAddress}</TableCell>
-                        <TableCell>
-                          {log.userAgent && (
-                            <span className="text-sm">
-                              {log.userAgent.includes('Mobile') ? '📱 Mobile' : '💻 Desktop'}
-                            </span>
-                          )}
-                        </TableCell>
-                        <TableCell>
-                          {new Date(log.createdAt).toLocaleString()}
-                          <div className="text-sm text-gray-500">
-                            {new Date(log.createdAt).toLocaleTimeString()}
-                          </div>
+            <div className="grid w-full items-center gap-1.5">
+              <div className="overflow-x-auto bg-white rounded-lg shadow dark:bg-gray-800">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead className="w-[100px]">ID</TableHead>
+                      <TableHead>Usuario</TableHead>
+                      <TableHead>Acción</TableHead>
+                      <TableHead>Entidad</TableHead>
+                      <TableHead>Detalles</TableHead>
+                      <TableHead>Dirección IP</TableHead>
+                      <TableHead>Dispositivo</TableHead>
+                      <TableHead>Fecha/Hora</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {logs.length > 0 ? (
+                      logs.map((log) => (
+                        <TableRow key={log.id}>
+                          <TableCell className="font-medium">#{log.id}</TableCell>
+                          <TableCell className="capitalize">
+                            {log.user?.name || 'Usuario eliminado'}
+                            {log.user?.email && <div className="text-sm text-gray-500">{log.user.email}</div>}
+                          </TableCell>
+                          <TableCell>
+                            <Badge variant={getBadgeVariant(log.actionType)}>
+                              {log.actionType}
+                            </Badge>
+                          </TableCell>
+                          <TableCell>{log.entityType}</TableCell>
+                          <TableCell className="max-w-xs truncate" title={log.details}>
+                            {log.details}
+                          </TableCell>
+                          <TableCell>{log.ipAddress}</TableCell>
+                          <TableCell>
+                            {log.userAgent && (
+                              <span className="text-sm">
+                                {log.userAgent.includes('Mobile') ? '📱 Mobile' : '💻 Desktop'}
+                              </span>
+                            )}
+                          </TableCell>
+                          <TableCell>
+                            {new Date(log.createdAt).toLocaleString()}
+                            <div className="text-sm text-gray-500">
+                              {new Date(log.createdAt).toLocaleTimeString()}
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      ))
+                    ) : (
+                      <TableRow>
+                        <TableCell colSpan={8} className="text-center">
+                          No se encontraron registros de actividad.
                         </TableCell>
                       </TableRow>
-                    ))
-                  ) : (
-                    <TableRow>
-                      <TableCell colSpan={8} className="text-center">
-                        No se encontraron registros de actividad.
-                      </TableCell>
-                    </TableRow>
-                  )}
-                </TableBody>
-              </Table>
+                    )}
+                  </TableBody>
+                </Table>
+              </div>
             </div>
           </div>
         </CardContent>

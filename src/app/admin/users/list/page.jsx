@@ -17,6 +17,7 @@ import withAuth from "@/app/middleware/withAuth";
 import permissions from "@/lib/permissions";
 import endpoints from "@/lib/endpoints";
 import { fetchData } from "@/services/api";
+import PermissionGuard from "@/components/PermissionGuard";
 
 const UsersList = () => {
   const [users, setUsers] = useState([]);
@@ -199,7 +200,7 @@ const UsersList = () => {
                       <TableHead className="text-left">Agencia asociada</TableHead>
                       <TableHead className="text-left">Ciudad</TableHead>
                       <TableHead className="text-left">Estado</TableHead>
-                      {/** */}<TableHead className="text-left">Fecha de Creación</TableHead>
+                      <TableHead className="text-left">Fecha de Creación</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -228,21 +229,27 @@ const UsersList = () => {
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end">
                               <DropdownMenuLabel>Acciones</DropdownMenuLabel>
-                              <DropdownMenuItem onClick={() => router.push(`/admin/users/show/${user.id}`)}>
-                              <Eye /> Ver Usuario
-                              </DropdownMenuItem>
-                              <DropdownMenuItem onClick={() => router.push(`/admin/users/edit/${user.id}`) } >
-                               <Pencil/> Editar Usuario
-                              </DropdownMenuItem>
+                              <PermissionGuard requiredPermission={permissions.user_show}>
+                                <DropdownMenuItem onClick={() => router.push(`/admin/users/show/${user.id}`)}>
+                                  <Eye /> Ver Usuario
+                                </DropdownMenuItem>
+                              </PermissionGuard>
+                              <PermissionGuard requiredPermission={permissions.user_update}>
+                                <DropdownMenuItem onClick={() => router.push(`/admin/users/edit/${user.id}`) } >
+                                  <Pencil/> Editar Usuario
+                                </DropdownMenuItem>
+                              </PermissionGuard>
                               <DropdownMenuSeparator />
-                              <DropdownMenuItem onClick={(e) => {
-                                    e.preventDefault(); // Evita que el menú se cierre automáticamente
-                                    setOpen(true);
-                                    setSelectedUser(user);
-                                  }}>
-                                <Trash2 color="red" />
-                                <span className="text-red-500" >Eliminar Usuario</span>
-                              </DropdownMenuItem>
+                              <PermissionGuard requiredPermission={permissions.user_delete}>
+                                <DropdownMenuItem onClick={(e) => {
+                                      e.preventDefault(); // Evita que el menú se cierre automáticamente
+                                      setOpen(true);
+                                      setSelectedUser(user);
+                                    }}>
+                                  <Trash2 color="red" />
+                                  <span className="text-red-500" >Eliminar Usuario</span>
+                                </DropdownMenuItem>
+                              </PermissionGuard>
                           </DropdownMenuContent>
                           </DropdownMenu>
                         </TableCell>

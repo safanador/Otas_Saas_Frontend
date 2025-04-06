@@ -2,15 +2,12 @@
 
 import {
   AudioWaveform,
-  BookOpen,
-  Bot,
   Command,
   Frame,
   GalleryVerticalEnd,
   Map,
   PieChart,
   Settings2,
-  SquareTerminal, 
   Receipt,
   Users,
   Puzzle,
@@ -26,7 +23,6 @@ import { NavMain } from "./nav-main"
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarRail } from "@/components/ui/sidebar"
 import { Skeleton } from "@/components/ui/skeleton"
 import { useSelector, useDispatch } from "react-redux";
-import { useEffect, useState } from "react"
 
 
 // This is sample data.
@@ -129,15 +125,6 @@ const data = {
           url: "/admin/agency/create",
           permission: "create agency",
         },
-        /**
-        {
-          title: "Billing",
-          url: "#",
-        },
-        {
-          title: "Limits",
-          url: "#",
-        }, */
       ],
     },
     {
@@ -214,22 +201,8 @@ const data = {
   ],
 }
 
-const isBrowser = typeof window !== "undefined";
-
 export function AppSidebar({ ...props }) {
   const user = useSelector((state) => state.auth.user);
-/*
-  useEffect(() => {
-    if (isBrowser) {
-      const userData = useSelector((state) => state.auth.user);
-      //const storedUser = sessionStorage.getItem("user");
-      if (userData) {
-        setUser(userData);
-      } else if (!storedUser) {
-        window.location.href = '/auth/login';
-      }
-    }
-  }, []); */
 
   return (
     <Sidebar collapsible="icon" {...props}>

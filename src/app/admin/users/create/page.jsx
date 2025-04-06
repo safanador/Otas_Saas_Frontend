@@ -137,6 +137,24 @@ const UsersCreate = () => {
         return;
       }
 
+      setForm({
+        name: "", 
+        email: "", 
+        password: '', 
+        image: null,
+        corporateEmail: '',
+        dob: '',
+        phone: '',
+        address: '',
+        country: '',
+        state: '',
+        city: '',
+        roleId: null,  
+        agencyId: null,
+      });
+      
+      setSelectedPhoneCode('');
+
       toast({
         variant: "success",
         title: "Realizado!",

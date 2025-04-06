@@ -2,11 +2,9 @@
 
 import React, { useEffect, useState } from "react";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
 
 import { Label } from "@/components/ui/label";
-import { Checkbox } from "@/components/ui/checkbox";
 import {
   Select,
   SelectContent,
@@ -28,6 +26,7 @@ import { PhoneCodes } from "@/app/admin/components/CountryStateCity/PhoneCode";
 import withAuth from "@/app/middleware/withAuth";
 import permissions from "@/lib/permissions";
 import endpoints from "@/lib/endpoints";
+import { fetchData } from "@/services/api";
 
 
 const UsersShow = () => {
@@ -62,7 +61,7 @@ const UsersShow = () => {
   }
 
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchInformation = async () => {
       try {
         const data = await fetchData(endpoints.user_getOne(id));
 
@@ -87,7 +86,7 @@ const UsersShow = () => {
       }
     };
 
-    fetchData();
+    fetchInformation();
   }, [id]);
 
   if (loading) {

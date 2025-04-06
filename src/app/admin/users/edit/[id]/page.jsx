@@ -31,6 +31,7 @@ import { PhoneCodes } from "@/app/admin/components/CountryStateCity/PhoneCode";
 import withAuth from "@/app/middleware/withAuth";
 import permissions from "@/lib/permissions";
 import endpoints from "@/lib/endpoints";
+import { fetchData } from "@/services/api";
 
 
 const UsersEdit = () => {
@@ -76,7 +77,7 @@ const UsersEdit = () => {
   }
 
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchInfo = async () => {
       try {
     
         const dataForm = await fetchData(endpoints.user_getOne(id));
@@ -108,7 +109,7 @@ const UsersEdit = () => {
       }
     };
 
-    fetchData();
+    fetchInfo();
     
   }, [id]);
 
