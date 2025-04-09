@@ -16,6 +16,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import permissions from "@/lib/permissions";
+import { fetchData } from "@/services/api";
+import endpoints from "@/lib/endpoints";
 
 const AgencyCreate = () => {
   const [roles, setRoles] = useState([]);
@@ -60,24 +62,12 @@ const AgencyCreate = () => {
         const formData = new FormData();
         formData.append('file', form.logo); // 'file' es el nombre del campo que espera tu backend
   
-        const imageResponse = await fetch("http://localhost:3000/api/v1/images/upload", {
+        const imageResponse = await fetchData(endpoints.images_upload(), {
           method: 'POST',
-          body: formData, // Envía el FormData
-          credentials: 'include', // Incluye cookies si es necesario
+          body: formData,
         });
-  
-        // Manejar errores de autenticación/autorización
-        if (imageResponse.status === 403) {
-          window.location.href = '/auth/login';
-          return;
-        }
-        if (imageResponse.status === 401) {
-          window.location.href = '/admin/unauthorized';
-          return;
-        }
-  
-        // Verificar si la carga de la imagen fue exitosa
-        if (!imageResponse.ok) {
+
+        if (imageResponse.error) {
           toast({
             variant: "destructive",
             title: "Uh oh! Parece que algo salió mal.",
@@ -86,10 +76,8 @@ const AgencyCreate = () => {
           setButtonLoading(false);
           return;
         }
-  
-        // Obtener la URL de la imagen subida
-        const imageData = await imageResponse.json();
-        imageUrl = imageData.imageUrl; // Asignar la URL de la imagen
+
+        imageUrl = imageResponse.imageUrl; // Asignar la URL de la imagen
       }
   
       // 2. Crear el usuario con la URL de la imagen (o null si no se subió ninguna)
@@ -101,24 +89,16 @@ const AgencyCreate = () => {
       };
       console.log(updatedForm);
   
-      const agencyResponse = await fetch("http://localhost:3000/api/v1/agencies", {
+      const agencyResponse = await fetchData(endpoints.agency_create(), {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json', // Corrección
-        },
         body: JSON.stringify(updatedForm),
-        credentials: 'include',
       });
-  
-      // Verificar si la creación del usuario fue exitosa
-      if (!agencyResponse.ok) {
-        const errorData = await agencyResponse.json();
-        setErrorData(errorData.message);
+
+      if (agencyResponse.error) {
+        setErrorData(agencyResponse.error);
         setButtonLoading(false);
         return;
       }
-  
-      setButtonLoading(false);
   
       // Mostrar mensaje de éxito
       toast({
@@ -126,15 +106,29 @@ const AgencyCreate = () => {
         title: "Realizado!",
         description: "Usuario creado exitosamente.",
       });
+
+      setForm({
+        name: "", 
+        email: "", 
+        logo: null,
+        phone: '',
+        url: '',
+        rnt: '',
+        phone2: '',
+        address: '',
+        country: '',
+        state: '',
+        city: '',
+      });
   
     } catch (error) {
-      setButtonLoading(false);
-      console.error("Error:", error);
       toast({
         variant: "destructive",
         title: "Uh oh! Parece que algo salió mal.",
         description: "No se pudo conectar con el servidor. Por favor, intenta más tarde.",
       });
+    } finally {
+      setButtonLoading(false);
     }
   };
   

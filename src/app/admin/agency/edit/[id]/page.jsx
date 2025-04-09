@@ -17,6 +17,8 @@ import { Cities } from "@/app/admin/components/CountryStateCity/Cities";
 import { PhoneCodes } from "@/app/admin/components/CountryStateCity/PhoneCode";
 import withAuth from "@/app/middleware/withAuth";
 import permissions from "@/lib/permissions";
+import { fetchData } from "@/services/api";
+import endpoints from "@/lib/endpoints";
 
 const AgencyEdit = () => {
   const [loading, setLoading] = useState(true);
@@ -59,22 +61,13 @@ const AgencyEdit = () => {
   }
 
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchInfo = async () => {
       try {
-        const responseForm = await fetch(`http://localhost:3000/api/v1/agencies/${id}`, {
-          credentials: 'include'
-        });
+        const dataForm = await fetchData(endpoints.agency_getOne(id));
 
-        if (responseForm.status === 401) {
-          window.location.href = '/auth/login';
-          return;
+        if (dataForm.error) {
+          return console.log(dataForm.error);
         }
-        if (responseForm.status === 403) {
-          window.location.href = '/admin/unauthorized';
-          return;
-        }
-
-        const dataForm = await responseForm.json();
         let updatedForm = { ...dataForm};
         const {id: agencyId, isActive, createdAt, updatedAt, ...rest} = updatedForm;
         updatedForm = rest;
@@ -92,7 +85,7 @@ const AgencyEdit = () => {
       }
     };
 
-    fetchData();
+    fetchInfo();
     
   }, [id]);
 
@@ -129,24 +122,12 @@ const AgencyEdit = () => {
           const formData = new FormData();
           formData.append('file', imageFromLocal); // 'file' es el nombre del campo que espera tu backend
     
-          const imageResponse = await fetch("http://localhost:3000/api/v1/images/upload", {
+          const imageResponse = await fetchData(endpoints.images_upload(), {
             method: 'POST',
-            body: formData, // Envía el FormData
-            credentials: 'include', // Incluye cookies si es necesario
+            body: formData,
           });
-    
-          // Manejar errores de autenticación/autorización
-          if (imageResponse.status === 403) {
-            window.location.href = '/auth/login';
-            return;
-          }
-          if (imageResponse.status === 401) {
-            window.location.href = '/admin/unauthorized';
-            return;
-          }
-    
-          // Verificar si la carga de la imagen fue exitosa
-          if (!imageResponse.ok) {
+  
+          if (imageResponse.error) {
             toast({
               variant: "destructive",
               title: "Uh oh! Parece que algo salió mal.",
@@ -156,9 +137,7 @@ const AgencyEdit = () => {
             return;
           }
     
-          // Obtener la URL de la imagen subida
-          const imageData = await imageResponse.json();
-          imageUrl = imageData.imageUrl; // Asignar la URL de la imagen
+          imageUrl = imageResponse.imageUrl; // Asignar la URL de la imagen
         }
     
         // 2. Crear el usuario con la URL de la imagen (o null si no se subió ninguna)
@@ -168,26 +147,17 @@ const AgencyEdit = () => {
           phone2: selectedPhoneCode2 + " " + form.phone2, // Agregar el código de teléfono
           logo: imageUrl, // Usar la URL de la imagen subida o null
         };
-        console.log(updatedForm);
     
-        const userResponse = await fetch(`http://localhost:3000/api/v1/agencies/${id}`, {
+        const agencyResponse = await fetchData(endpoints.agency_update(id), {
           method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json', // Corrección
-          },
           body: JSON.stringify(updatedForm),
-          credentials: 'include',
         });
-    
-        // Verificar si la creación del usuario fue exitosa
-        if (!userResponse.ok) {
-          const errorData = await userResponse.json();
-          setErrorData(errorData.message);
+
+        if (agencyResponse.error) {
+          setErrorData(agencyResponse.error);
           setButtonLoading(false);
-          return;
+          return
         }
-    
-        setButtonLoading(false);
     
         // Mostrar mensaje de éxito
         toast({
@@ -204,6 +174,8 @@ const AgencyEdit = () => {
           title: "Uh oh! Parece que algo salió mal.",
           description: "No se pudo conectar con el servidor. Por favor, intenta más tarde.",
         });
+      } finally { 
+        setButtonLoading(false);
       }
     };
 

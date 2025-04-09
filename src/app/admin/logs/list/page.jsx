@@ -307,4 +307,4 @@ const LogsList = () => {
   );
 };
 
-export default withAuth(LogsList,);
+export default withAuth(LogsList, permissions.logs_show);

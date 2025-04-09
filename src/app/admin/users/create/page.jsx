@@ -132,7 +132,7 @@ const UsersCreate = () => {
       });
 
       if (userResponse.error) {
-        setErrorData(data.error);
+        setErrorData(userResponse.error);
         setButtonLoading(false);
         return;
       }

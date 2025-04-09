@@ -107,6 +107,7 @@ const RolesEdit = () => {
     { spanish: 'Planes', english: 'plan' },
     { spanish: 'Suscripciones', english: 'subscription' },
     { spanish: 'Pagos', english: 'payment' },
+    { spanish: 'Logs', english: 'log' },
   ];
 
   const getPermission = (action, entity) => {

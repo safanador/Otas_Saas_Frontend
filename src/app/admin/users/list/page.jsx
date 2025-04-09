@@ -116,7 +116,6 @@ const UsersList = () => {
   // toggle user state
   const handleToggleUserState = async (userId) => {
     try {
-      console.log("Toggling user state for userId:", userId);
       const data = await fetchData(endpoints.user_toogleStatus(userId), {
         method: 'PATCH',
       });

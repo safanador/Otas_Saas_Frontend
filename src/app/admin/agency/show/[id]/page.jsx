@@ -27,6 +27,8 @@ import AvatarInput from "@/app/admin/components/Avatar/AvatarInput";
 import { PhoneCodes } from "@/app/admin/components/CountryStateCity/PhoneCode";
 import withAuth from "@/app/middleware/withAuth";
 import permissions from "@/lib/permissions";
+import { fetchData } from "@/services/api";
+import endpoints from "@/lib/endpoints";
 
 
 const AgencyShow = () => {
@@ -62,29 +64,21 @@ const AgencyShow = () => {
   }
 
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchInfo = async () => {
       try {
-        const responseForm = await fetch(`http://localhost:3000/api/v1/agencies/${id}`, {
-          credentials: 'include'
-        });
-        const dataForm = await responseForm.json();
-        console.log(dataForm);
 
-        const phoneParts = dataForm.phone.trim().split(" ");
-        const phone2Parts = dataForm.phone2.trim().split(" ");
+        const data = await fetchData(endpoints.agency_getOne(id));
 
-        setForm({...dataForm, phone: phoneParts[1], phone2: phone2Parts[1]});
+        if (data.error) {
+          return console.log(data.error);
+        }
+
+        const phoneParts = data.phone.trim().split(" ");
+        const phone2Parts = data.phone2.trim().split(" ");
+
+        setForm({...data, phone: phoneParts[1], phone2: phone2Parts[1]});
         setSelectedPhoneCode(phoneParts[0])
         setSelectedPhoneCode2(phone2Parts[0])
-
-        if (responseForm.status === 401) {
-          window.location.href = '/auth/login';
-          return;
-        }
-        if (responseForm.status === 403) {
-          window.location.href = '/admin/unauthorized';
-          return;
-        }
 
       } catch (error) {
         console.error("Error fetching users:", error);
@@ -93,7 +87,7 @@ const AgencyShow = () => {
       }
     };
 
-    fetchData();
+    fetchInfo();
   }, [id]);
 
   if (loading) {

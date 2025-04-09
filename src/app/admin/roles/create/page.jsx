@@ -91,7 +91,7 @@ const RolesCreate = () => {
     { spanish: 'Planes', english: 'plan' },
     { spanish: 'Suscripciones', english: 'subscription' },
     { spanish: 'Pagos', english: 'payment' },
-
+    { spanish: 'Logs', english: 'log' },
   ];
 
 

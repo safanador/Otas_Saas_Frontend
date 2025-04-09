@@ -20,6 +20,9 @@ import { States } from "../../components/CountryStateCity/State";
 import { Cities } from "../../components/CountryStateCity/Cities";
 import withAuth from "@/app/middleware/withAuth";
 import permissions from "@/lib/permissions";
+import { fetchData } from "@/services/api";
+import endpoints from "@/lib/endpoints";
+import PermissionGuard from "@/components/PermissionGuard";
 
 const AgenciesList = () => {
   const [agencies, setAgencies] = useState([]);
@@ -30,6 +33,8 @@ const AgenciesList = () => {
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [openT, setOpenT] = useState(false);
+  const [selectedAgency, setSelectedAgency] = useState();
+  
 
   const countries = Country.getAllCountries(); // it's an Array
   const states =  (country) => {
@@ -40,19 +45,14 @@ const AgenciesList = () => {
   } 
 
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchInfo = async () => {
       try {
-        // fetch agencies
-        const agenciesData = await fetch("http://localhost:3000/api/v1/agencies", {
-          credentials: 'include'
-        });
-        if (agenciesData.status === 401) {
-          window.location.href = '/auth/login';
+
+        const agencies = await fetchData(endpoints.agency_getAll());
+        
+        if (agencies.error) {
+          return console.log(data.error);
         }
-        if (agenciesData.status === 403) {
-          window.location.href = '/admin/unauthorized';
-        }
-        const agencies = await agenciesData.json();
         setAgencies(agencies);
       } catch (error) {
         console.error("Error fetching Agencies:", error);
@@ -61,7 +61,7 @@ const AgenciesList = () => {
       }
     };
 
-    fetchData();
+    fetchInfo();
   }, []);
 
    // Filtrar roles en función del término de búsqueda
@@ -81,32 +81,27 @@ const AgenciesList = () => {
 // eliminacion de usuario
   const handleDeleteAgency = async (id) => {
     try {
-      
-      const response = await fetch(`http://localhost:3000/api/v1/agencies/${id}`, {
+      const data = await fetchData(endpoints.agency_delete(id), {
         method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        credentials: 'include'
       });
 
-      if (response.ok) {
-        toast({
-          variant: "success",
-          title: "Realizado!",
-          description: "Agencia eliminada exitosamente.",
-        })
-        setTimeout(() => {
-          window.location.reload(); // Recargar la página actual
-        }, 1000);
-      }else{
-        console.log(response)
+      if (data.error) {
         toast({
           variant: "destructive",
           title: "Uh oh! Parece que algo salió mal.",
           description: "Por favor, intenta más tarde.",
         })
+        return
       }
+
+      toast({
+        variant: "success",
+        title: "Realizado!",
+        description: "Agencia eliminada exitosamente.",
+      })
+      setTimeout(() => {
+        window.location.reload();
+      }, 1000);
       
     } catch (error) {
         toast({
@@ -117,35 +112,29 @@ const AgenciesList = () => {
     }
   };
 
-  // toggle Agency state
   const handleToggleAgencyState = async (id) => {
     try {
-      
-      const response = await fetch(`http://localhost:3000/api/v1/agencies/${id}/toggle-state`, {
+      const response = await fetchData(endpoints.agency_toogleStatus(id), {
         method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        credentials: 'include'
       });
 
-      if (response.ok) {
-        toast({
-          variant: "success",
-          title: "Realizado!",
-          description: "El estatus de la agencia ha sido cambiado exitosamente.",
-        })
-        setTimeout(() => {
-          window.location.reload(); // Recargar la página actual
-        }, 1000);
-      }else{
-        console.log(response)
+      if (response.error) {
         toast({
           variant: "destructive",
           title: "Uh oh! Parece que algo salió mal.",
           description: "Por favor, intenta más tarde.",
         })
+        return
       }
+
+      toast({
+        variant: "success",
+        title: "Realizado!",
+        description: "El estatus de la agencia ha sido cambiado exitosamente.",
+      })
+      setTimeout(() => {
+        window.location.reload();
+      }, 1000);
       
     } catch (error) {
         toast({
@@ -251,25 +240,9 @@ const AgenciesList = () => {
                             />
                         </div>)}
                         </TableCell>
-
                         <TableCell className="capitalize" >{ agency.url && (<Link target="_blank" href={agency.url}><Globe/></Link>)}</TableCell>
                         <TableCell className="capitalize" >
-                          <Switch checked={agency.isActive} onCheckedChange={() => setOpenT(true) } />
-                            {/** Toggle Agency state confirmation */}
-                              <AlertDialog open={openT} onOpenChange={setOpenT}>
-                                <AlertDialogContent>
-                                  <AlertDialogHeader>
-                                    <AlertDialogTitle>Estás seguro de cambiar el estado de esta agencia?</AlertDialogTitle>
-                                    <AlertDialogDescription>
-                                      Esta acción {agency.isActive ? 'desactivará' : 'activará' } la agencia en la base de datos, sus usuarios {agency.isActive ? 'no podrán' : 'podrán' } utilizar sus credenciales y utilizar la plataforma.
-                                    </AlertDialogDescription>
-                                  </AlertDialogHeader>
-                                  <AlertDialogFooter>
-                                    <AlertDialogCancel >Cancelar</AlertDialogCancel>
-                                    <AlertDialogAction className={buttonVariants({ variant: "destructive" })} onClick={() => handleToggleAgencyState(agency.id)} >Continuar</AlertDialogAction>
-                                  </AlertDialogFooter>
-                                </AlertDialogContent>
-                              </AlertDialog>
+                          <Switch checked={agency.isActive} onCheckedChange={() => {setOpenT(true); setSelectedAgency(agency);} } />
                         </TableCell>
                         <TableCell>
                         <DropdownMenu>
@@ -281,36 +254,27 @@ const AgenciesList = () => {
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end">
                               <DropdownMenuLabel>Acciones</DropdownMenuLabel>
-                              <DropdownMenuItem onClick={() => router.push(`/admin/agency/show/${agency.id}`)}>
-                              <Eye /> Ver Agencia
-                              </DropdownMenuItem>
-                              <DropdownMenuItem onClick={() => router.push(`/admin/agency/edit/${agency.id}`) } >
-                               <Pencil/> Editar Agencia
-                              </DropdownMenuItem>
+                              <PermissionGuard requiredPermission={permissions.agency_show}>
+                                <DropdownMenuItem onClick={() => router.push(`/admin/agency/show/${agency.id}`)}>
+                                  <Eye /> Ver Agencia
+                                </DropdownMenuItem>
+                              </PermissionGuard>
+                              <PermissionGuard requiredPermission={permissions.agency_update}>
+                                <DropdownMenuItem onClick={() => router.push(`/admin/agency/edit/${agency.id}`) } >
+                                  <Pencil/> Editar Agencia
+                                </DropdownMenuItem>
+                              </PermissionGuard>
                               <DropdownMenuSeparator />
-                              <DropdownMenuItem onClick={(e) => {
-                                    e.preventDefault(); // Evita que el menú se cierre automáticamente
-                                    setOpen(true);
-                                  }}>
-                                <Trash2 color="red" />
-                                <span className="text-red-500" >Eliminar Agencia</span>
-                              </DropdownMenuItem>
-                              {/** Delete confirmation */}
-
-                              <AlertDialog open={open} onOpenChange={setOpen}>
-                                <AlertDialogContent>
-                                  <AlertDialogHeader>
-                                    <AlertDialogTitle>Estás seguro de eliminar esta agencia?</AlertDialogTitle>
-                                    <AlertDialogDescription>
-                                      Esta acción no se puede deshacer. La agencia será permanentemente eliminada de la base de datos, por favor verifique esta acción antes de realizarla.
-                                    </AlertDialogDescription>
-                                  </AlertDialogHeader>
-                                  <AlertDialogFooter>
-                                    <AlertDialogCancel >Cancelar</AlertDialogCancel>
-                                    <AlertDialogAction className={buttonVariants({ variant: "destructive" })} onClick={() => handleDeleteAgency(agency.id)} >Continuar</AlertDialogAction>
-                                  </AlertDialogFooter>
-                                </AlertDialogContent>
-                              </AlertDialog>
+                              <PermissionGuard requiredPermission={permissions.agency_delete}>
+                                <DropdownMenuItem onClick={(e) => {
+                                      e.preventDefault();
+                                      setOpen(true);
+                                      setSelectedAgency(agency);
+                                    }}>
+                                  <Trash2 color="red" />
+                                  <span className="text-red-500" >Eliminar Agencia</span>
+                                </DropdownMenuItem>
+                              </PermissionGuard>
                           </DropdownMenuContent>
                           </DropdownMenu>
                         </TableCell>
@@ -326,6 +290,38 @@ const AgenciesList = () => {
                     }
                   </TableBody>
                 </Table>
+
+                {/** Delete confirmation */}
+                <AlertDialog open={open} onOpenChange={setOpen}>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>Estás seguro de eliminar esta agencia?</AlertDialogTitle>
+                      <AlertDialogDescription>
+                        Esta acción no se puede deshacer. La agencia será permanentemente eliminada de la base de datos, por favor verifique esta acción antes de realizarla.
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel >Cancelar</AlertDialogCancel>
+                      <AlertDialogAction className={buttonVariants({ variant: "destructive" })} onClick={() => handleDeleteAgency(selectedAgency.id)} >Continuar</AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+
+                {/** Toggle Agency state confirmation */}
+                <AlertDialog open={openT} onOpenChange={setOpenT}>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>Estás seguro de cambiar el estado de esta agencia?</AlertDialogTitle>
+                      <AlertDialogDescription>
+                          Esta acción {selectedAgency?.isActive ? 'desactivará' : 'activará' } la agencia en la base de datos, sus usuarios {selectedAgency?.isActive ? 'no podrán' : 'podrán' } utilizar sus credenciales y utilizar la plataforma.
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel >Cancelar</AlertDialogCancel>
+                      <AlertDialogAction className={buttonVariants({ variant: "destructive" })} onClick={() => handleToggleAgencyState(selectedAgency.id)} >Continuar</AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
               </div>
             </div>
           </div>
