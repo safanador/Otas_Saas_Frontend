@@ -77,9 +77,9 @@ const PaymentsList = () => {
       }
 
       toast({ variant: "success", title: "Realizado!", description: "Pago eliminado exitosamente." });
-      setTimeout(() => {
+      /*setTimeout(() => {
         window.location.reload(); // Recargar la página actual
-      }, 1000);
+      }, 1000);*/
       
     } catch (error) {
         toast({

@@ -11,6 +11,8 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { Checkbox } from "@/components/ui/checkbox";
 import withAuth from "@/app/middleware/withAuth";
 import permissions from "@/lib/permissions";
+import { fetchData } from "@/services/api";
+import endpoints from "@/lib/endpoints";
 
 
 const UsersCreate = () => {
@@ -31,26 +33,17 @@ const UsersCreate = () => {
     try {
       setErrorData([]); // Limpiar errores anteriores
       setButtonLoading(true);
-      console.log(form);
-  
-      const response = await fetch("http://localhost:3000/api/v1/plans", {
+
+      const response = await fetchData(endpoints.plan_create(), {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json', // Corrección
-        },
         body: JSON.stringify(form),
-        credentials: 'include',
       });
-  
-      // Verificar si la creación del usuario fue exitosa
-      if (!response.ok) {
-        const errorData = await response.json();
-        setErrorData(errorData.message);
+
+      if (response.error) {
+        setErrorData(response.error);
         setButtonLoading(false);
         return;
       }
-  
-      setButtonLoading(false);
   
       // Mostrar mensaje de éxito
       toast({
@@ -61,13 +54,14 @@ const UsersCreate = () => {
       setForm(initialFormState);
   
     } catch (error) {
-      setButtonLoading(false);
-      console.error("Error:", error);
+
       toast({
         variant: "destructive",
         title: "Uh oh! Parece que algo salió mal.",
         description: "No se pudo conectar con el servidor. Por favor, intenta más tarde.",
       });
+    } finally { 
+      setButtonLoading(false);
     }
   };
   

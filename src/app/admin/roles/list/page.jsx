@@ -13,6 +13,9 @@ import { useRouter } from "next/navigation";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import withAuth from "@/app/middleware/withAuth";
 import permissions from "@/lib/permissions";
+import { fetchData } from "@/services/api";
+import endpoints from "@/lib/endpoints";
+import PermissionGuard from "@/components/PermissionGuard";
 
 const RolesList = () => {
   const [roles, setRoles] = useState([]);
@@ -21,21 +24,17 @@ const RolesList = () => {
   const { toast } = useToast();
   const router = useRouter();
   const [open, setOpen] = useState(false);
+  const [selectedRole, setSelectedRole] = useState();
 
   useEffect(() => {
     const fetchRoles = async () => {
       try {
-        const response = await fetch("http://localhost:3000/api/v1/roles/", {
-          credentials: 'include'
-        });
-        console.log(response)
-        if (response.status === 401) {
-          window.location.href = '/auth/login';
+
+        const data = await fetchData(endpoints.role_getAll());
+        
+        if (data.error) {
+          return console.log(data.error);
         }
-        if (response.status === 403) {
-          window.location.href = '/admin/unauthorized';
-        }
-        const data = await response.json();
         setRoles(data);
       } catch (error) {
         console.error("Error fetching roles:", error);
@@ -55,41 +54,28 @@ const RolesList = () => {
   if (loading) {
     return (
         <AdminLayout>
-            <div className="flex items-center justify-center h-full">
-                <p className="text-center">Cargando roles...</p>
-            </div>
+          <div className="flex items-center justify-center h-full">
+            <span className="w-8 h-8 border-[3px] border-black border-t-transparent rounded-full animate-spin"></span>
+          </div>
         </AdminLayout>
     );
   }
 
   const handleDeleteRole = async (id) => {
     try {
-      
-      const response = await fetch(`http://localhost:3000/api/v1/roles/${id}`, {
+
+      const data = await fetchData(endpoints.role_delete(id), {
         method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        credentials: 'include'
       });
 
-      if (response.ok) {
-        toast({
-          variant: "success",
-          title: "Realizado!",
-          description: "Rol eliminado exitosamente.",
-        })
-        setTimeout(() => {
-          window.location.reload(); // Recargar la página actual
-        }, 1000);
-      }else{
-        console.log(response)
-        toast({
-          variant: "destructive",
-          title: "Uh oh! Parece que algo salió mal.",
-          description: "Por favor, intenta más tarde.",
-        })
+      if (data.error) {
+        return
       }
+
+      toast({ variant: "success", title: "Realizado!", description: "Role eliminado exitosamente." });
+      setTimeout(() => {
+        window.location.reload();
+      }, 1000);
       
     } catch (error) {
         toast({
@@ -155,34 +141,22 @@ const RolesList = () => {
                               <DropdownMenuItem onClick={() => router.push(`/admin/roles/show/${role.id}`)}>
                                 <Eye />  Ver Rol
                               </DropdownMenuItem>
-                              <DropdownMenuItem onClick={() => router.push(`/admin/roles/edit/${role.id}`) } >
-                                <Pencil /> Editar Rol
-                              </DropdownMenuItem>
+                              <PermissionGuard requiredPermission={permissions.role_update}>
+                                <DropdownMenuItem onClick={() => router.push(`/admin/roles/edit/${role.id}`) } >
+                                  <Pencil /> Editar Rol
+                                </DropdownMenuItem>
+                              </PermissionGuard>
                               <DropdownMenuSeparator />
-                              <DropdownMenuItem onClick={(e) => {
-                                    e.preventDefault(); // Evita que el menú se cierre automáticamente
-                                    setOpen(true);
-                                  }}>
-                               <Trash2 color="red" /> 
-                                <span className="text-red-500" >Eliminar Rol</span>
-                              </DropdownMenuItem>
-                              {/** Delete confirmation */}
-
-                              <AlertDialog open={open} onOpenChange={setOpen}>
-                                <AlertDialogContent>
-                                  <AlertDialogHeader>
-                                    <AlertDialogTitle>Estás seguro de eliminar este rol?</AlertDialogTitle>
-                                    <AlertDialogDescription>
-                                      Esta acción no se puede deshacer. Este será permanentemente eliminado de la base de datos.
-                                    </AlertDialogDescription>
-                                  </AlertDialogHeader>
-                                  <AlertDialogFooter>
-                                    <AlertDialogCancel >Cancelar</AlertDialogCancel>
-                                    <AlertDialogAction className={buttonVariants({ variant: "destructive" })} onClick={() => handleDeleteRole(role.id)} >Continuar</AlertDialogAction>
-                                  </AlertDialogFooter>
-                                </AlertDialogContent>
-                              </AlertDialog>
-                              
+                              <PermissionGuard requiredPermission={permissions.role_delete}>
+                                <DropdownMenuItem onClick={(e) => {
+                                      e.preventDefault();
+                                      setOpen(true);
+                                      setSelectedRole(role);
+                                    }}>
+                                <Trash2 color="red" /> 
+                                  <span className="text-red-500" >Eliminar Rol</span>
+                                </DropdownMenuItem> 
+                              </PermissionGuard>
                           </DropdownMenuContent>
                           </DropdownMenu>
                         </TableCell>
@@ -198,6 +172,20 @@ const RolesList = () => {
                     }
                   </TableBody>
                 </Table>
+                <AlertDialog open={open} onOpenChange={setOpen}>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>Estás seguro de eliminar este rol?</AlertDialogTitle>
+                      <AlertDialogDescription>
+                        Esta acción no se puede deshacer. Este será permanentemente eliminado de la base de datos.
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel >Cancelar</AlertDialogCancel>
+                      <AlertDialogAction className={buttonVariants({ variant: "destructive" })} onClick={() => handleDeleteRole(selectedRole?.id)} >Continuar</AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
               </div>
             </div>
           </div>

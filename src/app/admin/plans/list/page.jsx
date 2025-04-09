@@ -14,6 +14,9 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { Checkbox } from "@/components/ui/checkbox";
 import withAuth from "@/app/middleware/withAuth";
 import permissions from "@/lib/permissions";
+import { fetchData } from "@/services/api";
+import endpoints from "@/lib/endpoints";
+import PermissionGuard from "@/components/PermissionGuard";
 
 
 const PlansList = () => {
@@ -23,22 +26,17 @@ const PlansList = () => {
   const { toast } = useToast();
   const router = useRouter();
   const [open, setOpen] = useState(false);
+  const [selectedPlan, setSelectedPlan] = useState();
 
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchInfo = async () => {
       try {
-        const plansData = await fetch("http://localhost:3000/api/v1/plans", {
-          credentials: 'include'
-        });
-
-        if (plansData.status === 401) {
-          window.location.href = '/auth/login';
+        const plansData = await fetchData(endpoints.plan_getAll());
+        
+        if (plansData.error) {
+          return console.log(plansData.error);
         }
-        if (plansData.status === 403) {
-          window.location.href = '/admin/unauthorized';
-        }
-        const plans = await plansData.json();
-        setPlans(plans);
+        setPlans(plansData);
       } catch (error) {
         console.error("Error fetching plans:", error);
       } finally {
@@ -46,7 +44,7 @@ const PlansList = () => {
       }
     };
 
-    fetchData();
+    fetchInfo();
   }, []);
 
    // Filtrar roles en función del término de búsqueda
@@ -66,32 +64,19 @@ const PlansList = () => {
 
   const handleDelete = async (id) => {
     try {
-      
-      const response = await fetch(`http://localhost:3000/api/v1/plans/${id}`, {
+
+      const data = await fetchData(endpoints.plan_delete(id), {
         method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        credentials: 'include'
       });
 
-      if (response.ok) {
-        toast({
-          variant: "success",
-          title: "Realizado!",
-          description: "Plan eliminado exitosamente.",
-        })
-        setTimeout(() => {
-          window.location.reload(); // Recargar la página actual
-        }, 1000);
-      }else{
-        console.log(response)
-        toast({
-          variant: "destructive",
-          title: "Uh oh! Parece que algo salió mal.",
-          description: "Por favor, intenta más tarde.",
-        })
+      if (data.error) {
+        return
       }
+
+      toast({ variant: "success", title: "Realizado!", description: "Plan eliminado exitosamente." });
+      setTimeout(() => {
+        window.location.reload(); // Recargar la página actual
+      }, 1000);
       
     } catch (error) {
         toast({
@@ -102,43 +87,9 @@ const PlansList = () => {
     }
   };
 
-  // toggle user state
+  // toggle state
   const handleToggleUserState = async (id) => {
-    try {
-      
-      const response = await fetch(`http://localhost:3000/api/v1/users/${id}/toggle-status`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        credentials: 'include'
-      });
 
-      if (response.ok) {
-        toast({
-          variant: "success",
-          title: "Realizado!",
-          description: "El estatus del usuario ha sido cambiado exitosamente.",
-        })
-        setTimeout(() => {
-          window.location.reload(); // Recargar la página actual
-        }, 1000);
-      }else{
-        console.log(response)
-        toast({
-          variant: "destructive",
-          title: "Uh oh! Parece que algo salió mal.",
-          description: "Por favor, intenta más tarde.",
-        })
-      }
-      
-    } catch (error) {
-        toast({
-          variant: "destructive",
-          title: "Uh oh! Parece que algo salió mal.",
-          description: "No se pudo conectar con el servidor. Por favor, intenta más tarde.",
-        })
-    }
   };
 
   return (
@@ -198,33 +149,23 @@ const PlansList = () => {
                               <DropdownMenuItem onClick={() => router.push(`/admin/plans/show/${plan.id}`)}>
                               <Eye /> Ver Plan
                               </DropdownMenuItem>
-                              <DropdownMenuItem onClick={() => router.push(`/admin/plans/edit/${plan.id}`) } >
-                               <Pencil/> Editar Plan
-                              </DropdownMenuItem>
+                              <PermissionGuard requiredPermission={permissions.plan_update}>
+                                <DropdownMenuItem onClick={() => router.push(`/admin/plans/edit/${plan.id}`) } >
+                                <Pencil/> Editar Plan
+                                </DropdownMenuItem>
+                              </PermissionGuard>
                               <DropdownMenuSeparator />
-                              <DropdownMenuItem onClick={(e) => {
-                                    e.preventDefault(); // Evita que el menú se cierre automáticamente
-                                    setOpen(true);
-                                  }}>
-                                <Trash2 color="red" />
-                                <span className="text-red-500" >Eliminar Plan</span>
-                              </DropdownMenuItem>
-                              {/** Delete confirmation */}
-
-                              <AlertDialog open={open} onOpenChange={setOpen}>
-                                <AlertDialogContent>
-                                  <AlertDialogHeader>
-                                    <AlertDialogTitle>Estás seguro de eliminar este Plan?</AlertDialogTitle>
-                                    <AlertDialogDescription>
-                                      Esta acción no se puede deshacer. El plan será permanentemente eliminado de la base de datos, confirma que ninguna agencia tenga este plan asociado.
-                                    </AlertDialogDescription>
-                                  </AlertDialogHeader>
-                                  <AlertDialogFooter>
-                                    <AlertDialogCancel >Cancelar</AlertDialogCancel>
-                                    <AlertDialogAction className={buttonVariants({ variant: "destructive" })} onClick={() => handleDelete(plan.id)} >Continuar</AlertDialogAction>
-                                  </AlertDialogFooter>
-                                </AlertDialogContent>
-                              </AlertDialog>
+                              <PermissionGuard requiredPermission={permissions.plan_list}>
+                                <DropdownMenuItem onClick={(e) => {
+                                      e.preventDefault(); // Evita que el menú se cierre automáticamente
+                                      setOpen(true);
+                                      setSelectedPlan(plan);
+                                    }}>
+                                  <Trash2 color="red" />
+                                  <span className="text-red-500" >Eliminar Plan</span>
+                                </DropdownMenuItem>
+                              </PermissionGuard>
+                              
                           </DropdownMenuContent>
                           </DropdownMenu>
                         </TableCell>
@@ -240,6 +181,23 @@ const PlansList = () => {
                     }
                   </TableBody>
                 </Table>
+
+                {/** Delete confirmation */}
+
+                <AlertDialog open={open} onOpenChange={setOpen}>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>Estás seguro de eliminar este Plan?</AlertDialogTitle>
+                      <AlertDialogDescription>
+                        Esta acción no se puede deshacer. El plan será permanentemente eliminado de la base de datos, confirma que ninguna agencia tenga este plan asociado.
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel >Cancelar</AlertDialogCancel>
+                      <AlertDialogAction className={buttonVariants({ variant: "destructive" })} onClick={() => handleDelete(selectedPlan?.id)} >Continuar</AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
               </div>
             </div>
           </div>

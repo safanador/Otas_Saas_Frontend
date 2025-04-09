@@ -8,6 +8,8 @@ import { useParams } from "next/navigation";
 import AdminLayout from "@/app/admin/components/SideBar/AdminLayout";
 import withAuth from "@/app/middleware/withAuth";
 import permissions from "@/lib/permissions";
+import { fetchData } from "@/services/api";
+import endpoints from "@/lib/endpoints";
 
 const PlanShow = () => {
   const [loading, setLoading] = useState(true);
@@ -31,22 +33,14 @@ const PlanShow = () => {
   }
 
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchInfo = async () => {
       try {
-        const responseForm = await fetch(`http://localhost:3000/api/v1/plans/${id}`, {
-          credentials: 'include'
-        });
+        const data = await fetchData(endpoints.plan_getOne(id));
 
-        if (responseForm.status === 401) {
-          window.location.href = '/auth/login';
-          return;
+        if (data.error) {
+          return console.log(data.error);
         }
-        if (responseForm.status === 403) {
-          window.location.href = '/admin/unauthorized';
-          return;
-        }
-        const dataForm = await responseForm.json();
-        setForm(dataForm);
+        setForm(data);
       } catch (error) {
         console.error("Error fetching users:", error);
       } finally {
@@ -54,7 +48,7 @@ const PlanShow = () => {
       }
     };
 
-    fetchData();
+    fetchInfo();
   }, [id]);
 
   if (loading) {

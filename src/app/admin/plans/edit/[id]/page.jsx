@@ -12,6 +12,8 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import withAuth from "@/app/middleware/withAuth";
 import permissions from "@/lib/permissions";
+import { fetchData } from "@/services/api";
+import endpoints from "@/lib/endpoints";
 
 const PlanEdit = () => {
   const { id } = useParams();
@@ -34,21 +36,9 @@ const PlanEdit = () => {
   }
 
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchInfo = async () => {
       try {
-        const responseForm = await fetch(`http://localhost:3000/api/v1/plans/${id}`, {
-          credentials: 'include'
-        });
-
-        if (responseForm.status === 401) {
-          window.location.href = '/auth/login';
-          return;
-        }
-        if (responseForm.status === 403) {
-          window.location.href = '/admin/unauthorized';
-          return;
-        }
-        const dataForm = await responseForm.json();
+        const dataForm = await fetchData(endpoints.plan_getOne(id))
         let updatedForm = { ...dataForm};
         const {id: planId, ...rest} = updatedForm;
         updatedForm = rest;        
@@ -60,7 +50,7 @@ const PlanEdit = () => {
       }
     };
 
-    fetchData();
+    fetchInfo();
     
   }, [id]);
 
@@ -80,26 +70,17 @@ const PlanEdit = () => {
         setButtonLoading(true);
         console.log(form);
         let updatedForm = { ...form, durationInDays: form.durationInDays.toString(), price: form.price.toString()};
-
     
-        const response = await fetch(`http://localhost:3000/api/v1/plans/${id}`, {
+        const response = await fetchData(endpoints.plan_update(id), {
           method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json', // Corrección
-          },
           body: JSON.stringify(updatedForm),
-          credentials: 'include',
         });
-    
-        // Verificar si la creación del usuario fue exitosa
-        if (!response.ok) {
-          const errorData = await response.json();
-          setErrorData(errorData.message);
+
+        if (response.error) {
+          setErrorData(response.error);
           setButtonLoading(false);
-          return;
+          return
         }
-    
-        setButtonLoading(false);
     
         // Mostrar mensaje de éxito
         toast({
@@ -115,6 +96,8 @@ const PlanEdit = () => {
           title: "Uh oh! Parece que algo salió mal.",
           description: "No se pudo conectar con el servidor. Por favor, intenta más tarde.",
         });
+      } finally {
+        setButtonLoading(false);
       }
     };
 
@@ -206,7 +189,7 @@ const PlanEdit = () => {
             className="w-full md:w-[100px]" >
               { buttonLoading 
                 ? (<span className="w-4 h-4 border-[1.5px] border-white border-t-transparent rounded-full animate-spin"></span>)
-                : (<span className="px-2 py-1">Editar Usuario</span>) }
+                : (<span className="px-2 py-1">Editar Plan</span>) }
           </Button>
 
           <AlertDialog open={open} onOpenChange={setOpen}>

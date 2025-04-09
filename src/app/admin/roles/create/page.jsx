@@ -23,6 +23,8 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { Toast, ToastDescription, ToastTitle } from "@/components/ui/toast";
 import withAuth from "@/app/middleware/withAuth";
 import permissions from "@/lib/permissions";
+import { fetchData } from "@/services/api";
+import endpoints from "@/lib/endpoints";
 
 
 const RolesCreate = () => {
@@ -33,6 +35,8 @@ const RolesCreate = () => {
   const [open, setOpen] = useState(false);
   const [errorData, setErrorData] = useState();
   const { toast } = useToast();
+  const [buttonLoading, setButtonLoading] = useState(false);
+  
 
   useEffect(() => {
     const fetchPermissions = async () => {
@@ -111,6 +115,7 @@ const RolesCreate = () => {
 
     const handleCreateRole = async () => {
       try {
+        setButtonLoading(true);
         setErrorData([])
         const formattedPermissions = form.permissions.map((p)=> permissions.find((pDb) => pDb.description === p)?.id).filter((id) => id !== undefined)
         
@@ -123,38 +128,31 @@ const RolesCreate = () => {
         setForm(updatedForm);
         console.log(updatedForm);
         
-        const response = await fetch("http://localhost:3000/api/v1/roles", {
-          method: 'post',
-          headers: {
-            'Content-Type': 'application/json', // Corrección
-          },
+        const response = await fetchData(endpoints.role_create(), {
+          method: 'POST',
           body: JSON.stringify(updatedForm),
-          credentials: 'include'
         });
 
-        if (response.status === 403) {
-          window.location.href = '/auth/login';
-        }
-        if (response.status === 401) {
-          window.location.href = '/admin/unauthorized';
+        if (response.error) {
+          setErrorData(response.error);
+          return;
         }
 
-        if (response.ok) {
-          toast({
-            variant: "success",
-            title: "Realizado!",
-            description: "Rol creado exitosamente.",
-          })
-        }else{
-          const errorData = await response.json(); 
-          setErrorData(errorData.message)
-        }
+        toast({
+          variant: "success",
+          title: "Realizado!",
+          description: "Rol creado exitosamente.",
+        })
+
+        setForm({name: "", scope: "", permissions: [], agencyId: null});
       } catch (error) {
           toast({
             variant: "destructive",
             title: "Uh oh! Parece que algo salió mal.",
             description: "No se pudo conectar con el servidor. Por favor, intenta más tarde.",
           })
+      } finally {
+        setButtonLoading(false);
       }
     };
 
@@ -290,7 +288,9 @@ const RolesCreate = () => {
           <Button                 
             onClick={() => setOpen(true)}
             className="w-full md:w-[100px]" >
-              Crear Rol
+              { buttonLoading 
+                ? (<span className="w-4 h-4 border-[1.5px] border-white border-t-transparent rounded-full animate-spin"></span>)
+                : (<span>Crear Role</span>) }          
           </Button>
 
           <AlertDialog open={open} onOpenChange={setOpen}>

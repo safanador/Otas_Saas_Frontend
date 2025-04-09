@@ -18,6 +18,8 @@ import { useParams } from "next/navigation";
 import AdminLayout from "@/app/admin/components/SideBar/AdminLayout";
 import withAuth from "@/app/middleware/withAuth";
 import permissions from "@/lib/permissions";
+import { fetchData } from "@/services/api";
+import endpoints from "@/lib/endpoints";
 
 const SubscriptionShow = () => {
   const [plans, setPlans] = useState([]);
@@ -41,10 +43,11 @@ const SubscriptionShow = () => {
   useEffect(() => {
     const fetchSubscriptions = async () => {
       try {
-        const response = await fetch(`http://localhost:3000/api/v1/subscriptions/${id}`, {
-          credentials: 'include',
-        });
-        const data = await response.json();
+        const data = await fetchData(endpoints.subscription_getOne(id));
+        if(data.error) {
+          console.error("Error fetching subscription:", data.error);
+          return;
+        }
         let updatedForm = {...data , agencyId: data.agency.id , planId: data.plan.id};
         const { agencyId, planId , ...rest} = updatedForm;
         updatedForm = { agencyId, planId};
@@ -58,12 +61,11 @@ const SubscriptionShow = () => {
 
     const fetchPlans = async () => {
       try {
-        const response = await fetch("http://localhost:3000/api/v1/plans", {
-          credentials: 'include',
-        });
-        const data = await response.json();
-        console.log(data)
-        setPlans(data);
+        const response = await fetchData(endpoints.plan_getAll());
+        if(response.error) {
+          return console.log(response.error);
+        }
+        setPlans(response);
       } catch (error) {
         console.error("Error fetching roles:", error);
       } 
@@ -73,17 +75,10 @@ const SubscriptionShow = () => {
 
     const fetchAgencies = async () => {
       try {
-        const response = await fetch("http://localhost:3000/api/v1/agencies", {
-          credentials: 'include'
-        });
-        if (response.status === 401) {
-          window.location.href = '/auth/login';
+        const agencies = await fetchData(endpoints.agency_getAll());
+        if(agencies.error) {
+          return console.log(data.error);
         }
-        if (response.status === 403) {
-          window.location.href = '/admin/unauthorized';
-        }
-        const agencies = await response.json();
-        console.log(agencies);
         setAgencies(agencies);
       } catch (error) {
         console.error("Error fetching agencies:", error);

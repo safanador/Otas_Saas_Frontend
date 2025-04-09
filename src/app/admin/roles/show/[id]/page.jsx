@@ -20,6 +20,8 @@ import { useParams } from "next/navigation";
 import AdminLayout from "@/app/admin/components/SideBar/AdminLayout";
 import withAuth from "@/app/middleware/withAuth";
 import permissions from "@/lib/permissions";
+import { fetchData } from "@/services/api";
+import endpoints from "@/lib/endpoints";
 
 
 const RolesShow = () => {
@@ -40,25 +42,22 @@ const RolesShow = () => {
   useEffect(() => {
     const fetchPermissions = async () => {
       try {
-        //permisos de la tabla de permisos
-        const response = await fetch("http://localhost:3000/api/v1/permissions/");
-        const data = await response.json();
-        setPermissions(data);
+        const response = await fetchData(endpoints.permissions_getAll());
+        if (response.error) {
+          return console.log(response.error);
+        }
+        setPermissions(response);
+        const responseForm = await fetchData(endpoints.role_getOne(id));
 
-        //role desde base de datos
-        const responseForm = await fetch(`http://localhost:3000/api/v1/roles/${id}`, {
-          credentials: 'include'
+        if (responseForm.error) {
+          return console.log(responseForm.error);
+        }
+        const formattedPermissions = responseForm.permissions.map((p)=> response.find((pDb) => pDb.description === p.description)?.description);
+
+        setForm({
+          ...responseForm,
+          permissions: formattedPermissions,
         });
-        const dataForm = await responseForm.json();
-
-        //modificar los permisos del form
-        const formattedPermissions = dataForm.permissions.map((p)=> data.find((pDb) => pDb.description === p.description)?.description);
-
-        // Actualizar el formulario con permisos formateados
-      setForm({
-        ...dataForm,
-        permissions: formattedPermissions,
-      });
       } catch (error) {
         console.error("Error fetching roles:", error);
       } finally {
@@ -74,7 +73,7 @@ const RolesShow = () => {
     return (
         <AdminLayout>
             <div className="flex items-center justify-center h-full">
-                <p className="text-center">Cargando...</p>
+              <span className="w-8 h-8 border-[3px] border-black border-t-transparent rounded-full animate-spin"></span>
             </div>
         </AdminLayout>
     );

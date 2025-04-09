@@ -23,6 +23,8 @@ import { useParams } from "next/navigation";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import withAuth from "@/app/middleware/withAuth";
 import permissions from "@/lib/permissions";
+import { fetchData } from "@/services/api";
+import endpoints from "@/lib/endpoints";
 
 
 const RolesEdit = () => {
@@ -34,6 +36,7 @@ const RolesEdit = () => {
   const [open, setOpen] = useState(false);
   const { toast } = useToast();
   const { id } = useParams();
+  const [buttonLoading, setButtonLoading] = useState(false);
 
    // Renderiza un estado de carga mientras `id` no esté disponible
    if (!id) {
@@ -48,19 +51,22 @@ const RolesEdit = () => {
     const fetchPermissionsAndAgencies = async () => {
       try {
         //permisos de la tabla de permisos
-        const responsePermissions = await fetch("http://localhost:3000/api/v1/permissions/");
-        const permissionsData = await responsePermissions.json();
-        setPermissions(permissionsData);
+        const responsePermissions = await fetchData(endpoints.permissions_getAll());
+        if (responsePermissions.error) {
+          return console.log(responsePermissions.error);
+        }
+        setPermissions(responsePermissions);
 
         //Obtener rol desde la base de datos
-        const responseForm = await fetch(`http://localhost:3000/api/v1/roles/${id}`, {
-          credentials: 'include'
-        });
-        const formData = await responseForm.json();
-        console.log(formData);
-        const formattedPermissions = formData.permissions.map((p)=> permissionsData.find((pDb) => pDb.description === p.description)?.description);
+        const responseForm = await fetchData(endpoints.role_getOne(id));
 
-        const { agency, createdAt, updatedAt, ...rest } = formData;
+        if (responseForm.error) {
+          return console.log(responseForm.error);
+        }
+
+        const formattedPermissions = responseForm.permissions.map((p)=> responsePermissions.find((pDb) => pDb.description === p.description)?.description);
+
+        const { agency, createdAt, updatedAt, ...rest } = responseForm;
 
         setForm({
           ...rest,
@@ -88,11 +94,11 @@ const RolesEdit = () => {
 
   if (loading) {
     return (
-        <AdminLayout>
-            <div className="flex items-center justify-center h-full">
-                <p className="text-center">Cargando...</p>
-            </div>
-        </AdminLayout>
+      <AdminLayout>
+          <div className="flex items-center justify-center h-full">
+            <span className="w-8 h-8 border-[3px] border-black border-t-transparent rounded-full animate-spin"></span>
+          </div>
+      </AdminLayout>
     );
   }
 
@@ -126,16 +132,10 @@ const RolesEdit = () => {
 
     const handleCreateRole = async (e) => {
       try {
+        setButtonLoading(true);
         setErrorData([]);
         const formattedPermissions = form.permissions.map((p)=> permissions.find((pDb) => pDb.description === p)?.id).filter((id) => id !== undefined)
         
-        /**
-        const updatedForm = { 
-          name: form.name, 
-          permissions: formattedPermissions , 
-          scope: form.scope }; */
-
-        // Sobrescribir directamente los permisos en una copia del estado
         let updatedForm = { ...form, permissions: formattedPermissions };
         const { id, ...rest} = updatedForm;
         updatedForm = rest; //saca el id del form
@@ -143,35 +143,30 @@ const RolesEdit = () => {
         if (updatedForm.scope=== 'global') {
           updatedForm = {...updatedForm, agencyId: null};
         }
-        console.log(updatedForm);
         
-        const response = await fetch(`http://localhost:3000/api/v1/roles/${id}`, {
+        const response = await fetchData(endpoints.role_update(id), {
           method: 'PATCH',
-          headers: {
-            'Content-Type': 'application/json',
-          },
           body: JSON.stringify(updatedForm),
-          credentials: 'include'
         });
 
-        if (response.ok) {
-          toast({
-            variant: "success",
-            title: "Realizado!",
-            description: "Rol editado exitosamente.",
-          })
-        }else{
-          console.log(response)
-          const errorData = await response.json(); 
-          setErrorData(errorData.message)
+        if (response.error) {
+          setErrorData(response.error);
+          return
         }
-      
+
+        toast({
+          variant: "success",
+          title: "Realizado!",
+          description: "Rol editado exitosamente.",
+        })
       } catch (error) {
           toast({
             variant: "destructive",
             title: "Uh oh! Parece que algo salió mal.",
             description: "No se pudo conectar con el servidor. Por favor, intenta más tarde.",
           })
+      } finally { 
+        setButtonLoading(false);
       }
     };
 
@@ -305,8 +300,9 @@ const RolesEdit = () => {
           <Button   
             onClick={() => setOpen(true)}              
             className="w-full md:w-[100px]" >
-              Editar Rol
-          </Button>
+              { buttonLoading 
+                ? (<span className="w-4 h-4 border-[1.5px] border-white border-t-transparent rounded-full animate-spin"></span>)
+                : (<span className="px-2 py-1">Editar Role</span>) }          </Button>
 
           <AlertDialog open={open} onOpenChange={setOpen}>
               <AlertDialogContent>

@@ -13,6 +13,9 @@ import { useRouter } from "next/navigation";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import withAuth from "@/app/middleware/withAuth";
 import permissions from "@/lib/permissions";
+import { fetchData } from "@/services/api";
+import endpoints from "@/lib/endpoints";
+import PermissionGuard from "@/components/PermissionGuard";
 
 const SubscritionList = () => {
   const [subscriptions, setSubscriptions] = useState([]);
@@ -21,6 +24,7 @@ const SubscritionList = () => {
   const { toast } = useToast();
   const router = useRouter();
   const [open, setOpen] = useState(false);
+  const [selectedSubscription, setSelectedSubscription] = useState();
 
     const formattedDate = (date) => {
       return new Date(date).toLocaleDateString('es-ES', {
@@ -32,20 +36,13 @@ const SubscritionList = () => {
   
 
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchInfo = async () => {
       try {
-        const response = await fetch("http://localhost:3000/api/v1/subscriptions", {
-          credentials: 'include'
-        });
-        console.log(response)
-        if (response.status === 401) {
-          window.location.href = '/auth/login';
+        const response = await fetchData(endpoints.subscription_getAll());
+        if(response.error) {
+          return console.log(response.error);
         }
-        if (response.status === 403) {
-          window.location.href = '/admin/unauthorized';
-        }
-        const data = await response.json();
-        setSubscriptions(data);
+        setSubscriptions(response);
       } catch (error) {
         console.error("Error fetching roles:", error);
       } finally {
@@ -53,7 +50,7 @@ const SubscritionList = () => {
       }
     };
 
-    fetchData();
+    fetchInfo();
   }, []);
 
    // Filtrar roles en función del término de búsqueda
@@ -74,31 +71,22 @@ const SubscritionList = () => {
   const handleDelete = async (id) => {
     try {
       
-      const response = await fetch(`http://localhost:3000/api/v1/subscriptions/${id}`, {
+      const response = await fetchData(endpoints.subscription_delete(id), {
         method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        credentials: 'include'
       });
 
-      if (response.ok) {
-        toast({
-          variant: "success",
-          title: "Realizado!",
-          description: "Status de la suscripción cambiado exitosamente.",
-        })
-        setTimeout(() => {
-          window.location.reload(); // Recargar la página actual
-        }, 1000);
-      }else{
-        console.log(response)
-        toast({
-          variant: "destructive",
-          title: "Uh oh! Parece que algo salió mal.",
-          description: "Por favor, intenta más tarde.",
-        })
+      if (response.error) {
+        return console.log(response.error);
       }
+
+      toast({
+        variant: "success",
+        title: "Realizado!",
+        description: "Status de la suscripción cambiado exitosamente.",
+      })
+      setTimeout(() => {
+        window.location.reload();
+      }, 1000);
       
     } catch (error) {
         toast({
@@ -174,34 +162,22 @@ const SubscritionList = () => {
                               <DropdownMenuItem onClick={() => router.push(`/admin/subscriptions/show/${sub.id}`)}>
                                 <Eye />  Ver Suscripcion
                               </DropdownMenuItem>
-                              <DropdownMenuItem onClick={() => router.push(`/admin/subscriptions/edit/${sub.id}`) } >
-                                <Pencil /> Editar Suscripción
-                              </DropdownMenuItem>
+                              {/*<PermissionGuard requiredPermission={permissions.subscription_update}>
+                                <DropdownMenuItem onClick={() => router.push(`/admin/subscriptions/edit/${sub.id}`) } >
+                                  <Pencil /> Editar Suscripción
+                                </DropdownMenuItem>
+                              </PermissionGuard> No hay una funcionalidad clara a editar */}
                               <DropdownMenuSeparator />
-                              <DropdownMenuItem onClick={(e) => {
-                                    e.preventDefault(); // Evita que el menú se cierre automáticamente
-                                    setOpen(true);
-                                  }}>
-                               <Repeat color="red" /> 
-                                <span className="text-red-500" >Cambiar status</span>
-                              </DropdownMenuItem>
-                              {/** Delete confirmation */}
-
-                              <AlertDialog open={open} onOpenChange={setOpen}>
-                                <AlertDialogContent>
-                                  <AlertDialogHeader>
-                                    <AlertDialogTitle>Estás seguro de cambiar el status de esta suscripción?</AlertDialogTitle>
-                                    <AlertDialogDescription>
-                                      Esta acción se puede deshacer, sin embargo puede causar inconsistencias en el flujo de trabajo de los usuarios de las agencias asociadas.
-                                    </AlertDialogDescription>
-                                  </AlertDialogHeader>
-                                  <AlertDialogFooter>
-                                    <AlertDialogCancel >Cancelar</AlertDialogCancel>
-                                    <AlertDialogAction className={buttonVariants({ variant: "destructive" })} onClick={() => handleDelete(sub.id)} >Continuar</AlertDialogAction>
-                                  </AlertDialogFooter>
-                                </AlertDialogContent>
-                              </AlertDialog>
-                              
+                              <PermissionGuard requiredPermission={permissions.subscription_delete}>
+                                <DropdownMenuItem onClick={(e) => {
+                                      e.preventDefault(); // Evita que el menú se cierre automáticamente
+                                      setOpen(true);
+                                      setSelectedSubscription(sub);
+                                    }}>
+                                <Repeat color="red" /> 
+                                  <span className="text-red-500" >Cambiar status</span>
+                                </DropdownMenuItem>
+                              </PermissionGuard>      
                           </DropdownMenuContent>
                           </DropdownMenu>
                         </TableCell>
@@ -217,6 +193,22 @@ const SubscritionList = () => {
                     }
                   </TableBody>
                 </Table>
+
+                {/** Delete confirmation */}
+                <AlertDialog open={open} onOpenChange={setOpen}>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>Estás seguro de cambiar el status de esta suscripción?</AlertDialogTitle>
+                      <AlertDialogDescription>
+                        Esta acción se puede deshacer, sin embargo puede causar inconsistencias en el flujo de trabajo de los usuarios de las agencias asociadas.
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel >Cancelar</AlertDialogCancel>
+                      <AlertDialogAction className={buttonVariants({ variant: "destructive" })} onClick={() => handleDelete(selectedSubscription?.id)} >Continuar</AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
               </div>
             </div>
           </div>

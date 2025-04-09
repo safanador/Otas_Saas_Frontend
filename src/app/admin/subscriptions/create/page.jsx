@@ -22,6 +22,8 @@ import { useToast } from "@/hooks/use-toast";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import withAuth from "@/app/middleware/withAuth";
 import permissions from "@/lib/permissions";
+import { fetchData } from "@/services/api";
+import endpoints from "@/lib/endpoints";
 
 
 const SubscriptionCreate = () => {
@@ -43,11 +45,10 @@ const SubscriptionCreate = () => {
   useEffect(() => {
     const fetchPlans = async () => {
       try {
-        const response = await fetch("http://localhost:3000/api/v1/plans", {
-          credentials: 'include',
-        });
-        const data = await response.json();
-        console.log(data)
+        const data = await fetchData(endpoints.plan_getAll());
+        if(data.error) {
+          return console.log(data.error);
+        }
         setPlans(data);
       } catch (error) {
         console.error("Error fetching roles:", error);
@@ -58,18 +59,9 @@ const SubscriptionCreate = () => {
 
     const fetchAgencies = async () => {
       try {
-        const response = await fetch("http://localhost:3000/api/v1/agencies", {
-          credentials: 'include'
-        });
-        if (response.status === 401) {
-          window.location.href = '/auth/login';
-        }
-        if (response.status === 403) {
-          window.location.href = '/admin/unauthorized';
-        }
-        const agencies = await response.json();
-        console.log(agencies);
-        setAgencies(agencies);
+        const response = await fetchData(endpoints.agency_getAll());
+
+        setAgencies(response);
       } catch (error) {
         console.error("Error fetching agencies:", error);
       } finally {
@@ -95,41 +87,35 @@ const SubscriptionCreate = () => {
         setButtonLoading(true);
         setErrorData([])
         
-        const response = await fetch("http://localhost:3000/api/v1/subscriptions", {
+        const response = await fetchData(endpoints.subscription_create(), {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
           body: JSON.stringify(form),
-          credentials: 'include'
         });
 
-        if (response.status === 403) {
-          window.location.href = '/auth/login';
-        }
-        if (response.status === 401) {
-          window.location.href = '/admin/unauthorized';
+        if (response.error) {
+          setErrorData(response.error)
+          return 
         }
 
-        if (response.ok) {
-          setButtonLoading(false);
-          toast({
-            variant: "success",
-            title: "Realizado!",
-            description: "Suscripción creada exitosamente.",
-          })
-        }else{
-          setButtonLoading(false);
-          const errorData = await response.json(); 
-          setErrorData(errorData.message)
-        }
+        toast({
+          variant: "success",
+          title: "Realizado!",
+          description: "Suscripción creada exitosamente.",
+        })
+
+        setForm({
+          agencyId: null,
+          planId: null,
+        });
+
       } catch (error) {
-          setButtonLoading(false);
           toast({
             variant: "destructive",
             title: "Uh oh! Parece que algo salió mal.",
             description: "No se pudo conectar con el servidor. Por favor, intenta más tarde.",
           })
+      } finally {
+        setButtonLoading(false);
       }
     };
 
