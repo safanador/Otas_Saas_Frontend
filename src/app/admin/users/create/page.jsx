@@ -44,6 +44,7 @@ const UsersCreate = () => {
     dob: '',
     phone: '',
     address: '',
+    preferredLanguage: '',
     country: '',
     state: '',
     city: '',
@@ -146,6 +147,7 @@ const UsersCreate = () => {
         dob: '',
         phone: '',
         address: '',
+        preferredLanguage: '',
         country: '',
         state: '',
         city: '',
@@ -295,6 +297,29 @@ const UsersCreate = () => {
               value={form.address}
               onChange={(e) => setForm({...form, address: e.target.value})} />
               {errorData && renderFieldErrors('address',errorData)}
+          </div>
+
+          <div className="grid w-full max-w-lg items-center gap-1.5" >
+              <Label htmlFor="user-type" >Idioma preferido</Label>
+                <Select
+                  value={form.preferredLanguage}
+                  onValueChange={(value) => setForm({...form, preferredLanguage: value})}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Selecciona un idioma" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectGroup>
+                      <SelectLabel>Idiomas</SelectLabel>
+                      <SelectItem key="es" value="es" >
+                          Español
+                      </SelectItem>
+                      <SelectItem key="en" value="en" >
+                          Ingles
+                      </SelectItem>
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
+                {errorData && renderFieldErrors('preferredLanguage',errorData)}
           </div>
 
              {/** Country Done*/}

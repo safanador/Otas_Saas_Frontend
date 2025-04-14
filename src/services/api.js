@@ -1,11 +1,11 @@
 import { toast } from "@/hooks/use-toast";
 
 const handleResponse = async (response) => {
-  if (response.status === 403) {
+  if (response.status === 401) {
     window.location.href = '/auth/login';
     return null;
   }
-  if (response.status === 401) {
+  if (response.status === 403) {
     window.location.href = '/admin/unauthorized';
     return null;
   }

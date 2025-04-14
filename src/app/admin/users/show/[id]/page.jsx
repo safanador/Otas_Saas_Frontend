@@ -38,6 +38,7 @@ const UsersShow = () => {
     dob: new Date(),
     phone: "",
     address: "",
+    preferredLanguage: '',
     country: "",
     state: "",
     city: "",
@@ -181,6 +182,18 @@ const UsersShow = () => {
                 id="address" 
                 placeholder="Dirección" 
                 value={form.address}
+                onChange={(e) => setForm({...form, address: e.target.value})} />
+            </div>
+
+             {/** preferred language Done*/}
+             <div className="grid w-full max-w-lg items-center gap-1.5">
+              <Label htmlFor="name">Idioma preferido</Label>
+              <Input 
+                disabled
+                type="text" 
+                id="address" 
+                placeholder="Dirección" 
+                value={form.preferredLanguage}
                 onChange={(e) => setForm({...form, address: e.target.value})} />
             </div>
 

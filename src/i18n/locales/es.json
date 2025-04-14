@@ -1,0 +1,57 @@
+{
+    "common": {
+      "item": "Ítem",
+      "searchName": "Buscar nombre...",
+      "actions": "Acciones",
+      "cancel": "Cancelar",
+      "continue": "Continuar",
+      "openMenu": "Abrir menú"
+    },
+    "agencies": {
+      "list": {
+        "title": "Lista de agencias",
+        "description": "A continuación se presenta una lista con aspectos generales de las agencias.",
+        "noAgenciesFound": "No se encontraron agencias."
+      },
+      "fields": {
+        "name": "Nombre",
+        "email": "Correo",
+        "phone": "Teléfono",
+        "address": "Dirección",
+        "city": "Ciudad",
+        "state": "Estado",
+        "country": "País",
+        "web": "Web",
+        "status": "Estatus"
+      },
+      "actions": {
+        "view": "Ver Agencia",
+        "edit": "Editar Agencia",
+        "delete": "Eliminar Agencia"
+      },
+      "delete": {
+        "confirmTitle": "¿Estás seguro de eliminar esta agencia?",
+        "confirmDescription": "Esta acción no se puede deshacer. La agencia será permanentemente eliminada de la base de datos, por favor verifique esta acción antes de realizarla."
+      },
+      "toggleState": {
+        "confirmTitle": "¿Estás seguro de cambiar el estado de esta agencia?",
+        "activateDescription": "Esta acción activará la agencia en la base de datos, sus usuarios podrán utilizar sus credenciales y utilizar la plataforma.",
+        "deactivateDescription": "Esta acción desactivará la agencia en la base de datos, sus usuarios no podrán utilizar sus credenciales y utilizar la plataforma."
+      }
+    },
+    "toast": {
+      "error": {
+        "title": "¡Ups! Parece que algo salió mal.",
+        "tryLater": "Por favor, intenta más tarde.",
+        "serverConnection": "No se pudo conectar con el servidor. Por favor, intenta más tarde."
+      },
+      "success": {
+        "title": "¡Realizado!",
+        "agencyDeleted": "Agencia eliminada exitosamente.",
+        "agencyStatusChanged": "El estatus de la agencia ha sido cambiado exitosamente."
+      }
+    },
+    "errors": {
+      "fetchingAgencies": "Error al obtener las agencias:"
+    }
+  }

@@ -23,8 +23,23 @@ import permissions from "@/lib/permissions";
 import { fetchData } from "@/services/api";
 import endpoints from "@/lib/endpoints";
 import PermissionGuard from "@/components/PermissionGuard";
+import { useSelector } from 'react-redux';
+import { useTranslation } from 'react-i18next';
 
 const AgenciesList = () => {
+  // Get language from Redux store
+  const { preferredLanguage } = useSelector((state) => state.auth.user);
+
+  // Initialize translation hook
+  const { t, i18n } = useTranslation();
+
+  // Set the language from Redux
+  useEffect(() => {
+    if (preferredLanguage) {
+      i18n.changeLanguage(preferredLanguage);
+    }
+  }, [preferredLanguage, i18n]);
+
   const [agencies, setAgencies] = useState([]);
   const [agencyId, setAgencyId] = useState();
   const [loading, setLoading] = useState(true);
@@ -36,8 +51,8 @@ const AgenciesList = () => {
   const [selectedAgency, setSelectedAgency] = useState();
   
 
-  const countries = Country.getAllCountries(); // it's an Array
-  const states =  (country) => {
+  const countries = Country.getAllCountries();
+  const states = (country) => {
     return State.getStatesOfCountry(country);
   } 
   const cities = (country, state) => {
@@ -47,25 +62,23 @@ const AgenciesList = () => {
   useEffect(() => {
     const fetchInfo = async () => {
       try {
-
         const agencies = await fetchData(endpoints.agency_getAll());
         
         if (agencies.error) {
-          return console.log(data.error);
+          return console.log(agencies.error);
         }
         setAgencies(agencies);
       } catch (error) {
-        console.error("Error fetching Agencies:", error);
+        console.error(t('errors.fetchingAgencies'), error);
       } finally {
         setLoading(false);
       }
     };
 
     fetchInfo();
-  }, []);
+  }, [t]);
 
-   // Filtrar roles en función del término de búsqueda
-   const filteredAgencies = agencies?.filter((agency) =>
+  const filteredAgencies = agencies?.filter((agency) =>
     agency.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
@@ -78,7 +91,7 @@ const AgenciesList = () => {
       </AdminLayout>
     );
   }
-// eliminacion de usuario
+
   const handleDeleteAgency = async (id) => {
     try {
       const data = await fetchData(endpoints.agency_delete(id), {
@@ -88,16 +101,16 @@ const AgenciesList = () => {
       if (data.error) {
         toast({
           variant: "destructive",
-          title: "Uh oh! Parece que algo salió mal.",
-          description: "Por favor, intenta más tarde.",
+          title: t('toast.error.title'),
+          description: t('toast.error.tryLater'),
         })
         return
       }
 
       toast({
         variant: "success",
-        title: "Realizado!",
-        description: "Agencia eliminada exitosamente.",
+        title: t('toast.success.title'),
+        description: t('toast.success.agencyDeleted'),
       })
       setTimeout(() => {
         window.location.reload();
@@ -106,8 +119,8 @@ const AgenciesList = () => {
     } catch (error) {
         toast({
           variant: "destructive",
-          title: "Uh oh! Parece que algo salió mal.",
-          description: "No se pudo conectar con el servidor. Por favor, intenta más tarde.",
+          title: t('toast.error.title'),
+          description: t('toast.error.serverConnection'),
         })
     }
   };
@@ -121,16 +134,16 @@ const AgenciesList = () => {
       if (response.error) {
         toast({
           variant: "destructive",
-          title: "Uh oh! Parece que algo salió mal.",
-          description: "Por favor, intenta más tarde.",
+          title: t('toast.error.title'),
+          description: t('toast.error.tryLater'),
         })
         return
       }
 
       toast({
         variant: "success",
-        title: "Realizado!",
-        description: "El estatus de la agencia ha sido cambiado exitosamente.",
+        title: t('toast.success.title'),
+        description: t('toast.success.agencyStatusChanged'),
       })
       setTimeout(() => {
         window.location.reload();
@@ -139,8 +152,8 @@ const AgenciesList = () => {
     } catch (error) {
         toast({
           variant: "destructive",
-          title: "Uh oh! Parece que algo salió mal.",
-          description: "No se pudo conectar con el servidor. Por favor, intenta más tarde.",
+          title: t('toast.error.title'),
+          description: t('toast.error.serverConnection'),
         })
     }
   };
@@ -149,8 +162,8 @@ const AgenciesList = () => {
     <AdminLayout>
       <Card>
         <CardHeader>
-          <CardTitle>Lista de agencias</CardTitle>
-          <CardDescription>A continuación se presenta una lista con aspectos generales de las agencias.</CardDescription>
+          <CardTitle>{t('agencies.list.title')}</CardTitle>
+          <CardDescription>{t('agencies.list.description')}</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="container mx-auto py-2">
@@ -158,33 +171,12 @@ const AgenciesList = () => {
               <div></div>
               <div className="flex items-center gap-2">
                 <Input 
-                type="search" 
-                placeholder="Buscar nombre..." 
-                value={searchTerm} 
-                onChange={(e) => setSearchTerm(e.target.value)} // Actualiza el estado al escribir
-                className="w-full md:w-64" />
-                {/*
-                <Select
-                  value={agencyId}
-                  onValueChange={(value) => setAgencyId(value)}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Selecciona una agencia" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectGroup>
-                      <SelectLabel>Agencias</SelectLabel>
-                      <SelectItem  value={null} >
-                          Todas
-                        </SelectItem>
-                      {agencies.map((agency) => (
-                        <SelectItem key={agency.id} value={agency.id} >
-                          {agency.name}
-                        </SelectItem>
-                      ))}
-                    </SelectGroup>
-                  </SelectContent>
-                </Select> */}
+                  type="search" 
+                  placeholder={t('common.searchName')}
+                  value={searchTerm} 
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="w-full md:w-64" 
+                />
               </div>
             </div>
             <div className="grid w-full items-center gap-1.5">
@@ -192,16 +184,16 @@ const AgenciesList = () => {
                 <Table>
                   <TableHeader>
                     <TableRow>
-                      <TableHead className="text-center">Item</TableHead>
-                      <TableHead className="text-left">Nombre</TableHead>
-                      <TableHead className="text-left">Correo</TableHead>
-                      <TableHead className="text-left">Teléfono</TableHead>
-                      <TableHead className="text-left">Dirección</TableHead>
-                      <TableHead className="text-left">Ciudad</TableHead>
-                      <TableHead className="text-left">Estado</TableHead>
-                      <TableHead className="text-left">País</TableHead>
-                      <TableHead className="text-left">Web</TableHead>
-                      <TableHead className="text-left">Estatus</TableHead>
+                      <TableHead className="text-center">{t('common.item')}</TableHead>
+                      <TableHead className="text-left">{t('agencies.fields.name')}</TableHead>
+                      <TableHead className="text-left">{t('agencies.fields.email')}</TableHead>
+                      <TableHead className="text-left">{t('agencies.fields.phone')}</TableHead>
+                      <TableHead className="text-left">{t('agencies.fields.address')}</TableHead>
+                      <TableHead className="text-left">{t('agencies.fields.city')}</TableHead>
+                      <TableHead className="text-left">{t('agencies.fields.state')}</TableHead>
+                      <TableHead className="text-left">{t('agencies.fields.country')}</TableHead>
+                      <TableHead className="text-left">{t('agencies.fields.web')}</TableHead>
+                      <TableHead className="text-left">{t('agencies.fields.status')}</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -248,20 +240,20 @@ const AgenciesList = () => {
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
                               <Button variant="ghost" className="h-8 w-8 p-0">
-                                <span className="sr-only">Open menu</span>
+                                <span className="sr-only">{t('common.openMenu')}</span>
                                 <MoreHorizontal className="h-4 w-4" />
                               </Button>
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end">
-                              <DropdownMenuLabel>Acciones</DropdownMenuLabel>
+                              <DropdownMenuLabel>{t('common.actions')}</DropdownMenuLabel>
                               <PermissionGuard requiredPermission={permissions.agency_show}>
                                 <DropdownMenuItem onClick={() => router.push(`/admin/agency/show/${agency.id}`)}>
-                                  <Eye /> Ver Agencia
+                                  <Eye /> {t('agencies.actions.view')}
                                 </DropdownMenuItem>
                               </PermissionGuard>
                               <PermissionGuard requiredPermission={permissions.agency_update}>
                                 <DropdownMenuItem onClick={() => router.push(`/admin/agency/edit/${agency.id}`) } >
-                                  <Pencil/> Editar Agencia
+                                  <Pencil/> {t('agencies.actions.edit')}
                                 </DropdownMenuItem>
                               </PermissionGuard>
                               <DropdownMenuSeparator />
@@ -272,7 +264,7 @@ const AgenciesList = () => {
                                       setSelectedAgency(agency);
                                     }}>
                                   <Trash2 color="red" />
-                                  <span className="text-red-500" >Eliminar Agencia</span>
+                                  <span className="text-red-500" >{t('agencies.actions.delete')}</span>
                                 </DropdownMenuItem>
                               </PermissionGuard>
                           </DropdownMenuContent>
@@ -283,7 +275,7 @@ const AgenciesList = () => {
                   ) : (
                       <TableRow>
                         <TableCell colSpan={12} className="text-center">
-                          No se encontraron agencias.
+                          {t('agencies.list.noAgenciesFound')}
                         </TableCell>
                       </TableRow>
                   )
@@ -295,14 +287,14 @@ const AgenciesList = () => {
                 <AlertDialog open={open} onOpenChange={setOpen}>
                   <AlertDialogContent>
                     <AlertDialogHeader>
-                      <AlertDialogTitle>Estás seguro de eliminar esta agencia?</AlertDialogTitle>
+                      <AlertDialogTitle>{t('agencies.delete.confirmTitle')}</AlertDialogTitle>
                       <AlertDialogDescription>
-                        Esta acción no se puede deshacer. La agencia será permanentemente eliminada de la base de datos, por favor verifique esta acción antes de realizarla.
+                        {t('agencies.delete.confirmDescription')}
                       </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
-                      <AlertDialogCancel >Cancelar</AlertDialogCancel>
-                      <AlertDialogAction className={buttonVariants({ variant: "destructive" })} onClick={() => handleDeleteAgency(selectedAgency.id)} >Continuar</AlertDialogAction>
+                      <AlertDialogCancel>{t('common.cancel')}</AlertDialogCancel>
+                      <AlertDialogAction className={buttonVariants({ variant: "destructive" })} onClick={() => handleDeleteAgency(selectedAgency.id)}>{t('common.continue')}</AlertDialogAction>
                     </AlertDialogFooter>
                   </AlertDialogContent>
                 </AlertDialog>
@@ -311,14 +303,17 @@ const AgenciesList = () => {
                 <AlertDialog open={openT} onOpenChange={setOpenT}>
                   <AlertDialogContent>
                     <AlertDialogHeader>
-                      <AlertDialogTitle>Estás seguro de cambiar el estado de esta agencia?</AlertDialogTitle>
+                      <AlertDialogTitle>{t('agencies.toggleState.confirmTitle')}</AlertDialogTitle>
                       <AlertDialogDescription>
-                          Esta acción {selectedAgency?.isActive ? 'desactivará' : 'activará' } la agencia en la base de datos, sus usuarios {selectedAgency?.isActive ? 'no podrán' : 'podrán' } utilizar sus credenciales y utilizar la plataforma.
+                        {selectedAgency?.isActive 
+                          ? t('agencies.toggleState.deactivateDescription')
+                          : t('agencies.toggleState.activateDescription')
+                        }
                       </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
-                      <AlertDialogCancel >Cancelar</AlertDialogCancel>
-                      <AlertDialogAction className={buttonVariants({ variant: "destructive" })} onClick={() => handleToggleAgencyState(selectedAgency.id)} >Continuar</AlertDialogAction>
+                      <AlertDialogCancel>{t('common.cancel')}</AlertDialogCancel>
+                      <AlertDialogAction className={buttonVariants({ variant: "destructive" })} onClick={() => handleToggleAgencyState(selectedAgency.id)}>{t('common.continue')}</AlertDialogAction>
                     </AlertDialogFooter>
                   </AlertDialogContent>
                 </AlertDialog>
