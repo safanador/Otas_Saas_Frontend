@@ -46,6 +46,7 @@ const UsersEdit = () => {
     phone: '',
     address: '',
     preferredLanguage: '',
+    countryCode: '',
     country: '',
     state: '',
     city: '',
@@ -56,7 +57,7 @@ const UsersEdit = () => {
   const [errorData, setErrorData] = useState([]);
   const [open, setOpen] = useState(false);
 
-  const [selectedPhoneCode, setSelectedPhoneCode] = useState()
+  //const [selectedPhoneCode, setSelectedPhoneCode] = useState()
   const [phoneNumber, setPhoneNumber] = useState()
   const [buttonLoading, setButtonLoading] = useState(false);
   const [imageFromLocal, setImageFromLocal] = useState(null);
@@ -92,10 +93,7 @@ const UsersEdit = () => {
         const {id: userId, isActive,createdAt, updatedAt, role, ...rest} = updatedForm;
         updatedForm = rest;
 
-        const phoneParts = updatedForm.phone.trim().split(" ");
-
-        setForm({...updatedForm, phone: phoneParts[1]});
-        setSelectedPhoneCode(phoneParts[0])
+        setForm(updatedForm);
       
         const roleData = await fetchData(endpoints.role_getAll());
 
@@ -168,8 +166,7 @@ const UsersEdit = () => {
         // 2. Crear el usuario con la URL de la imagen (o null si no se subió ninguna)
         const updatedForm = {
           ...form,
-          phone: selectedPhoneCode + " " + form.phone, // Agregar el código de teléfono
-          image: imageUrl, // Usar la URL de la imagen subida o null
+          image: imageUrl,
         };
 
         const userResponse = await fetchData(endpoints.user_update(id), {
@@ -285,7 +282,7 @@ const UsersEdit = () => {
           <div className="grid w-full max-w-lg items-center gap-1.5">
             <Label htmlFor="phone">Número de Teléfono</Label>
             <div className="flex gap-1">
-              <PhoneCodes countries={countries} onCodeSelect={(code) => setSelectedPhoneCode(code)} selectedPhoneCode={Number(selectedPhoneCode)} />
+              <PhoneCodes countries={countries} onCodeSelect={(code) => setForm({...form, countryCode: code})} selectedPhoneCode={Number(form.countryCode)} />
               <Input
                 type="tel" 
                 id="phone"

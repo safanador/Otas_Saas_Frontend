@@ -43,6 +43,7 @@ const UsersCreate = () => {
     corporateEmail: '',
     dob: '',
     phone: '',
+    countryCode: '',
     address: '',
     preferredLanguage: '',
     country: '',
@@ -55,7 +56,7 @@ const UsersCreate = () => {
   const countries = Country.getAllCountries() // it's an Array
   const [states, setStates] = useState([]);
   const [cities, setCities] = useState([]);
-  const [selectedPhoneCode, setSelectedPhoneCode] = useState('');
+  //const [selectedPhoneCode, setSelectedPhoneCode] = useState('');
 
   const foundRole = roles.find(role => role.id === form.roleId) || null;
   const [errorData, setErrorData] = useState();
@@ -123,7 +124,6 @@ const UsersCreate = () => {
       // 2. Crear el usuario con la URL de la imagen (o null si no se subió ninguna)
       const updatedForm = {
         ...form,
-        phone: selectedPhoneCode + " " + form.phone, // Agregar el código de teléfono
         image: imageUrl, // Usar la URL de la imagen subida o null
       };  
 
@@ -147,6 +147,7 @@ const UsersCreate = () => {
         dob: '',
         phone: '',
         address: '',
+        countryCode: '',
         preferredLanguage: '',
         country: '',
         state: '',
@@ -155,7 +156,7 @@ const UsersCreate = () => {
         agencyId: null,
       });
       
-      setSelectedPhoneCode('');
+      //setSelectedPhoneCode('');
 
       toast({
         variant: "success",
@@ -269,7 +270,7 @@ const UsersCreate = () => {
           <div className="grid w-full max-w-lg items-center gap-1.5">
             <Label htmlFor="phone">Número de Teléfono</Label>
             <div className="flex gap-1">
-              <PhoneCodes countries={countries} onCodeSelect={(code) => setSelectedPhoneCode(code)} selectedPhoneCode={selectedPhoneCode} />
+              <PhoneCodes countries={countries} onCodeSelect={(code) => setForm({...form, countryCode: code})} selectedPhoneCode={form.countryCode} />
               <Input
                 type="tel" 
                 id="phone"
