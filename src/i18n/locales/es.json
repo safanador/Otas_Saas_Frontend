@@ -21,6 +21,16 @@
       "selectACity": "Selecciona una ciudad",
       "seekForACityPlaceholder": "Busca una ciudad...",
       "cityNotFound": "Ciudad no encontrado"
+    },
+    "datePicker": {
+      "selectDate": "Seleccione una fecha",
+      "month": "Mes",
+      "year": "Año"
+    },
+    "preferredLanguages": {
+      "title": "Idiomas",
+      "spanish": "Español",
+      "english": "Inglés"
     }
   },
 
@@ -129,7 +139,148 @@
         "webPlaceholder": "Ingrese la URL del sitio web...",
         "rntPlaceholder": "Ingrese el RNT..."
       }
+    },
+    "userCreate": {
+      "title": "Creación de usuario",
+      "description": "Ventana para crear un nuevo usuario, agregue toda la información del usuario para poder continuar.",
+      "fields": {
+        "profileImage": "Foto del usuario",
+        "name": "Nombre del usuario",
+        "email": "Correo Electronico",
+        "password": "Contraseña del usuario",
+        "corporateEmail": "Correo Corporativo",
+        "dob": "Fecha de nacimiento",
+        "phone": "Número de Teléfono",
+        "address": "Dirección",
+        "preferredLanguage": "Idioma preferido",
+        "country": "País",
+        "state": "Estado",
+        "city": "Ciudad",
+        "role": "Rol asociado",
+        "roleLabel": "Rol, tipo y agencia"
+
+      },
+      "placeholders": {
+        "name": "Ingresa el nombre del usuario...",
+        "email": "ingresa un correo electrónico válido...",
+        "password": "Ingresa una contraseña...",
+        "corporateEmail": "Ingresa un correo corporativo...",
+        "phone": "Ingresa un número de teléfono (10 dígitos)...",
+        "address": "Ingresa una dirección",
+        "language": "Selecciona un idioma",
+        "role": "Selecciona un rol"
+      },
+      "confirmation": {
+        "title": "¿Estás seguro de crear este usuario?",
+        "description": "Una vez creado el usuario va a recibir un correo electronico de confirmación."
+      }
+    },
+
+    "userEdit": {
+      "title": "Información del usuario",
+      "description": "Ventana para un usuario ya registrado, agregue toda la información del usuario para poder continuar.",
+      "fields": {
+        "profileImage": "Foto del usuario",
+        "name": "Nombre del usuario",
+        "email": "Correo Electronico",
+        "password": "Contraseña del usuario",
+        "corporateEmail": "Correo Corporativo",
+        "dob": "Fecha de nacimiento",
+        "phone": "Número de Teléfono",
+        "address": "Dirección",
+        "preferredLanguage": "Idioma preferido",
+        "country": "País",
+        "state": "Estado",
+        "city": "Ciudad",
+        "role": "Rol asociado",
+        "roleLabel": "Rol, tipo y agencia"
+
+      },
+      "placeholders": {
+        "name": "Ingresa el nombre del usuario...",
+        "email": "ingresa un correo electrónico válido...",
+        "password": "Ingresa una contraseña...",
+        "corporateEmail": "Ingresa un correo corporativo...",
+        "phone": "Ingresa un número de teléfono (10 dígitos)...",
+        "address": "Ingresa una dirección",
+        "language": "Selecciona un idioma",
+        "role": "Selecciona un rol"
+      },
+      "confirmation": {
+        "title": "¿Estás seguro de editar este usuario?",
+        "description": "Una vez editado, el usuario va a recibir un correo electronico de confirmación."
+      }
+  
+    },
+
+    "usersList": {
+      "title": "Lista de usuarios",
+      "description": "A continuación se muestra una lista con aspectos generales de los usuarios.",
+      "noUsersFound": "No se encontraron usuarios.",
+      "fields": {
+        "item": "Item",
+        "name": "Nombre",
+        "role": "Rol",
+        "roleType": "Tipo de rol",
+        "AssociatedAgency": "Agencia asociada",
+        "city": "Ciudad",
+        "state": "Departamento",
+        "country": "País",
+        "status": "Status"
+      },     
+      "filters": {
+          "selectAgency": "Selecciona una agencia",
+          "selectLabel": "Agencias",
+          "allAgencies": "Todas"
+        },                 
+      "actions": {
+        "view": "Ver Usuario",
+        "edit": "Editar Usuario",
+        "delete": "Borrar Usuario"
+      },
+      "delete": {
+        "confirmTitle": "¿Estás seguro de que deseas eliminar este usuario?",
+        "confirmDescription": "Esta acción no se puede deshacer. El usuario se eliminará permanentemente de la base de datos, por favor verifica esta acción antes de continuar."
+      },
+      "toggleState": {
+        "confirmTitle": "¿Estás seguro de que deseas cambiar el status de este usuario?",
+        "activateDescription": "Esta acción activará el usuario en la base de datos, podrán usar sus credenciales y utilizar la plataforma.",
+        "deactivateDescription": "Esta acción desactivará el usuario en la base de datos, no podrá usar sus credenciales ni utilizar la plataforma."
+      }
+    },
+
+    "userShow": {
+      "title": "Edición de usuario",
+      "description": "En esta ventana puedes ver toda la información relacionada al usuario.",
+      "fields": {
+        "profileImage": "Foto del usuario",
+        "name": "Nombre del usuario",
+        "email": "Correo Electronico",
+        "password": "Contraseña del usuario",
+        "corporateEmail": "Correo Corporativo",
+        "dob": "Fecha de nacimiento",
+        "phone": "Número de Teléfono",
+        "address": "Dirección",
+        "preferredLanguage": "Idioma preferido",
+        "country": "País",
+        "state": "Estado",
+        "city": "Ciudad",
+        "role": "Rol asociado",
+        "roleLabel": "Rol, tipo y agencia"
+
+      },
+      "placeholders": {
+        "name": "Ingresa el nombre del usuario...",
+        "email": "ingresa un correo electrónico válido...",
+        "password": "Ingresa una contraseña...",
+        "corporateEmail": "Ingresa un correo corporativo...",
+        "phone": "Ingresa un número de teléfono (10 dígitos)...",
+        "address": "Ingresa una dirección",
+        "language": "Selecciona un idioma",
+        "role": "Selecciona un rol"
+      }
     }
+
   },
 
   "toast": {
@@ -142,6 +293,10 @@
       "title": "¡Éxito!",
       "agencyDeleted": "Agencia eliminada exitosamente.",
       "agencyCreated": "Agencia creada exitosamente.",
+      "userCreated": "Usuario creado exitosamente.",
+      "userEdited": "Usuario editado exitosamente.",
+      "userDeleted": "Usuario eliminado exitosamente.",
+      "userStatus": "Estatus del usuario cambiado exitosamente.",
       "agencyStatusChanged": "Estado de la agencia cambiado exitosamente."
     }
   },

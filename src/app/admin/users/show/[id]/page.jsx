@@ -27,9 +27,24 @@ import withAuth from "@/app/middleware/withAuth";
 import permissions from "@/lib/permissions";
 import endpoints from "@/lib/endpoints";
 import { fetchData } from "@/services/api";
+import { useSelector } from "react-redux";
+import { useTranslation } from "react-i18next";
 
 
 const UsersShow = () => {
+      // Get language from Redux store
+      const { preferredLanguage } = useSelector((state) => state.auth.user);
+
+      // Initialize translation hook
+      const { t, i18n } = useTranslation();
+    
+      // Set the language from Redux
+      useEffect(() => {
+        if (preferredLanguage) {
+          i18n.changeLanguage(preferredLanguage);
+        }
+      }, [preferredLanguage, i18n]);
+
   const [loading, setLoading] = useState(true);
   const [form, setForm] = useState({
     name: "",
@@ -105,9 +120,9 @@ const UsersShow = () => {
     <AdminLayout>
       <Card>
         <CardHeader>
-          <CardTitle>Información de usuario</CardTitle>
+          <CardTitle>{t("admin.userShow.title")}</CardTitle>
           <CardDescription>
-            En esta ventana puedes ver toda la información relacionada al usuario.
+            {t("admin.userShow.description")}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -115,7 +130,7 @@ const UsersShow = () => {
 
             {/** Profile image */}
             <div className="grid w-full max-w-lg items-center gap-1.5">
-              <Label htmlFor="image">Foto del usuario</Label>
+              <Label htmlFor="image">{t("admin.userShow.fields.profileImage")}</Label>
               <AvatarInput
                   imageUrl={form.image} isEditing={false}
                 />
@@ -123,52 +138,52 @@ const UsersShow = () => {
 
               {/** Name Done */}
             <div className="grid w-full max-w-lg items-center gap-1.5">
-              <Label htmlFor="name">Nombre del usuario</Label>
+              <Label htmlFor="name">{t("admin.userShow.fields.name")}</Label>
               <Input
                 disabled
                 type="text" 
                 id="name" 
-                placeholder="Nombre..." 
+                placeholder={t("admin.userShow.placeholders.name")}
                 value={form.name}/>
             </div>
 
               {/** Email Done*/}
             <div className="grid w-full max-w-lg items-center gap-1.5">
-              <Label htmlFor="name">Correo Electronico</Label>
+              <Label htmlFor="name">{t("admin.userShow.fields.email")}</Label>
               <Input 
                 disabled
                 type="email" 
                 id="email" 
-                placeholder="Correo electrónico..." 
+                placeholder={t("admin.userShow.placeholders.email")}
                 value={form.email}/>
             </div>
 
               {/** Corporate email Done */}
             <div className="grid w-full max-w-lg items-center gap-1.5">
-              <Label htmlFor="name">Correo Corporativo</Label>
+              <Label htmlFor="name">{t("admin.userShow.fields.corporateEmail")}</Label>
               <Input 
                 disabled
                 type="email" 
                 id="corporateEmail" 
-                placeholder="Correo corporativo..." 
+                placeholder={t("admin.userShow.placeholders.corporateEmail")}
                 value={form.corporateEmail === null? '' : form.corporateEmail}/>
             </div>
 
               {/** Date of Birth Pending*/}
             <div className="grid w-full max-w-lg items-center gap-1.5">
-              <Label htmlFor="phone">Fecha de nacimiento</Label>
+              <Label htmlFor="phone">{t("admin.userShow.fields.dob")}</Label>
               <DatePicker disabled={true} initialDate={form.dob}  onDateChange={(date) => setForm({...form, dob: date})} />
             </div>
 
               {/** Phone Done*/}
             <div className="grid w-full max-w-lg items-center gap-1.5">
-              <Label htmlFor="phone">Número de Teléfono</Label>
+              <Label htmlFor="phone">{t("admin.userShow.fields.phone")}</Label>
               <div className="flex gap-1">
                 <Input
                   disabled
                   type="tel" 
                   id="phone"
-                  placeholder="Número de teléfono (10 dígitos)..."
+                  placeholder={t("admin.userShow.placeholders.phone")}
                   value={form.phone}
                 />
               </div>
@@ -176,31 +191,31 @@ const UsersShow = () => {
 
               {/** Address Done*/}
             <div className="grid w-full max-w-lg items-center gap-1.5">
-              <Label htmlFor="name">Dirección</Label>
+              <Label htmlFor="name">{t("admin.userShow.fields.address")}</Label>
               <Input 
                 disabled
                 type="text" 
                 id="address" 
-                placeholder="Dirección" 
+                placeholder={t("admin.userShow.placeholders.address")}
                 value={form.address}
                 onChange={(e) => setForm({...form, address: e.target.value})} />
             </div>
 
              {/** preferred language Done*/}
              <div className="grid w-full max-w-lg items-center gap-1.5">
-              <Label htmlFor="name">Idioma preferido</Label>
+              <Label htmlFor="name">{t("admin.userShow.fields.preferredLanguage")}</Label>
               <Input 
                 disabled
                 type="text" 
-                id="address" 
-                placeholder="Dirección" 
+                id="preferredLanguage" 
+                placeholder={t("admin.userShow.placeholders.preferredLanguage")}
                 value={form.preferredLanguage}
                 onChange={(e) => setForm({...form, address: e.target.value})} />
             </div>
 
                {/** Country Done*/}
             {form.country && (<div className="grid w-full max-w-lg items-center gap-1.5">
-              <Label htmlFor="name">País</Label>
+              <Label htmlFor="name">{t("admin.userShow.fields.country")}</Label>
               <Countries 
                 disabled={true}
                 countries={countries} 
@@ -209,7 +224,7 @@ const UsersShow = () => {
             </div>)}
 
             { form.country && (<div className="grid w-full max-w-lg items-center gap-1.5">
-              <Label htmlFor="name">Estado</Label>
+              <Label htmlFor="name">{t("admin.userShow.fields.state")}</Label>
               <States 
                 disabled={true}
                 states={states} 
@@ -218,7 +233,7 @@ const UsersShow = () => {
             </div>)}
 
             {cities.length > 0 && (<div className="grid w-full max-w-lg items-center gap-1.5">
-              <Label htmlFor="name">Ciudad</Label>
+              <Label htmlFor="name">{t("admin.userShow.fields.city")}</Label>
               <Cities 
                 disabled={true}
                 cities={cities} 
@@ -228,17 +243,17 @@ const UsersShow = () => {
 
               {/** Role Done*/}
             <div className="grid w-full max-w-lg items-center gap-1.5" >
-                <Label htmlFor="user-type" >Rol asociado</Label>
+                <Label htmlFor="user-type" >{t("admin.userShow.fields.role")}</Label>
                   <Select
                     disabled
                     value={form.role.id}
                     onValueChange={(value) => setForm({...form, role: value})}>
                     <SelectTrigger>
-                      <SelectValue placeholder="Selecciona un rol" />
+                      <SelectValue placeholder={t("admin.userShow.placeholders.role")} />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectGroup>
-                        <SelectLabel>Roles (Rol - Tipo - Agencia)</SelectLabel>
+                        <SelectLabel>{t("admin.userShow.fields.roleLabel")}</SelectLabel>
                         {roles.map((role) => (
                           <SelectItem key={role.id} value={role.id} >
                             {role.name} - {role.scope} - {role.agency?.name}

@@ -13,7 +13,9 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./select"
-import { es } from "date-fns/locale"
+import { es, enUS } from "date-fns/locale"
+import { useSelector } from "react-redux"
+import { useTranslation } from "react-i18next"
 
 
 export function DatePicker({
@@ -24,22 +26,33 @@ export function DatePicker({
   disabled=false
 }) {
 
+  // Get language from Redux store
+  const { preferredLanguage } = useSelector((state) => state.auth.user);
+
+  // Initialize translation hook
+  const { t, i18n } = useTranslation();
+
+  // Set the language from Redux
+  React.useEffect(() => {
+    if (preferredLanguage) {
+      i18n.changeLanguage(preferredLanguage);
+    }
+  }, [preferredLanguage, i18n]);  
+
+  const months = React.useMemo(() => {
+    return preferredLanguage === 'es' ? [
+      'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
+      'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
+    ] : [
+      'January', 'February', 'March', 'April', 'May', 'June',
+      'July', 'August', 'September', 'October', 'November', 'December'
+    ]
+  }, [preferredLanguage])
+
+  const locale = preferredLanguage === 'es' ? es : enUS;
+
   const [date, setDate] = React.useState(initialDate);
 
-  const months = [
-    'Enero',
-    'Febrero',
-    'Marzo',
-    'Abril',
-    'Mayo',
-    'Junio',
-    'Julio',
-    'Agosto',
-    'Septiembre',
-    'Octubre',
-    'Noviembre',
-    'Diciembre',
-  ];
   const years = Array.from(
     { length: endYear - startYear + 1 },
     (_, i) => startYear + i
@@ -82,7 +95,7 @@ export function DatePicker({
           )}
         >
           <CalendarIcon className="mr-2 h-4 w-4" />
-          {date ? format(date, "PPP", { locale: es}) : <span>Seleccione una fecha</span>}
+          {date ? format(date, "PPP", { locale: locale }) : <span>{t("common.datePicker.selectDate")}</span>}
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-auto p-0">
@@ -92,7 +105,7 @@ export function DatePicker({
             value={months[getMonth(date)]}
           >
             <SelectTrigger className="w-[110px]">
-              <SelectValue placeholder="Mes" />
+              <SelectValue placeholder={t("common.datePicker.month")} />
             </SelectTrigger>
             <SelectContent>
               {months.map(month => (
@@ -105,7 +118,7 @@ export function DatePicker({
             value={getYear(date).toString()}
           >
             <SelectTrigger className="w-[110px]">
-              <SelectValue placeholder="Year" />
+              <SelectValue placeholder={t("common.datePicker.year")} />
             </SelectTrigger>
             <SelectContent>
               {years.map(year => (
@@ -117,6 +130,7 @@ export function DatePicker({
 
         <Calendar
           mode="single"
+          locale={locale}
           selected={date}
           onSelect={handleSelect}
           initialFocus

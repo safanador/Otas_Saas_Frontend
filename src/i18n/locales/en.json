@@ -21,11 +21,21 @@
         "selectACity": "Select a city",
         "seekForACityPlaceholder": "Look for a city...",
         "cityNotFound": "City not found"
+      },
+      "datePicker": {
+        "selectDate": "Select a date",
+        "month": "Month",
+        "year": "Year"
+      },
+      "preferredLanguages": {
+        "title": "Languages",
+        "spanish": "Spanish",
+        "english": "English"
       }
     },
 
     "admin": {
-
+      
       "agenciesList": {
         "list": {
           "title": "Agencies List",
@@ -112,26 +122,166 @@
       },
 
       "agencyShow": {
-      "title": "Agency Information",
-      "description": "In this window you can view all the information related to the agency.",
-      "fields": {
-        "name": "Name",
-        "email": "Email",
-        "phone": "Phone Number",
-        "alternatePhone": "Alternative Phone",
-        "address": "Address",
-        "city": "City",
-        "state": "State",
-        "country": "Country",
-        "web": "Website Link",
-        "rnt": "National Tourism Registry",
-        "logo": "Logo",
-        "phonePlaceholder": "Phone number (10 digits)...",
-        "webPlaceholder": "Website...",
-        "rntPlaceholder": "RNT..."
-      }
-    }
+        "title": "Agency Information",
+        "description": "In this window you can view all the information related to the agency.",
+        "fields": {
+          "name": "Name",
+          "email": "Email",
+          "phone": "Phone Number",
+          "alternatePhone": "Alternative Phone",
+          "address": "Address",
+          "city": "City",
+          "state": "State",
+          "country": "Country",
+          "web": "Website Link",
+          "rnt": "National Tourism Registry",
+          "logo": "Logo",
+          "phonePlaceholder": "Phone number (10 digits)...",
+          "webPlaceholder": "Website...",
+          "rntPlaceholder": "RNT..."
+        }
+      },
+      "userCreate": {
+        "title": "User creation",
+        "description": "Window to create a new user, add all the user information to continue.",
+        "fields": {
+          "profileImage": "User photo",
+          "name": "User name",
+          "email": "Email",
+          "password": "User password",
+          "corporateEmail": "Corporate email",
+          "dob": "Date of birth",
+          "phone": "Phone number",
+          "address": "Address",
+          "preferredLanguage": "Preferred language",
+          "country": "Country",
+          "state": "State",
+          "city": "City",
+          "role": "Associated role",
+          "roleLabel": "Role, type and agency"
 
+        },
+        "placeholders": {
+          "name": "Enter the user's name...",
+          "email": "Enter a valid email...",
+          "password": "Enter a password...",
+          "corporateEmail": "Enter a corporate email...",
+          "phone": "Enter a phone number (10 digits)...",
+          "address": "Enter an address",
+          "language": "Select a language",
+          "role": "Select a role"
+        },
+        "confirmation": {
+          "title": "Are you sure you want to create this user?",
+          "description": "Once created, the user will receive a confirmation email."
+        }
+      },
+
+      "userEdit": {
+        "title": "User Edition",
+        "description": "Window for a registered user, add all the user information to continue.",
+        "fields": {
+          "profileImage": "User photo",
+          "name": "User name",
+          "email": "Email",
+          "password": "User password",
+          "corporateEmail": "Corporate email",
+          "dob": "Date of birth",
+          "phone": "Phone number",
+          "address": "Address",
+          "preferredLanguage": "Preferred language",
+          "country": "Country",
+          "state": "State",
+          "city": "City",
+          "role": "Associated role",
+          "roleLabel": "Role, type and agency"
+
+        },
+        "placeholders": {
+          "name": "Enter the user's name...",
+          "email": "Enter a valid email...",
+          "password": "Enter a password...",
+          "corporateEmail": "Enter a corporate email...",
+          "phone": "Enter a phone number (10 digits)...",
+          "address": "Enter an address",
+          "language": "Select a language",
+          "role": "Select a role"
+        },
+        "confirmation": {
+          "title": "Are you sure you want to edit this user?",
+          "description": "Once edited, the user will receive a confirmation email."
+        }
+      },
+
+      "usersList": {
+        
+        "title": "Users List",
+        "description": "Below is a list with general aspects of the users.",
+        "noUsersFound": "No users found.",
+        "fields": {
+          "item": "Item",
+          "name": "Name",
+          "role": "Role",
+          "roleType": "Role type",
+          "AssociatedAgency": "Associated agency",
+          "city": "City",
+          "state": "State",
+          "country": "Country",
+          "status": "Status"
+        },        
+        "filters": {
+          "selectAgency": "Select an agency",
+          "selectLabel": "Agencies",
+          "allAgencies": "All"
+        },              
+
+        "actions": {
+          "view": "View User",
+          "edit": "Edit User",
+          "delete": "Delete User"
+        },
+        "delete": {
+          "confirmTitle": "Are you sure you want to delete this user?",
+          "confirmDescription": "This action cannot be undone. The user will be permanently deleted from the database, please verify this action before proceeding."
+        },
+        "toggleState": {
+          "confirmTitle": "Are you sure you want to change the status of this user?",
+          "activateDescription": "This action will activate the user in the database, its users will be able to use their credentials and use the platform.",
+          "deactivateDescription": "This action will deactivate the user in the database, its users will not be able to use their credentials and use the platform."
+        }
+      },
+
+      "userShow": {
+        "title": "User Information",
+        "description": "In this window you can view all the information related to the user.",
+        "fields": {
+          "profileImage": "User photo",
+          "name": "User name",
+          "email": "Email",
+          "password": "User password",
+          "corporateEmail": "Corporate email",
+          "dob": "Date of birth",
+          "phone": "Phone number",
+          "address": "Address",
+          "preferredLanguage": "Preferred language",
+          "country": "Country",
+          "state": "State",
+          "city": "City",
+          "role": "Associated role",
+          "roleLabel": "Role, type and agency"
+
+        },
+        "placeholders": {
+          "name": "Enter the user's name...",
+          "email": "Enter a valid email...",
+          "password": "Enter a password...",
+          "corporateEmail": "Enter a corporate email...",
+          "phone": "Enter a phone number (10 digits)...",
+          "address": "Enter an address",
+          "language": "Select a language",
+          "role": "Select a role"
+        }
+      }
 
     },
 
@@ -145,6 +295,10 @@
         "title": "Success!",
         "agencyDeleted": "Agency successfully deleted.",
         "agencyCreated": "Agency created successfully.",
+        "userCreated": "User created successfully.",
+        "userEdited": "User updated successfully.",
+        "userDeleted": "User deleted successfully.",
+        "userStatus": "User status successfully changed.",
         "agencyStatusChanged": "Agency status successfully changed."
       }
     },

@@ -21,7 +21,7 @@ import {
 import { useSelector } from "react-redux"
 import { useTranslation } from "react-i18next"
 
-export function States({states, selectedState, onStateChange, disabled=false}) {
+export function States({states, selectedState, onStateChange, disabled=false, isList = false}) {
       // Get language from Redux store
       const { preferredLanguage } = useSelector((state) => state.auth.user);
       // Initialize translation hook
@@ -47,7 +47,7 @@ export function States({states, selectedState, onStateChange, disabled=false}) {
       <PopoverTrigger asChild>
         <Button
           disabled={disabled}
-          variant="outline"
+          variant={isList ? "ghost" : "outline"}
           role="combobox"
           aria-expanded={open}
           className="w-full justify-between"
@@ -55,7 +55,7 @@ export function States({states, selectedState, onStateChange, disabled=false}) {
           {value
             ? states.find((s) => s.isoCode === value)?.name
             : t("common.state.selectAState")}
-          <ChevronsUpDown className="opacity-50" />
+          {!isList && <ChevronsUpDown className="opacity-50" />}
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-full p-0" align="start">

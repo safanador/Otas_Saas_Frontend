@@ -32,9 +32,24 @@ import withAuth from "@/app/middleware/withAuth";
 import permissions from "@/lib/permissions";
 import endpoints from "@/lib/endpoints";
 import { fetchData } from "@/services/api";
+import { useSelector } from "react-redux";
+import { useTranslation } from "react-i18next";
 
 
 const UsersEdit = () => {
+      // Get language from Redux store
+      const { preferredLanguage } = useSelector((state) => state.auth.user);
+
+      // Initialize translation hook
+      const { t, i18n } = useTranslation();
+    
+      // Set the language from Redux
+      useEffect(() => {
+        if (preferredLanguage) {
+          i18n.changeLanguage(preferredLanguage);
+        }
+      }, [preferredLanguage, i18n]);
+      
   const [loading, setLoading] = useState(true);
   const [form, setForm] = useState({
     name: "", 
@@ -56,8 +71,6 @@ const UsersEdit = () => {
   const [roles, setRoles] = useState([]);
   const [errorData, setErrorData] = useState([]);
   const [open, setOpen] = useState(false);
-
-  //const [selectedPhoneCode, setSelectedPhoneCode] = useState()
   const [phoneNumber, setPhoneNumber] = useState()
   const [buttonLoading, setButtonLoading] = useState(false);
   const [imageFromLocal, setImageFromLocal] = useState(null);
@@ -153,8 +166,8 @@ const UsersEdit = () => {
           if (imageData.error) {
             toast({
               variant: "destructive",
-              title: "Uh oh! Parece que algo salió mal.",
-              description: "Hubo un error al subir la imagen. Por favor, intenta más tarde.",
+              title: t("toast.error.title"),
+              description: t("admin.agencyCreate.imageUploadError"),
             });
             setButtonLoading(false);
             return;
@@ -182,16 +195,16 @@ const UsersEdit = () => {
     
         toast({
           variant: "success",
-          title: "Realizado!",
-          description: "Usuario editado exitosamente.",
+          title: t("toast.success.title"),
+          description: t("toast.success.userEdited"),
         });
     
       } catch (error) {
         console.log("Error:", error);
         toast({
           variant: "destructive",
-          title: "Uh oh! Parece que algo salió mal.",
-          description: "No se pudo conectar con el servidor. Por favor, intenta más tarde.",
+          title: t("toast.error.title"),
+          description: t("toast.error.serverConnection"),
         });
       } finally {
         setButtonLoading(false);
@@ -212,9 +225,9 @@ const UsersEdit = () => {
     <AdminLayout>
       <Card>
         <CardHeader>
-          <CardTitle>Edición de usuario</CardTitle>
+          <CardTitle>{t("admin.userEdit.title")}</CardTitle>
           <CardDescription>
-            Ventana para un usuario ya registrado, agregue toda la información del usuario para poder continuar.
+            {t("admin.userEdit.description")}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -222,7 +235,7 @@ const UsersEdit = () => {
 
             {/** Profile image Pending*/}
             <div className="grid w-full max-w-lg items-center gap-1.5">
-            <Label htmlFor="image">Foto del usuario</Label>
+            <Label htmlFor="image">{t("admin.userEdit.fields.profileImage")}</Label>
             <AvatarInput
                 imageUrl={form.image}
                 image={imageFromLocal}
@@ -237,11 +250,11 @@ const UsersEdit = () => {
 
             {/** Name Done */}
           <div className="grid w-full max-w-lg items-center gap-1.5">
-            <Label htmlFor="name">Nombre del usuario</Label>
+            <Label htmlFor="name">{t("admin.userEdit.fields.name")}</Label>
             <Input 
               type="text" 
               id="name" 
-              placeholder="Nombre..." 
+              placeholder={t("admin.userEdit.placeholders.name")}
               value={form.name}
               onChange={(e) => setForm({...form, name: e.target.value})} />
               {errorData && renderFieldErrors('name',errorData)}
@@ -249,11 +262,11 @@ const UsersEdit = () => {
 
             {/** Email Done*/}
           <div className="grid w-full max-w-lg items-center gap-1.5">
-            <Label htmlFor="name">Correo Electronico</Label>
+            <Label htmlFor="name">{t("admin.userEdit.fields.email")}</Label>
             <Input 
               type="email" 
               id="email" 
-              placeholder="Correo electrónico..." 
+              placeholder={t("admin.userEdit.placeholders.email")}
               value={form.email}
               onChange={(e) => setForm({...form, email: e.target.value})} />
               {errorData && renderFieldErrors('email',errorData)}
@@ -261,11 +274,11 @@ const UsersEdit = () => {
 
             {/** Corporate email Done */}
           <div className="grid w-full max-w-lg items-center gap-1.5">
-            <Label htmlFor="name">Correo Corporativo</Label>
+            <Label htmlFor="name">{t("admin.userEdit.fields.corporateEmail")}</Label>
             <Input 
               type="email" 
               id="corporateEmail" 
-              placeholder="Correo corporativo..." 
+              placeholder={t("admin.userEdit.placeholders.corporateEmail")}
               value={form.corporateEmail}
               onChange={(e) => setForm({...form, corporateEmail: e.target.value})} />
               {errorData && renderFieldErrors('corporateEmail',errorData)}
@@ -273,20 +286,20 @@ const UsersEdit = () => {
 
             {/** Date of Birth Pending*/}
           <div className="grid w-full max-w-lg items-center gap-1.5">
-            <Label htmlFor="phone">Fecha de nacimiento</Label>
+            <Label htmlFor="phone">{t("admin.userEdit.fields.dob")}</Label>
             <DatePicker initialDate={form.dob} onDateChange={(date) => setForm({...form, dob: date})} />
             {errorData && renderFieldErrors('dob', errorData)}
           </div>
 
             {/** Phone Done*/}
           <div className="grid w-full max-w-lg items-center gap-1.5">
-            <Label htmlFor="phone">Número de Teléfono</Label>
+            <Label htmlFor="phone">{t("admin.userEdit.fields.phone")}</Label>
             <div className="flex gap-1">
               <PhoneCodes countries={countries} onCodeSelect={(code) => setForm({...form, countryCode: code})} selectedPhoneCode={Number(form.countryCode)} />
               <Input
                 type="tel" 
                 id="phone"
-                placeholder="Número de teléfono (10 dígitos)..."
+                placeholder={t("admin.userEdit.placeholders.phone")}
                 value={form.phone}
                 onChange={(e) => {
                   const phone = e.target.value;
@@ -303,32 +316,32 @@ const UsersEdit = () => {
 
             {/** Address Done*/}
           <div className="grid w-full max-w-lg items-center gap-1.5">
-            <Label htmlFor="name">Dirección</Label>
+            <Label htmlFor="name">{t("admin.userEdit.fields.address")}</Label>
             <Input 
               type="text" 
               id="address" 
-              placeholder="Dirección" 
+              placeholder={t("admin.userEdit.placeholders.address")}
               value={form.address}
               onChange={(e) => setForm({...form, address: e.target.value})} />
               {errorData && renderFieldErrors('address',errorData)}
           </div>
 
                     <div className="grid w-full max-w-lg items-center gap-1.5" >
-                        <Label htmlFor="user-type" >Idioma preferido</Label>
+                        <Label htmlFor="user-type" >{t("admin.userEdit.fields.preferredLanguage")}</Label>
                           <Select
                             value={form.preferredLanguage}
                             onValueChange={(value) => setForm({...form, preferredLanguage: value})}>
                             <SelectTrigger>
-                              <SelectValue placeholder="Selecciona un idioma" />
+                              <SelectValue placeholder={t("admin.userEdit.placeholders.language")} />
                             </SelectTrigger>
                             <SelectContent>
                               <SelectGroup>
-                                <SelectLabel>Idiomas</SelectLabel>
+                                <SelectLabel>{t("common.preferredLanguages.title")}</SelectLabel>
                                 <SelectItem key="es" value="es" >
-                                    Español
+                                  {t("common.preferredLanguages.spanish")}
                                 </SelectItem>
                                 <SelectItem key="en" value="en" >
-                                    Ingles
+                                  {t("common.preferredLanguages.english")}
                                 </SelectItem>
                               </SelectGroup>
                             </SelectContent>
@@ -338,7 +351,7 @@ const UsersEdit = () => {
 
              {/** Country Done*/}
           {countries && (<div className="grid w-full max-w-lg items-center gap-1.5">
-            <Label htmlFor="name">País</Label>
+            <Label htmlFor="name">{t("admin.userEdit.fields.country")}</Label>
             <Countries
               countries={countries} 
               selectedCountry={form.country}
@@ -349,7 +362,7 @@ const UsersEdit = () => {
           </div>)}
 
           { form.country && (<div className="grid w-full max-w-lg items-center gap-1.5">
-            <Label htmlFor="name">Estado</Label>
+            <Label htmlFor="name">{t("admin.userEdit.fields.state")}</Label>
             <States
               states={states} 
               selectedState={form.state} 
@@ -360,7 +373,7 @@ const UsersEdit = () => {
           </div>)}
 
           {cities.length > 0 && (<div className="grid w-full max-w-lg items-center gap-1.5">
-            <Label htmlFor="name">Ciudad</Label>
+            <Label htmlFor="name">{t("admin.userEdit.fields.city")}</Label>
             <Cities 
               cities={cities} 
               selectedCity={form.city} 
@@ -372,16 +385,16 @@ const UsersEdit = () => {
           </div>)}
 
           <div className="grid w-full max-w-lg items-center gap-1.5" >
-              <Label htmlFor="user-type" >Rol asociado</Label>
+              <Label htmlFor="user-type" >{t("admin.userEdit.fields.role")}</Label>
                 <Select
                   value={form.roleId}
                   onValueChange={(value) => setForm({...form, roleId: value})}>
                   <SelectTrigger>
-                    <SelectValue placeholder="Selecciona un rol" />
+                    <SelectValue placeholder={t("admin.userEdit.placeholders.role")} />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectGroup>
-                      <SelectLabel>Roles (Rol - Tipo - Agencia)</SelectLabel>
+                      <SelectLabel>{t("admin.userEdit.fields.roleLabel")}</SelectLabel>
                       {roles.map((role) => (
                         <SelectItem key={role.id} value={role.id} >
                           {role.name} - {role.scope} - {role.agency?.name}
@@ -401,20 +414,20 @@ const UsersEdit = () => {
             className="w-full md:w-[100px]" >
               { buttonLoading 
                 ? (<span className="w-4 h-4 border-[1.5px] border-white border-t-transparent rounded-full animate-spin"></span>)
-                : (<span className="px-2 py-1">Editar Usuario</span>) }
+                : (<span className="px-2 py-1">{t("common.save")}</span>) }
           </Button>
 
           <AlertDialog open={open} onOpenChange={setOpen}>
               <AlertDialogContent>
                 <AlertDialogHeader>
-                  <AlertDialogTitle>Estás seguro de crear este usuario?</AlertDialogTitle>
+                  <AlertDialogTitle>{t("admin.userEdit.confirmation.title")}</AlertDialogTitle>
                   <AlertDialogDescription>
-                    Una vez creado el usuario va a recibir un correo electronico de confirmación.
+                    {t("admin.userEdit.confirmation.description")}
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
-                  <AlertDialogCancel >Cancelar</AlertDialogCancel>
-                  <AlertDialogAction onClick={handleEditUser} >Continuar</AlertDialogAction>
+                  <AlertDialogCancel >{t("common.cancel")}</AlertDialogCancel>
+                  <AlertDialogAction onClick={handleEditUser} >{t("common.continue")}</AlertDialogAction>
                 </AlertDialogFooter>
               </AlertDialogContent>
           </AlertDialog>

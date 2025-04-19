@@ -18,8 +18,27 @@ import permissions from "@/lib/permissions";
 import endpoints from "@/lib/endpoints";
 import { fetchData } from "@/services/api";
 import PermissionGuard from "@/components/PermissionGuard";
+import { useSelector } from "react-redux";
+import { useTranslation } from "react-i18next";
+import { States } from "../../components/CountryStateCity/State";
+import { City, Country, State } from "country-state-city";
+import { Cities } from "../../components/CountryStateCity/Cities";
+import { Countries } from "../../components/CountryStateCity/Country";
 
 const UsersList = () => {
+      // Get language from Redux store
+      const { preferredLanguage } = useSelector((state) => state.auth.user);
+
+      // Initialize translation hook
+      const { t, i18n } = useTranslation();
+    
+      // Set the language from Redux
+      useEffect(() => {
+        if (preferredLanguage) {
+          i18n.changeLanguage(preferredLanguage);
+        }
+      }, [preferredLanguage, i18n]);
+
   const [users, setUsers] = useState([]);
   const [agencies, setAgencies] = useState([]);
   const [agencyId, setAgencyId] = useState();
@@ -30,7 +49,14 @@ const UsersList = () => {
   const [open, setOpen] = useState(false);
   const [openT, setOpenT] = useState(false);
   const [selectedUser, setSelectedUser] = useState();
-  console.log("Users:", users);
+
+  const countries = Country.getAllCountries();
+  const states = (country) => {
+    return State.getStatesOfCountry(country);
+  } 
+  const cities = (country, state) => {
+    return City.getCitiesOfState(country, state);
+  } 
 
   useEffect(() => {
     const fetchInfo = async () => {
@@ -87,18 +113,14 @@ const UsersList = () => {
       });
 
       if (data.error) {
-        toast({
-          variant: "destructive",
-          title: "Uh oh! Parece que algo salió mal.",
-          description: "Por favor, intenta más tarde.",
-        })
+        console.log(data.error)
         return
       }
 
       toast({
         variant: "success",
-        title: "Realizado!",
-        description: "Usuario eliminado exitosamente.",
+        title: t("toast.success.title"),
+        description: t("toast.success.userDeleted"),
       })
       setTimeout(() => {
         window.location.reload();
@@ -107,8 +129,8 @@ const UsersList = () => {
     } catch (error) {
         toast({
           variant: "destructive",
-          title: "Uh oh! Parece que algo salió mal.",
-          description: "No se pudo conectar con el servidor. Por favor, intenta más tarde.",
+          title: t("toast.error.title"),
+          description: t("toast.error.serverConnection"),
         })
     }
   };
@@ -121,18 +143,14 @@ const UsersList = () => {
       });
 
       if (data.error) {
-        toast({
-          variant: "destructive",
-          title: "Uh oh! Parece que algo salió mal.",
-          description: "Por favor, intenta más tarde.",
-        })
+        console.log(data.error);
         return
       }
 
       toast({
         variant: "success",
-        title: "Realizado!",
-        description: "El estatus del usuario ha sido cambiado exitosamente.",
+        title: t("toast.success.title"),
+        description: t("toast.success.userStatus"),
       })
       setTimeout(() => {
         window.location.reload(); // Recargar la página actual
@@ -140,8 +158,8 @@ const UsersList = () => {
     } catch (error) {
         toast({
           variant: "destructive",
-          title: "Uh oh! Parece que algo salió mal.",
-          description: "No se pudo conectar con el servidor. Por favor, intenta más tarde.",
+          title: t("toast.error.title"),
+          description: t("toast.error.serverConnection"),
         })
     }
   };
@@ -150,32 +168,32 @@ const UsersList = () => {
     <AdminLayout>
       <Card>
         <CardHeader>
-          <CardTitle>Usuarios</CardTitle>
-          <CardDescription>A continuación se presenta una lista con aspectos generales de los usuarios.</CardDescription>
+          <CardTitle>{t("admin.usersList.title")}</CardTitle>
+          <CardDescription>{t("admin.usersList.description")}</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="container mx-auto py-2">
             <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
-              <h1 className="text-lg font-bold text-gray-900 dark:text-gray-100">Lista de usuarios</h1>
               <div className="flex items-center gap-2">
                 <Input 
-                type="search" 
-                placeholder="Buscar usuarios..." 
-                value={searchTerm} 
-                onChange={(e) => setSearchTerm(e.target.value)} // Actualiza el estado al escribir
-                className="w-full md:w-64" />
+                  type="search" 
+                  placeholder={t('common.searchName')}
+                  value={searchTerm} 
+                  onChange={(e) => setSearchTerm(e.target.value)} // Actualiza el estado al escribir
+                  className="w-full md:w-64" 
+                />
                 <Select
                   value={agencyId}
                   onValueChange={(value) => setAgencyId(value)}
                 >
                   <SelectTrigger>
-                    <SelectValue placeholder="Selecciona una agencia" />
+                    <SelectValue placeholder={t("admin.usersList.filters.selectAgency")} />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectGroup>
-                      <SelectLabel>Agencias</SelectLabel>
+                      <SelectLabel>{t("admin.usersList.filters.selectLabel")}</SelectLabel>
                       <SelectItem  value={null} >
-                          Todas
+                        {t("admin.usersList.filters.allAgencies")}
                         </SelectItem>
                       {agencies.map((agency) => (
                         <SelectItem key={agency.id} value={agency.id} >
@@ -192,14 +210,15 @@ const UsersList = () => {
                 <Table>
                   <TableHeader>
                     <TableRow>
-                      <TableHead className="text-center">Item</TableHead>
-                      <TableHead className="text-left">Nombre</TableHead>
-                      <TableHead className="text-left">Rol</TableHead>
-                      <TableHead className="text-left">Tipo de Rol</TableHead>
-                      <TableHead className="text-left">Agencia asociada</TableHead>
-                      <TableHead className="text-left">Ciudad</TableHead>
-                      <TableHead className="text-left">Estado</TableHead>
-                      <TableHead className="text-left">Fecha de Creación</TableHead>
+                      <TableHead className="text-center">{t("admin.usersList.fields.item")}</TableHead>
+                      <TableHead className="text-left">{t("admin.usersList.fields.name")}</TableHead>
+                      <TableHead className="text-left">{t("admin.usersList.fields.role")}</TableHead>
+                      <TableHead className="text-left">{t("admin.usersList.fields.roleType")}</TableHead>
+                      <TableHead className="text-left">{t("admin.usersList.fields.AssociatedAgency")}</TableHead>
+                      <TableHead className="text-left">{t("admin.usersList.fields.city")}</TableHead>
+                      <TableHead className="text-left">{t("admin.usersList.fields.state")}</TableHead>
+                      <TableHead className="text-left">{t("admin.usersList.fields.country")}</TableHead>
+                      <TableHead className="text-left">{t("admin.usersList.fields.status")}</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -210,14 +229,50 @@ const UsersList = () => {
                         <TableCell className="capitalize" >{user.role.name}</TableCell>
                         <TableCell className="capitalize" >{user.role.scope === 'agency' ? `Agencias` : "Empresa desarrolladora"}</TableCell>
                         <TableCell className="capitalize" >{user.agency?.name}</TableCell>
-                        <TableCell className="capitalize" >{user.city}</TableCell>
+                        <TableCell className="capitalize" >
+                          {
+                            user.country && user.state && user.city && 
+                              (<div className="grid w-full max-w-lg items-center gap-1.5">
+                                  <Cities
+                                    disabled={true}
+                                    isList={true}
+                                    cities={cities(user.country, user.state)} 
+                                    selectedCity={user.city} 
+                                  />
+                                </div>)
+                          }
+                        </TableCell>
+                        <TableCell>
+                          { user.country && user.state && 
+                            (<div className="grid w-full max-w-lg items-center gap-1.5">
+                                <States 
+                                  disabled={true}
+                                  isList={true}
+                                  states={states(user.country)} 
+                                  selectedState={user.state} 
+                                />
+                            </div>)
+                          }
+                        </TableCell>
+                        <TableCell>
+                          {
+                            user.country && 
+                              (<div className="grid w-full max-w-lg items-center gap-1.5">
+                                  <Countries
+                                    isList={true}
+                                    disabled={true}
+                                    countries={countries} 
+                                    selectedCountry={user.country}
+                                  />
+                                </div>)
+                          }
+                        </TableCell>
                         <TableCell className="capitalize" >
                           <Switch checked={user.isActive} onCheckedChange={() => {
                             setOpenT(true);
                             setSelectedUser(user);
                             }} />
                         </TableCell>
-                        <TableCell>{new Date(user.createdAt).toLocaleDateString()}</TableCell>
                         <TableCell>
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
@@ -227,15 +282,15 @@ const UsersList = () => {
                               </Button>
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end">
-                              <DropdownMenuLabel>Acciones</DropdownMenuLabel>
+                              <DropdownMenuLabel>{t('common.actions')}</DropdownMenuLabel>
                               <PermissionGuard requiredPermission={permissions.user_show}>
                                 <DropdownMenuItem onClick={() => router.push(`/admin/users/show/${user.id}`)}>
-                                  <Eye /> Ver Usuario
+                                  <Eye /> {t("admin.usersList.actions.view")}
                                 </DropdownMenuItem>
                               </PermissionGuard>
                               <PermissionGuard requiredPermission={permissions.user_update}>
                                 <DropdownMenuItem onClick={() => router.push(`/admin/users/edit/${user.id}`) } >
-                                  <Pencil/> Editar Usuario
+                                  <Pencil/> {t("admin.usersList.actions.edit")}
                                 </DropdownMenuItem>
                               </PermissionGuard>
                               <DropdownMenuSeparator />
@@ -246,7 +301,7 @@ const UsersList = () => {
                                       setSelectedUser(user);
                                     }}>
                                   <Trash2 color="red" />
-                                  <span className="text-red-500" >Eliminar Usuario</span>
+                                  <span className="text-red-500" >{t("admin.usersList.actions.delete")}</span>
                                 </DropdownMenuItem>
                               </PermissionGuard>
                           </DropdownMenuContent>
@@ -257,7 +312,7 @@ const UsersList = () => {
                   ) : (
                       <TableRow>
                         <TableCell colSpan={9} className="text-center">
-                          No se encontraron usuarios.
+                          {t("admin.usersList.noUsersFound")}
                         </TableCell>
                       </TableRow>
                   )
@@ -268,14 +323,21 @@ const UsersList = () => {
                 <AlertDialog open={openT} onOpenChange={setOpenT}>
                   <AlertDialogContent>
                   <AlertDialogHeader>
-                      <AlertDialogTitle>Estás seguro de cambiar el estado de este usuario?</AlertDialogTitle>
+                      <AlertDialogTitle>                          
+                        {t("admin.usersList.toggleState.confirmTitle")}
+                      </AlertDialogTitle>
                       <AlertDialogDescription>
-                        Esta acción {selectedUser?.isActive ? 'desactivará' : 'activará' } el usuario en la base de datos, este {selectedUser?.isActive ? 'no podrá' : 'podrá' } utilizar sus credenciales y utilizar la plataforma.
+                        {
+                          selectedUser?.isActive 
+                          ? t("admin.usersList.toggleState.deactivateDescription") 
+                          : t("admin.usersList.toggleState.activateDescription")
+                        }
                       </AlertDialogDescription>
                   </AlertDialogHeader>
                     <AlertDialogFooter>
-                      <AlertDialogCancel >Cancelar</AlertDialogCancel>
-                      <AlertDialogAction className={buttonVariants({ variant: "destructive" })} onClick={() => handleToggleUserState(selectedUser?.id)} >Continuar
+                      <AlertDialogCancel >{t("common.cancel")}
+                      </AlertDialogCancel>
+                      <AlertDialogAction className={buttonVariants({ variant: "destructive" })} onClick={() => handleToggleUserState(selectedUser?.id)} >{t("common.continue")}
                       </AlertDialogAction>
                     </AlertDialogFooter>
                     </AlertDialogContent>
@@ -286,15 +348,15 @@ const UsersList = () => {
                     <AlertDialogContent>
                         <AlertDialogHeader>
                             <AlertDialogTitle>
-                              Estás seguro de eliminar este usuario?
+                              {t("admin.usersList.delete.confirmTitle")}
                             </AlertDialogTitle>
                             <AlertDialogDescription>
-                              Esta acción no se puede deshacer. El usuario será permanentemente eliminado de la base de datos.
+                              {t("admin.usersList.delete.confirmDescription")}
                             </AlertDialogDescription>
                         </AlertDialogHeader>
                         <AlertDialogFooter>
-                          <AlertDialogCancel >Cancelar</AlertDialogCancel>
-                          <AlertDialogAction className={buttonVariants({ variant: "destructive" })} onClick={() => handleDeleteUser(selectedUser?.id)} >Continuar</AlertDialogAction>
+                          <AlertDialogCancel >{t("common.cancel")}</AlertDialogCancel>
+                          <AlertDialogAction className={buttonVariants({ variant: "destructive" })} onClick={() => handleDeleteUser(selectedUser?.id)} >{t("common.continue")}</AlertDialogAction>
                         </AlertDialogFooter>
                     </AlertDialogContent>
                 </AlertDialog>

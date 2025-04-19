@@ -209,6 +209,7 @@ const AgenciesList = () => {
                           {agency.country && agency.state && agency.city && (<div className="grid w-full max-w-lg items-center gap-1.5">
                             <Cities
                               disabled={true}
+                              isList={true}
                               cities={cities(agency.country, agency.state)} 
                               selectedCity={agency.city} 
                               />
@@ -218,6 +219,7 @@ const AgenciesList = () => {
                           { agency.country && agency.state && (<div className="grid w-full max-w-lg items-center gap-1.5">
                             <States 
                               disabled={true}
+                              isList={true}
                               states={states(agency.country)} 
                               selectedState={agency.state} 
                               />
@@ -227,6 +229,7 @@ const AgenciesList = () => {
                           {agency.country && (<div className="grid w-full max-w-lg items-center gap-1.5">
                           <Countries 
                             disabled={true}
+                            isList={true}
                             countries={countries} 
                             selectedCountry={agency.country}
                             />

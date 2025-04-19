@@ -28,9 +28,24 @@ import withAuth from "@/app/middleware/withAuth";
 import permissions from "@/lib/permissions";
 import endpoints from "@/lib/endpoints";
 import { fetchData } from "@/services/api";
+import { useSelector } from "react-redux";
+import { useTranslation } from "react-i18next";
 
 
 const UsersCreate = () => {
+    // Get language from Redux store
+    const { preferredLanguage } = useSelector((state) => state.auth.user);
+
+    // Initialize translation hook
+    const { t, i18n } = useTranslation();
+  
+    // Set the language from Redux
+    useEffect(() => {
+      if (preferredLanguage) {
+        i18n.changeLanguage(preferredLanguage);
+      }
+    }, [preferredLanguage, i18n]);
+
   const [roles, setRoles] = useState([]);
   const [loading, setLoading] = useState(true);
   const [buttonLoading, setButtonLoading] = useState(false);
@@ -53,10 +68,9 @@ const UsersCreate = () => {
     agencyId: null,
   });
   const [open, setOpen] = useState(false);
-  const countries = Country.getAllCountries() // it's an Array
+  const countries = Country.getAllCountries()
   const [states, setStates] = useState([]);
   const [cities, setCities] = useState([]);
-  //const [selectedPhoneCode, setSelectedPhoneCode] = useState('');
 
   const foundRole = roles.find(role => role.id === form.roleId) || null;
   const [errorData, setErrorData] = useState();
@@ -111,8 +125,8 @@ const UsersCreate = () => {
         if (imageResponse.error) {
           toast({
             variant: "destructive",
-            title: "Uh oh! Parece que algo salió mal.",
-            description: "Hubo un error al subir la imagen. Por favor, intenta más tarde.",
+            title: t("toast.error.title"),
+            description: t("admin.agencyCreate.imageUploadError"),
           });
           setButtonLoading(false);
           return;
@@ -160,16 +174,16 @@ const UsersCreate = () => {
 
       toast({
         variant: "success",
-        title: "Realizado!",
-        description: "Usuario creado exitosamente.",
+        title: t("toast.success.title"),
+        description: t("toast.success.userCreated"),
       });
   
     } catch (error) {
       console.log("Error:", error);
       toast({
         variant: "destructive",
-        title: "Uh oh! Parece que algo salió mal.",
-        description: "No se pudo conectar con el servidor. Por favor, intenta más tarde.",
+        title: t("toast.error.title"),
+        description: t("toast.error.serverConnection"),
       });
     } finally { 
       setButtonLoading(false);
@@ -190,9 +204,9 @@ const UsersCreate = () => {
     <AdminLayout>
       <Card>
         <CardHeader>
-          <CardTitle>Creación de usuario</CardTitle>
+          <CardTitle>{t("admin.userCreate.title")}</CardTitle>
           <CardDescription>
-            Ventana para crear un nuevo usuario, agregue toda la información del usuario para poder continuar.
+          {t("admin.userCreate.description")}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -200,7 +214,8 @@ const UsersCreate = () => {
 
             {/** Profile image Pending*/}
             <div className="grid w-full max-w-lg items-center gap-1.5">
-            <Label htmlFor="image">Foto del usuario</Label>
+            <Label htmlFor="image">{t("admin.userCreate.fields.profileImage")}
+            </Label>
             <AvatarInput
                 image={form.image}
                 onChange={(e) => {
@@ -213,11 +228,11 @@ const UsersCreate = () => {
 
             {/** Name Done */}
           <div className="grid w-full max-w-lg items-center gap-1.5">
-            <Label htmlFor="name">Nombre del usuario</Label>
+            <Label htmlFor="name">{t("admin.userCreate.fields.name")}</Label>
             <Input 
               type="text" 
               id="name" 
-              placeholder="Nombre..." 
+              placeholder={t("admin.userCreate.placeholders.name")}
               value={form.name}
               onChange={(e) => setForm({...form, name: e.target.value})} />
               {errorData && renderFieldErrors('name',errorData)}
@@ -225,11 +240,11 @@ const UsersCreate = () => {
 
             {/** Email Done*/}
           <div className="grid w-full max-w-lg items-center gap-1.5">
-            <Label htmlFor="name">Correo Electronico</Label>
+            <Label htmlFor="name">{t("admin.userCreate.fields.email")}</Label>
             <Input 
               type="email" 
               id="email" 
-              placeholder="Correo electrónico..." 
+              placeholder={t("admin.userCreate.placeholders.email")}
               value={form.email}
               onChange={(e) => setForm({...form, email: e.target.value})} />
               {errorData && renderFieldErrors('email',errorData)}
@@ -237,11 +252,11 @@ const UsersCreate = () => {
 
             {/** Password Done*/}
           <div className="grid w-full max-w-lg items-center gap-1.5">
-            <Label htmlFor="name">Contraseña del usuario</Label>
+            <Label htmlFor="name">{t("admin.userCreate.fields.password")}</Label>
             <Input 
               type="password" 
               id="password" 
-              placeholder="Contraseña..." 
+              placeholder={t("admin.userCreate.placeholders.password")}
               value={form.password}
               onChange={(e) => setForm({...form, password: e.target.value})} /> 
               {errorData && renderFieldErrors('password',errorData)}
@@ -249,11 +264,11 @@ const UsersCreate = () => {
 
             {/** Corporate email Done */}
           <div className="grid w-full max-w-lg items-center gap-1.5">
-            <Label htmlFor="name">Correo Corporativo</Label>
+            <Label htmlFor="name">{t("admin.userCreate.fields.corporateEmail")}</Label>
             <Input 
               type="email" 
               id="corporateEmail" 
-              placeholder="Correo corporativo..." 
+              placeholder={t("admin.userCreate.placeholders.corporateEmail")}
               value={form.corporateEmail}
               onChange={(e) => setForm({...form, corporateEmail: e.target.value})} />
               {errorData && renderFieldErrors('corporateEmail',errorData)}
@@ -261,20 +276,20 @@ const UsersCreate = () => {
 
             {/** Date of Birth Pending*/}
           <div className="grid w-full max-w-lg items-center gap-1.5">
-            <Label htmlFor="phone">Fecha de nacimiento</Label>
+            <Label htmlFor="phone">{t("admin.userCreate.fields.dob")}</Label>
             <DatePicker onDateChange={(date) => setForm({...form, dob: date})} />
             {errorData && renderFieldErrors('dob', errorData)}
           </div>
 
             {/** Phone Done*/}
           <div className="grid w-full max-w-lg items-center gap-1.5">
-            <Label htmlFor="phone">Número de Teléfono</Label>
+            <Label htmlFor="phone">{t("admin.userCreate.fields.phone")}</Label>
             <div className="flex gap-1">
               <PhoneCodes countries={countries} onCodeSelect={(code) => setForm({...form, countryCode: code})} selectedPhoneCode={form.countryCode} />
               <Input
                 type="tel" 
                 id="phone"
-                placeholder="Número de teléfono (10 dígitos)..."
+                placeholder={t("admin.userCreate.placeholders.phone")}
                 value={form.phone}
                 onChange={(e) => {
                   const phone = e.target.value;
@@ -290,32 +305,32 @@ const UsersCreate = () => {
 
             {/** Address Done*/}
           <div className="grid w-full max-w-lg items-center gap-1.5">
-            <Label htmlFor="name">Dirección</Label>
+            <Label htmlFor="name">{t("admin.userCreate.fields.address")}</Label>
             <Input 
               type="text" 
               id="address" 
-              placeholder="Dirección" 
+              placeholder={t("admin.userCreate.placeholders.address")}
               value={form.address}
               onChange={(e) => setForm({...form, address: e.target.value})} />
               {errorData && renderFieldErrors('address',errorData)}
           </div>
 
           <div className="grid w-full max-w-lg items-center gap-1.5" >
-              <Label htmlFor="user-type" >Idioma preferido</Label>
+              <Label htmlFor="user-type" >{t("admin.userCreate.fields.preferredLanguage")}</Label>
                 <Select
                   value={form.preferredLanguage}
                   onValueChange={(value) => setForm({...form, preferredLanguage: value})}>
                   <SelectTrigger>
-                    <SelectValue placeholder="Selecciona un idioma" />
+                    <SelectValue placeholder={t("admin.userCreate.placeholders.language")} />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectGroup>
-                      <SelectLabel>Idiomas</SelectLabel>
+                      <SelectLabel>{t("common.preferredLanguages.title")}</SelectLabel>
                       <SelectItem key="es" value="es" >
-                          Español
+                        {t("common.preferredLanguages.spanish")}
                       </SelectItem>
                       <SelectItem key="en" value="en" >
-                          Ingles
+                        {t("common.preferredLanguages.english")}
                       </SelectItem>
                     </SelectGroup>
                   </SelectContent>
@@ -325,7 +340,7 @@ const UsersCreate = () => {
 
              {/** Country Done*/}
           {countries && (<div className="grid w-full max-w-lg items-center gap-1.5">
-            <Label htmlFor="name">País</Label>
+            <Label htmlFor="name">{t("admin.userCreate.fields.country")}</Label>
             <Countries 
               countries={countries} 
               selectedCountry={form.country}
@@ -339,7 +354,7 @@ const UsersCreate = () => {
 
             {/** State Done*/}  
           { form.country && (<div className="grid w-full max-w-lg items-center gap-1.5">
-            <Label htmlFor="name">Estado</Label>
+            <Label htmlFor="name">{t("admin.userCreate.fields.state")}</Label>
             <States 
               states={states} 
               selectedState={form.state} 
@@ -353,7 +368,7 @@ const UsersCreate = () => {
 
             {/** City Done*/}
           {cities.length > 0 && (<div className="grid w-full max-w-lg items-center gap-1.5">
-            <Label htmlFor="name">Ciudad</Label>
+            <Label htmlFor="name">{t("admin.userCreate.fields.city")}</Label>
             <Cities 
               cities={cities} 
               selectedCity={form.city} 
@@ -366,16 +381,16 @@ const UsersCreate = () => {
 
             {/** Role Done*/}
           <div className="grid w-full max-w-lg items-center gap-1.5" >
-              <Label htmlFor="user-type" >Rol asociado</Label>
+              <Label htmlFor="user-type" >{t("admin.userCreate.fields.role")}</Label>
                 <Select
                   value={form.roleId}
                   onValueChange={(value) => setForm({...form, roleId: value})}>
                   <SelectTrigger>
-                    <SelectValue placeholder="Selecciona un rol" />
+                    <SelectValue placeholder={t("admin.userCreate.placeholders.role")} />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectGroup>
-                      <SelectLabel>Roles (Rol - Tipo - Agencia)</SelectLabel>
+                      <SelectLabel>{t("admin.userCreate.fields.roleLabel")}</SelectLabel>
                       {roles.map((role) => (
                         <SelectItem key={role.id} value={role.id} >
                           {role.name} - {role.scope} - {role.agency?.name}
@@ -395,20 +410,20 @@ const UsersCreate = () => {
             className="w-full md:w-[100px]" >
               { buttonLoading 
                 ? (<span className="w-4 h-4 border-[1.5px] border-white border-t-transparent rounded-full animate-spin"></span>)
-                : (<span>Crear Usuario</span>) }
+                : (<span>{t("common.save")}</span>) }
           </Button>
 
           <AlertDialog open={open} onOpenChange={setOpen}>
               <AlertDialogContent>
                 <AlertDialogHeader>
-                  <AlertDialogTitle>Estás seguro de crear este usuario?</AlertDialogTitle>
+                  <AlertDialogTitle>{t("admin.userCreate.confirmation.title")}</AlertDialogTitle>
                   <AlertDialogDescription>
-                    Una vez creado el usuario va a recibir un correo electronico de confirmación.
+                    {t("admin.userCreate.confirmation.description")}
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
-                  <AlertDialogCancel >Cancelar</AlertDialogCancel>
-                  <AlertDialogAction onClick={handleCreateUser} >Continuar</AlertDialogAction>
+                  <AlertDialogCancel >{t("common.cancel")}</AlertDialogCancel>
+                  <AlertDialogAction onClick={handleCreateUser} >{t("common.continue")}</AlertDialogAction>
                 </AlertDialogFooter>
               </AlertDialogContent>
           </AlertDialog>
