@@ -18,8 +18,21 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover"
+import { useSelector } from "react-redux"
+import { useTranslation } from "react-i18next"
 
 export function Cities({cities, selectedCity, onCityChange, disabled=false}) {
+        // Get language from Redux store
+        const { preferredLanguage } = useSelector((state) => state.auth.user);
+        // Initialize translation hook
+        const { t, i18n } = useTranslation();
+        // Set the language from Redux
+        React.useEffect(() => {
+          if (preferredLanguage) {
+            i18n.changeLanguage(preferredLanguage);
+          }
+        }, [preferredLanguage, i18n]);  
+        
   const [open, setOpen] = React.useState(false)
   const [value, setValue] = React.useState( selectedCity ||"")
 
@@ -27,7 +40,6 @@ export function Cities({cities, selectedCity, onCityChange, disabled=false}) {
     const selectedValue = currentValue === value ? "" : currentValue
     setValue(selectedValue)
     setOpen(false)
-    // Llamar a la función pasada como prop para notificar al componente padre
     onCityChange(selectedValue)
   }
   return (
@@ -42,15 +54,15 @@ export function Cities({cities, selectedCity, onCityChange, disabled=false}) {
         >
           {value
             ? value
-            : "Selecciona una ciudad..."}
+            : t("common.city.selectACity")}
           <ChevronsUpDown className="opacity-50" />
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-full p-0" align="start">
         <Command>
-          <CommandInput placeholder="Busca una ciudad..." className="h-9" />
+          <CommandInput placeholder={t("common.city.seekForACityPlaceholder")} className="h-9" />
           <CommandList>
-            <CommandEmpty>Ciudad no encontrada.</CommandEmpty>
+            <CommandEmpty>{t("common.city.cityNotFound")}</CommandEmpty>
             <CommandGroup>
               {cities.map((city) => (
                 <CommandItem

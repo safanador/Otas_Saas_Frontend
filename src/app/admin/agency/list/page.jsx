@@ -162,8 +162,8 @@ const AgenciesList = () => {
     <AdminLayout>
       <Card>
         <CardHeader>
-          <CardTitle>{t('agencies.list.title')}</CardTitle>
-          <CardDescription>{t('agencies.list.description')}</CardDescription>
+          <CardTitle>{t('admin.agenciesList.list.title')}</CardTitle>
+          <CardDescription>{t('admin.agenciesList.list.description')}</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="container mx-auto py-2">
@@ -185,15 +185,15 @@ const AgenciesList = () => {
                   <TableHeader>
                     <TableRow>
                       <TableHead className="text-center">{t('common.item')}</TableHead>
-                      <TableHead className="text-left">{t('agencies.fields.name')}</TableHead>
-                      <TableHead className="text-left">{t('agencies.fields.email')}</TableHead>
-                      <TableHead className="text-left">{t('agencies.fields.phone')}</TableHead>
-                      <TableHead className="text-left">{t('agencies.fields.address')}</TableHead>
-                      <TableHead className="text-left">{t('agencies.fields.city')}</TableHead>
-                      <TableHead className="text-left">{t('agencies.fields.state')}</TableHead>
-                      <TableHead className="text-left">{t('agencies.fields.country')}</TableHead>
-                      <TableHead className="text-left">{t('agencies.fields.web')}</TableHead>
-                      <TableHead className="text-left">{t('agencies.fields.status')}</TableHead>
+                      <TableHead className="text-left">{t('admin.agenciesList.fields.name')}</TableHead>
+                      <TableHead className="text-left">{t('admin.agenciesList.fields.email')}</TableHead>
+                      <TableHead className="text-left">{t('admin.agenciesList.fields.phone')}</TableHead>
+                      <TableHead className="text-left">{t('admin.agenciesList.fields.address')}</TableHead>
+                      <TableHead className="text-left">{t('admin.agenciesList.fields.city')}</TableHead>
+                      <TableHead className="text-left">{t('admin.agenciesList.fields.state')}</TableHead>
+                      <TableHead className="text-left">{t('admin.agenciesList.fields.country')}</TableHead>
+                      <TableHead className="text-left">{t('admin.agenciesList.fields.web')}</TableHead>
+                      <TableHead className="text-left">{t('admin.agenciesList.fields.status')}</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -248,12 +248,12 @@ const AgenciesList = () => {
                               <DropdownMenuLabel>{t('common.actions')}</DropdownMenuLabel>
                               <PermissionGuard requiredPermission={permissions.agency_show}>
                                 <DropdownMenuItem onClick={() => router.push(`/admin/agency/show/${agency.id}`)}>
-                                  <Eye /> {t('agencies.actions.view')}
+                                  <Eye /> {t('admin.agenciesList.actions.view')}
                                 </DropdownMenuItem>
                               </PermissionGuard>
                               <PermissionGuard requiredPermission={permissions.agency_update}>
                                 <DropdownMenuItem onClick={() => router.push(`/admin/agency/edit/${agency.id}`) } >
-                                  <Pencil/> {t('agencies.actions.edit')}
+                                  <Pencil/> {t('admin.agenciesList.actions.edit')}
                                 </DropdownMenuItem>
                               </PermissionGuard>
                               <DropdownMenuSeparator />
@@ -264,7 +264,7 @@ const AgenciesList = () => {
                                       setSelectedAgency(agency);
                                     }}>
                                   <Trash2 color="red" />
-                                  <span className="text-red-500" >{t('agencies.actions.delete')}</span>
+                                  <span className="text-red-500" >{t('admin.agenciesList.actions.delete')}</span>
                                 </DropdownMenuItem>
                               </PermissionGuard>
                           </DropdownMenuContent>
@@ -275,7 +275,7 @@ const AgenciesList = () => {
                   ) : (
                       <TableRow>
                         <TableCell colSpan={12} className="text-center">
-                          {t('agencies.list.noAgenciesFound')}
+                          {t('admin.agenciesList.list.noAgenciesFound')}
                         </TableCell>
                       </TableRow>
                   )
@@ -287,9 +287,9 @@ const AgenciesList = () => {
                 <AlertDialog open={open} onOpenChange={setOpen}>
                   <AlertDialogContent>
                     <AlertDialogHeader>
-                      <AlertDialogTitle>{t('agencies.delete.confirmTitle')}</AlertDialogTitle>
+                      <AlertDialogTitle>{t('admin.agenciesList.delete.confirmTitle')}</AlertDialogTitle>
                       <AlertDialogDescription>
-                        {t('agencies.delete.confirmDescription')}
+                        {t('admin.agenciesList.delete.confirmDescription')}
                       </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
@@ -303,11 +303,11 @@ const AgenciesList = () => {
                 <AlertDialog open={openT} onOpenChange={setOpenT}>
                   <AlertDialogContent>
                     <AlertDialogHeader>
-                      <AlertDialogTitle>{t('agencies.toggleState.confirmTitle')}</AlertDialogTitle>
+                      <AlertDialogTitle>{t('admin.agenciesList.toggleState.confirmTitle')}</AlertDialogTitle>
                       <AlertDialogDescription>
                         {selectedAgency?.isActive 
-                          ? t('agencies.toggleState.deactivateDescription')
-                          : t('agencies.toggleState.activateDescription')
+                          ? t('admin.agenciesList.toggleState.deactivateDescription')
+                          : t('admin.agenciesList.toggleState.activateDescription')
                         }
                       </AlertDialogDescription>
                     </AlertDialogHeader>

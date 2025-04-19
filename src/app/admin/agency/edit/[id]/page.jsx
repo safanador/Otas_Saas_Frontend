@@ -19,15 +19,32 @@ import withAuth from "@/app/middleware/withAuth";
 import permissions from "@/lib/permissions";
 import { fetchData } from "@/services/api";
 import endpoints from "@/lib/endpoints";
+import { useSelector } from "react-redux";
+import { useTranslation } from "react-i18next";
 
 const AgencyEdit = () => {
+    // Get language from Redux store
+    const { preferredLanguage } = useSelector((state) => state.auth.user);
+
+    // Initialize translation hook
+    const { t, i18n } = useTranslation();
+  
+    // Set the language from Redux
+    useEffect(() => {
+      if (preferredLanguage) {
+        i18n.changeLanguage(preferredLanguage);
+      }
+    }, [preferredLanguage, i18n]);  
+
   const [loading, setLoading] = useState(true);
   const [form, setForm] = useState({
     name: "", 
     email: "", 
     logo: null,
     phone: '',
+    countryCode: '',
     phone2: '',
+    countryCode2: '',
     rnt: '',
     url: '',
     address: '',
@@ -37,26 +54,21 @@ const AgencyEdit = () => {
   });
   const [errorData, setErrorData] = useState([]);
   const [open, setOpen] = useState(false);
-
-  const [selectedPhoneCode, setSelectedPhoneCode] = useState()
-  const [selectedPhoneCode2, setSelectedPhoneCode2] = useState()
-
   const [buttonLoading, setButtonLoading] = useState(false);
   const [imageFromLocal, setImageFromLocal] = useState(null);
-  const countries = Country.getAllCountries(); // it's an Array
+  const countries = Country.getAllCountries();
   const states = State.getStatesOfCountry(form.country);
   const cities = City.getCitiesOfState(form.country, form.state);
   const { toast } = useToast();
   const { id } = useParams();
 
-   // Renderiza un estado de carga mientras `id` no esté disponible
-   if (!id) {
+  if (!id) {
     return (
-    <AdminLayout>
-      <div className="flex items-center justify-center h-full">
-        <span className="w-8 h-8 border-[3px] border-black border-t-transparent rounded-full animate-spin"></span>
-      </div>
-    </AdminLayout>
+      <AdminLayout>
+        <div className="flex items-center justify-center h-full">
+          <span className="w-8 h-8 border-[3px] border-black border-t-transparent rounded-full animate-spin"></span>
+        </div>
+      </AdminLayout>
     );
   }
 
@@ -71,12 +83,8 @@ const AgencyEdit = () => {
         let updatedForm = { ...dataForm};
         const {id: agencyId, isActive, createdAt, updatedAt, ...rest} = updatedForm;
         updatedForm = rest;
-        const phoneParts = updatedForm.phone.trim().split(" ");
-        const phoneParts2 = updatedForm.phone2.trim().split(" ");
 
-        setForm({...updatedForm, phone: phoneParts[1], phone2: phoneParts2[1]});
-        setSelectedPhoneCode(phoneParts[0])
-        setSelectedPhoneCode2(phoneParts2[0])
+        setForm(updatedForm);
           
       } catch (error) {
         console.error("Error fetching users:", error);
@@ -99,108 +107,92 @@ const AgencyEdit = () => {
     );
   }
 
-    const handleEditAgency = async (e) => {
-      try {
-        setErrorData([]); // Limpiar errores anteriores
-        setButtonLoading(true);
-        console.log(form);
-    
-        let imageUrl = form.image || null; // Inicializa imageUrl como form.image si ya existe o null si no
-        {/** 
-        //si existe form.image && imageFromLocal borrar form.image
-        if (form.image && imageFromLocal) {
-          const imageDelete = await fetch(`http://localhost:3000/api/v1/images/${form.image}`, {
-            method: 'DELETE',
-            credentials: 'include', // Incluye cookies si es necesario
-          });
-          imageUrl = null;
-          console.log(await imageDelete.json())
-        }*/}
+  const handleEditAgency = async (e) => {
+    try {
+      setErrorData([]);
+      setButtonLoading(true);
+      console.log(form);
 
-        // 1. Subir la imagen solo si imageFromLocal no es null o undefined
-        if (imageFromLocal) {
-          const formData = new FormData();
-          formData.append('file', imageFromLocal); // 'file' es el nombre del campo que espera tu backend
-    
-          const imageResponse = await fetchData(endpoints.images_upload(), {
-            method: 'POST',
-            body: formData,
-          });
-  
-          if (imageResponse.error) {
-            toast({
-              variant: "destructive",
-              title: "Uh oh! Parece que algo salió mal.",
-              description: "Hubo un error al subir la imagen. Por favor, intenta más tarde.",
-            });
-            setButtonLoading(false);
-            return;
-          }
-    
-          imageUrl = imageResponse.imageUrl; // Asignar la URL de la imagen
-        }
-    
-        // 2. Crear el usuario con la URL de la imagen (o null si no se subió ninguna)
-        const updatedForm = {
-          ...form,
-          phone: selectedPhoneCode + " " + form.phone, // Agregar el código de teléfono
-          phone2: selectedPhoneCode2 + " " + form.phone2, // Agregar el código de teléfono
-          logo: imageUrl, // Usar la URL de la imagen subida o null
-        };
-    
-        const agencyResponse = await fetchData(endpoints.agency_update(id), {
-          method: 'PUT',
-          body: JSON.stringify(updatedForm),
+      let imageUrl = form.image || null;
+
+      if (imageFromLocal) {
+        const formData = new FormData();
+        formData.append('file', imageFromLocal);
+
+        const imageResponse = await fetchData(endpoints.images_upload(), {
+          method: 'POST',
+          body: formData,
         });
 
-        if (agencyResponse.error) {
-          setErrorData(agencyResponse.error);
+        if (imageResponse.error) {
+          toast({
+            variant: "destructive",
+            title: t("toast.error.title"),
+            description: t("admin.agencyCreate.imageUploadError"),
+          });
           setButtonLoading(false);
-          return
+          return;
         }
     
-        // Mostrar mensaje de éxito
-        toast({
-          variant: "success",
-          title: "Realizado!",
-          description: "Usuario editado exitosamente.",
-        });
-    
-      } catch (error) {
-        setButtonLoading(false);
-        console.error("Error:", error);
-        toast({
-          variant: "destructive",
-          title: "Uh oh! Parece que algo salió mal.",
-          description: "No se pudo conectar con el servidor. Por favor, intenta más tarde.",
-        });
-      } finally { 
-        setButtonLoading(false);
+        imageUrl = imageResponse.imageUrl;
       }
-    };
+    
+      const updatedForm = {
+        ...form,
+        logo: imageUrl,
+      };
+    
+      const agencyResponse = await fetchData(endpoints.agency_update(id), {
+        method: 'PUT',
+        body: JSON.stringify(updatedForm),
+      });
 
-    const renderFieldErrors = (fieldName, errors) => {
-      return errors
-        .filter(error => error.property === fieldName)
-        .map((error, index) => (
-          <p key={index} className="text-red-500 text-sm">
-            {error.message}
-          </p>
-        ));
-    };
+      if (agencyResponse.error) {
+        setErrorData(agencyResponse.error);
+        setButtonLoading(false);
+        return
+      }
+    
+      toast({
+        variant: "success",
+        title: t("toast.success.title"),
+        description: t("admin.agencyEdit.success"),
+      });
+    
+    } catch (error) {
+      setButtonLoading(false);
+      console.error("Error:", error);
+      toast({
+        variant: "destructive",
+        title: t("toast.error.title"),
+        description: t("toast.error.serverConnection"),
+      });
+    } finally { 
+      setButtonLoading(false);
+    }
+  };
+
+  const renderFieldErrors = (fieldName, errors) => {
+    return errors
+      .filter(error => error.property === fieldName)
+      .map((error, index) => (
+        <p key={index} className="text-red-500 text-sm">
+          {error.message}
+        </p>
+      ));
+  };
 
   return (
     <AdminLayout>
       <Card>
         <CardHeader>
-          <CardTitle>Edición de agencia</CardTitle>
+          <CardTitle>{t("admin.agencyEdit.title")}</CardTitle>
           <CardDescription>
-            Ventana para editar la información de la agencia.
+            {t("admin.agencyEdit.description")}
           </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="container space-y-4 mx-auto py-2">
-            {/** Profile image Pending*/}
             <div className="grid w-full max-w-lg items-center gap-1.5">
               <AvatarInput
                   imageUrl={form.logo}
@@ -208,49 +200,44 @@ const AgencyEdit = () => {
                   onChange={(e) => {
                     const file = e.target.files?.[0] || null;
                     setImageFromLocal(file)
-                    //setForm({ ...form, image: file });
                   }}
                 />
                 {errorData && renderFieldErrors('logo',errorData)}
             </div>
 
-            {/** Name Done */}
             <div className="grid w-full max-w-lg items-center gap-1.5">
-              <Label htmlFor="name">Nombre</Label>
+              <Label htmlFor="name">{t("admin.agencyEdit.fields.name")}</Label>
               <Input 
                 type="text" 
                 id="name" 
-                placeholder="Nombre..." 
+                placeholder={t("common.item")} 
                 value={form.name}
                 onChange={(e) => setForm({...form, name: e.target.value})} />
                 {errorData && renderFieldErrors('name',errorData)}
             </div>
 
-            {/** Email Done*/}
             <div className="grid w-full max-w-lg items-center gap-1.5">
-              <Label htmlFor="name">Correo Electronico</Label>
+              <Label htmlFor="name">{t("admin.agencyEdit.fields.email")}</Label>
               <Input 
                 type="email" 
                 id="email" 
-                placeholder="Correo electrónico..." 
+                placeholder={t("admin.agencyEdit.fields.email")} 
                 value={form.email}
                 onChange={(e) => setForm({...form, email: e.target.value})} />
                 {errorData && renderFieldErrors('email',errorData)}
             </div>
 
-            {/** Phone Done*/}
             <div className="grid w-full max-w-lg items-center gap-1.5">
-              <Label htmlFor="phone">Número de Teléfono</Label>
+              <Label htmlFor="phone">{t("admin.agencyEdit.fields.phone")}</Label>
               <div className="flex gap-1">
-                <PhoneCodes countries={countries} onCodeSelect={(code) => setSelectedPhoneCode(code)} selectedPhoneCode={selectedPhoneCode} />
+                <PhoneCodes countries={countries} onCodeSelect={(code) => setForm({...form, countryCode: code})} selectedPhoneCode={form.countryCode} />
                 <Input
                   type="tel" 
                   id="phone"
-                  placeholder="Número de teléfono (10 dígitos)..."
+                  placeholder={t("admin.agencyEdit.fields.phonePlaceholder")}
                   value={form.phone}
                   onChange={(e) => {
                     const phone = e.target.value;
-                    // Permite solo números y restringe la longitud a 10 caracteres
                     if (/^\d{0,10}$/.test(phone)) {
                       setForm({ ...form, phone });
                     }
@@ -260,19 +247,17 @@ const AgencyEdit = () => {
               {errorData && renderFieldErrors('phone', errorData)}
             </div>
 
-            {/** Phone2 Done*/}
             <div className="grid w-full max-w-lg items-center gap-1.5">
-              <Label htmlFor="phone">Número alternativo</Label>
+              <Label htmlFor="phone">{t("admin.agencyEdit.fields.alternatePhone")}</Label>
               <div className="flex gap-1">
-                <PhoneCodes countries={countries} onCodeSelect={(code) => setSelectedPhoneCode2(code)} selectedPhoneCode={selectedPhoneCode2} />
+                <PhoneCodes countries={countries} onCodeSelect={(code) => setForm({...form, countryCode2: code})} selectedPhoneCode={form.countryCode2} />
                 <Input
                   type="tel" 
                   id="phone"
-                  placeholder="Número de teléfono (10 dígitos)..."
+                  placeholder={t("admin.agencyEdit.fields.phonePlaceholder")}
                   value={form.phone2}
                   onChange={(e) => {
                     const phone = e.target.value;
-                    // Permite solo números y restringe la longitud a 10 caracteres
                     if (/^\d{0,10}$/.test(phone)) {
                       setForm({ ...form, phone2: phone });
                     }
@@ -282,45 +267,41 @@ const AgencyEdit = () => {
               {errorData && renderFieldErrors('phone2', errorData)}
             </div>
 
-            {/** Rnt Done */}
             <div className="grid w-full max-w-lg items-center gap-1.5">
-              <Label htmlFor="name">Registro Nacional Turistico</Label>
+              <Label htmlFor="name">{t("admin.agencyEdit.fields.rnt")}</Label>
               <Input 
                 type="text" 
                 id="name" 
-                placeholder="Nombre..." 
+                placeholder={t("admin.agencyEdit.fields.rntPlaceholder")} 
                 value={form.rnt}
                 onChange={(e) => setForm({...form, rnt: e.target.value})} />
                 {errorData && renderFieldErrors('rnt',errorData)}
             </div>
 
-            {/** Url Done */}
             <div className="grid w-full max-w-lg items-center gap-1.5">
-              <Label htmlFor="name">Enlace página web</Label>
+              <Label htmlFor="name">{t("admin.agencyEdit.fields.web")}</Label>
               <Input 
                 type="text" 
                 id="name" 
-                placeholder="Página web..." 
+                placeholder={t("admin.agencyEdit.fields.webPlaceholder")} 
                 value={form.url}
                 onChange={(e) => setForm({...form, url: e.target.value})} />
                 {errorData && renderFieldErrors('url',errorData)}
             </div>
 
-            {/** Address Done*/}
             <div className="grid w-full max-w-lg items-center gap-1.5">
-              <Label htmlFor="name">Dirección</Label>
+              <Label htmlFor="name">{t("admin.agencyCreate.fields.address")}</Label>
               <Input 
                 type="text" 
                 id="address" 
-                placeholder="Dirección" 
+                placeholder={t("admin.agencyEdit.fields.address")} 
                 value={form.address}
                 onChange={(e) => setForm({...form, address: e.target.value})} />
                 {errorData && renderFieldErrors('address',errorData)}
             </div>
 
-             {/** Country Done*/}
             {countries && (<div className="grid w-full max-w-lg items-center gap-1.5">
-              <Label htmlFor="name">País</Label>
+              <Label htmlFor="name">{t("admin.agencyEdit.fields.country")}</Label>
               <Countries
                 countries={countries} 
                 selectedCountry={form.country}
@@ -331,7 +312,7 @@ const AgencyEdit = () => {
             </div>)}
 
             { form.country && (<div className="grid w-full max-w-lg items-center gap-1.5">
-              <Label htmlFor="name">Estado</Label>
+              <Label htmlFor="name">{t("admin.agencyEdit.fields.state")}</Label>
               <States
                 states={states} 
                 selectedState={form.state} 
@@ -342,7 +323,7 @@ const AgencyEdit = () => {
             </div>)}
 
             {cities.length > 0 && (<div className="grid w-full max-w-lg items-center gap-1.5">
-              <Label htmlFor="name">Ciudad</Label>
+              <Label htmlFor="name">{t("admin.agencyEdit.fields.city")}</Label>
               <Cities 
                 cities={cities} 
                 selectedCity={form.city} 
@@ -360,24 +341,23 @@ const AgencyEdit = () => {
             className="w-full md:w-[100px]" >
               { buttonLoading 
                 ? (<span className="w-4 h-4 border-[1.5px] border-white border-t-transparent rounded-full animate-spin"></span>)
-                : (<span className="px-2 py-1">Editar Agencia</span>) }
+                : (<span className="px-2 py-1">{t("common.save")}</span>) }
           </Button>
 
           <AlertDialog open={open} onOpenChange={setOpen}>
               <AlertDialogContent>
                 <AlertDialogHeader>
-                  <AlertDialogTitle>Estás seguro de editar esta agencia?</AlertDialogTitle>
+                  <AlertDialogTitle>{t("admin.agencyEdit.confirmTitle")}</AlertDialogTitle>
                   <AlertDialogDescription>
-                    Después de realizados los cambios, estos podrán ser editados nuevamente.
+                    {t("admin.agencyEdit.confirmDescription")}
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
-                  <AlertDialogCancel >Cancelar</AlertDialogCancel>
-                  <AlertDialogAction onClick={handleEditAgency} >Continuar</AlertDialogAction>
+                  <AlertDialogCancel>{t("common.cancel")}</AlertDialogCancel>
+                  <AlertDialogAction onClick={handleEditAgency}>{t("common.continue")}</AlertDialogAction>
                 </AlertDialogFooter>
               </AlertDialogContent>
           </AlertDialog>
-
         </CardFooter>
       </Card>
     </AdminLayout>

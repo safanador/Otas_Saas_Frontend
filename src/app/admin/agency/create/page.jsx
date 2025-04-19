@@ -8,7 +8,7 @@ import { Cities } from "../../components/CountryStateCity/Cities";
 import { States } from "../../components/CountryStateCity/State";
 import AdminLayout from "../../components/SideBar/AdminLayout";
 import AvatarInput from "../../components/Avatar/AvatarInput";
-import { Country, State, City }  from 'country-state-city';
+import { Country, State, City } from 'country-state-city';
 import React, { useEffect, useState } from "react";
 import withAuth from "@/app/middleware/withAuth";
 import { Button } from "@/components/ui/button";
@@ -18,50 +18,60 @@ import { useToast } from "@/hooks/use-toast";
 import permissions from "@/lib/permissions";
 import { fetchData } from "@/services/api";
 import endpoints from "@/lib/endpoints";
+import { useTranslation } from "react-i18next";
+import { useSelector } from "react-redux";
 
 const AgencyCreate = () => {
+  // Get language from Redux store
+  const { preferredLanguage } = useSelector((state) => state.auth.user);
+
+  // Initialize translation hook
+  const { t, i18n } = useTranslation();
+
+  // Set the language from Redux
+  useEffect(() => {
+    if (preferredLanguage) {
+      i18n.changeLanguage(preferredLanguage);
+    }
+  }, [preferredLanguage, i18n]);  
+  
   const [roles, setRoles] = useState([]);
   const [loading, setLoading] = useState(true);
   const [buttonLoading, setButtonLoading] = useState(false);
 
   const [form, setForm] = useState({
-    name: "", 
-    email: "", 
+    name: "",
+    email: "",
     logo: null,
     phone: '',
+    countryCode: '',
     url: '',
     rnt: '',
     phone2: '',
+    countryCode2: '',
     address: '',
     country: '',
     state: '',
     city: '',
   });
   const [open, setOpen] = useState(false);
-  const countries = Country.getAllCountries() // it's an Array
+  const countries = Country.getAllCountries();
   const [states, setStates] = useState([]);
   const [cities, setCities] = useState([]);
-  const [selectedPhoneCode, setSelectedPhoneCode] = useState('');
-  const [selectedPhoneCode2, setSelectedPhoneCode2] = useState('');
   const [errorData, setErrorData] = useState();
   const { toast } = useToast();
 
   const handleCreateAgency = async () => {
     try {
-      setErrorData([]); // Limpiar errores anteriores
+      setErrorData([]);
       setButtonLoading(true);
-      console.log(form);
-  
-      let imageUrl = null; // Inicializa imageUrl como null
-  
-      // 1. Subir la imagen solo si form.image no es null o undefined
-      console.log('No entra a form.logo')
+      
+      let imageUrl = null;
 
       if (form.logo) {
-        console.log(' entra a form.logo')
         const formData = new FormData();
-        formData.append('file', form.logo); // 'file' es el nombre del campo que espera tu backend
-  
+        formData.append('file', form.logo);
+
         const imageResponse = await fetchData(endpoints.images_upload(), {
           method: 'POST',
           body: formData,
@@ -70,25 +80,21 @@ const AgencyCreate = () => {
         if (imageResponse.error) {
           toast({
             variant: "destructive",
-            title: "Uh oh! Parece que algo salió mal.",
-            description: "Hubo un error al subir la imagen. Por favor, intenta más tarde.",
+            title: t("toast.error.title"),
+            description: t("admin.agencyCreate.imageUploadError"),
           });
           setButtonLoading(false);
           return;
         }
 
-        imageUrl = imageResponse.imageUrl; // Asignar la URL de la imagen
+        imageUrl = imageResponse.imageUrl;
       }
-  
-      // 2. Crear el usuario con la URL de la imagen (o null si no se subió ninguna)
+
       const updatedForm = {
         ...form,
-        phone: selectedPhoneCode + " " + form.phone, // Agregar el código de teléfono
-        phone2: selectedPhoneCode2 + " " + form.phone2, // Agregar el código de teléfono
-        logo: imageUrl, // Usar la URL de la imagen subida o null
+        logo: imageUrl,
       };
-      console.log(updatedForm);
-  
+
       const agencyResponse = await fetchData(endpoints.agency_create(), {
         method: 'POST',
         body: JSON.stringify(updatedForm),
@@ -99,245 +105,263 @@ const AgencyCreate = () => {
         setButtonLoading(false);
         return;
       }
-  
-      // Mostrar mensaje de éxito
+
       toast({
         variant: "success",
-        title: "Realizado!",
-        description: "Usuario creado exitosamente.",
+        title: t("toast.success.title"),
+        description: t("toast.success.agencyCreated"),
       });
 
       setForm({
-        name: "", 
-        email: "", 
+        name: "",
+        email: "",
         logo: null,
         phone: '',
+        countryCode: '',
         url: '',
         rnt: '',
         phone2: '',
+        countryCode2: '',
         address: '',
         country: '',
         state: '',
         city: '',
       });
-  
+
     } catch (error) {
       toast({
         variant: "destructive",
-        title: "Uh oh! Parece que algo salió mal.",
-        description: "No se pudo conectar con el servidor. Por favor, intenta más tarde.",
+        title: t("toast.error.title"),
+        description: t("toast.error.serverConnection"),
       });
     } finally {
       setButtonLoading(false);
     }
   };
-  
-    const renderFieldErrors = (fieldName, errors) => {
-      return errors
-        .filter(error => error.property === fieldName)
-        .map((error, index) => (
-          <p key={index} className="text-red-500 text-sm">
-            {error.message}
-          </p>
-        ));
-    };
+
+  const renderFieldErrors = (fieldName, errors) => {
+    return errors
+      .filter(error => error.property === fieldName)
+      .map((error, index) => (
+        <p key={index} className="text-red-500 text-sm">
+          {error.message}
+        </p>
+      ));
+  };
 
   return (
     <AdminLayout>
       <Card>
         <CardHeader>
-          <CardTitle>Creación de agencia</CardTitle>
+          <CardTitle>{t("admin.agencyCreate.title")}</CardTitle>
           <CardDescription>
-            Ventana para crear una agencia, agregue toda la información para poder continuar.
+            {t("admin.agencyCreate.description")}
           </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="container space-y-4 mx-auto py-2">
 
-            {/** logo image */}
+            {/* Logo image */}
             <div className="grid w-full max-w-lg items-center gap-1.5">
-            <AvatarInput
+              <AvatarInput
                 image={form.logo}
                 onChange={(e) => {
                   const file = e.target.files?.[0] || null;
                   setForm({ ...form, logo: file });
                 }}
               />
-              {errorData && renderFieldErrors('logo',errorData)}
-          </div>
-
-            {/** Name  */}
-          <div className="grid w-full max-w-lg items-center gap-1.5">
-            <Label htmlFor="name">Nombre</Label>
-            <Input 
-              type="text" 
-              id="name" 
-              placeholder="Nombre..." 
-              value={form.name}
-              onChange={(e) => setForm({...form, name: e.target.value})} />
-              {errorData && renderFieldErrors('name',errorData)}
-          </div>
-
-            {/** Email */}
-          <div className="grid w-full max-w-lg items-center gap-1.5">
-            <Label htmlFor="name">Correo Electronico</Label>
-            <Input 
-              type="email" 
-              id="email" 
-              placeholder="Correo electrónico..." 
-              value={form.email}
-              onChange={(e) => setForm({...form, email: e.target.value})} />
-              {errorData && renderFieldErrors('email',errorData)}
-          </div>
-
-            {/** Phone */}
-          <div className="grid w-full max-w-lg items-center gap-1.5">
-            <Label htmlFor="phone">Número de Teléfono</Label>
-            <div className="flex gap-1">
-              <PhoneCodes countries={countries} onCodeSelect={(code) => setSelectedPhoneCode(code)} selectedPhoneCode={selectedPhoneCode} />
-              <Input
-                type="tel" 
-                id="phone"
-                placeholder="Número de teléfono (10 dígitos)..."
-                value={form.phone}
-                onChange={(e) => {
-                  const phone = e.target.value;
-                  // Permite solo números y restringe la longitud a 10 caracteres
-                  if (/^\d{0,10}$/.test(phone)) {
-                    setForm({ ...form, phone });
-                  }
-                }}
-              />
+              {errorData && renderFieldErrors('logo', errorData)}
             </div>
-            {errorData && renderFieldErrors('phone', errorData)}
-          </div>
 
-
-          {/** Phone2 */}
-          <div className="grid w-full max-w-lg items-center gap-1.5">
-            <Label htmlFor="phone">Teléfono alternativo</Label>
-            <div className="flex gap-1">
-              <PhoneCodes countries={countries} onCodeSelect={(code) => setSelectedPhoneCode2(code)} selectedPhoneCode={selectedPhoneCode2} />
+            {/* Name */}
+            <div className="grid w-full max-w-lg items-center gap-1.5">
+              <Label htmlFor="name">{t("admin.agencyCreate.fields.name")}</Label>
               <Input
-                type="tel" 
-                id="phone2"
-                placeholder="Número de teléfono (10 dígitos)..."
-                value={form.phone2}
-                onChange={(e) => {
-                  const phone = e.target.value;
-                  // Permite solo números y restringe la longitud a 10 caracteres
-                  if (/^\d{0,10}$/.test(phone)) {
-                    setForm({ ...form, phone2: phone });
-                  }
-                }}
+                type="text"
+                id="name"
+                placeholder={t("admin.agencyCreate.fields.name")}
+                value={form.name}
+                onChange={(e) => setForm({ ...form, name: e.target.value })}
               />
+              {errorData && renderFieldErrors('name', errorData)}
             </div>
-            {errorData && renderFieldErrors('phone2', errorData)}
-          </div>
 
-            {/** url  */}
+            {/* Email */}
             <div className="grid w-full max-w-lg items-center gap-1.5">
-            <Label htmlFor="name">Enlace página web</Label>
-            <Input 
-              type="text" 
-              id="name" 
-              placeholder="Página web..." 
-              value={form.url}
-              onChange={(e) => setForm({...form, url: e.target.value})} />
-              {errorData && renderFieldErrors('url',errorData)}
-          </div>
-
-            {/** RNT  */}
-            <div className="grid w-full max-w-lg items-center gap-1.5">
-            <Label htmlFor="name">Registro Nacional de Turismo</Label>
-            <Input 
-              type="text" 
-              id="name" 
-              placeholder="RNT..." 
-              value={form.rnt}
-              onChange={(e) => setForm({...form, rnt: e.target.value})} />
-              {errorData && renderFieldErrors('rnt',errorData)}
-          </div>
-
-            {/** Address Done*/}
-          <div className="grid w-full max-w-lg items-center gap-1.5">
-            <Label htmlFor="name">Dirección</Label>
-            <Input 
-              type="text" 
-              id="address" 
-              placeholder="Dirección" 
-              value={form.address}
-              onChange={(e) => setForm({...form, address: e.target.value})} />
-              {errorData && renderFieldErrors('address',errorData)}
-          </div>
-
-             {/** Country Done*/}
-          {countries && (<div className="grid w-full max-w-lg items-center gap-1.5">
-            <Label htmlFor="name">País</Label>
-            <Countries 
-              countries={countries} 
-              selectedCountry={form.country}
-              onCountryChange={(newCountry) => {
-                setForm({...form, country: newCountry, state: '', city: ''});
-                const fetchedStates = State.getStatesOfCountry(newCountry);
-                setStates(fetchedStates);
-                }}/>
-              {errorData && renderFieldErrors('country',errorData)}
-          </div>)}
-
-            {/** State Done*/}  
-          { form.country && (<div className="grid w-full max-w-lg items-center gap-1.5">
-            <Label htmlFor="name">Estado</Label>
-            <States 
-              states={states} 
-              selectedState={form.state} 
-              onStateChange={(newState) => {
-                setForm({...form, state: newState});
-                const fetchedCities = City.getCitiesOfState(form.country, newState);
-                setCities(fetchedCities);
-                }} />
-              {errorData && renderFieldErrors('state',errorData)}
-          </div>)}
-
-            {/** City Done*/}
-          {cities.length > 0 && (<div className="grid w-full max-w-lg items-center gap-1.5">
-            <Label htmlFor="name">Ciudad</Label>
-            <Cities 
-              cities={cities} 
-              selectedCity={form.city} 
-              onCityChange={(newCity) => {
-                setForm({...form, city: newCity});
-                }}
+              <Label htmlFor="email">{t("admin.agencyCreate.fields.email")}</Label>
+              <Input
+                type="email"
+                id="email"
+                placeholder={t("admin.agencyCreate.fields.email")}
+                value={form.email}
+                onChange={(e) => setForm({ ...form, email: e.target.value })}
               />
-              {errorData && renderFieldErrors('city',errorData)}
-          </div>)}
+              {errorData && renderFieldErrors('email', errorData)}
+            </div>
 
-           
+            {/* Phone */}
+            <div className="grid w-full max-w-lg items-center gap-1.5">
+              <Label htmlFor="phone">{t("admin.agencyCreate.fields.phone")}</Label>
+              <div className="flex gap-1">
+                <PhoneCodes
+                  countries={countries}
+                  onCodeSelect={(code) => setForm({ ...form, countryCode: code })}
+                  selectedPhoneCode={form.countryCode}
+                />
+                <Input
+                  type="tel"
+                  id="phone"
+                  placeholder={t("admin.agencyCreate.fields.phonePlaceholder")}
+                  value={form.phone}
+                  onChange={(e) => {
+                    const phone = e.target.value;
+                    if (/^\d{0,10}$/.test(phone)) {
+                      setForm({ ...form, phone });
+                    }
+                  }}
+                />
+              </div>
+              {errorData && renderFieldErrors('phone', errorData)}
+            </div>
+
+            {/* Alternate Phone */}
+            <div className="grid w-full max-w-lg items-center gap-1.5">
+              <Label htmlFor="phone2">{t("admin.agencyCreate.fields.alternatePhone")}</Label>
+              <div className="flex gap-1">
+                <PhoneCodes
+                  countries={countries}
+                  onCodeSelect={(code) => setForm({ ...form, countryCode2: code })}
+                  selectedPhoneCode={form.countryCode2}
+                />
+                <Input
+                  type="tel"
+                  id="phone2"
+                  placeholder={t("admin.agencyCreate.fields.phonePlaceholder")}
+                  value={form.phone2}
+                  onChange={(e) => {
+                    const phone = e.target.value;
+                    if (/^\d{0,10}$/.test(phone)) {
+                      setForm({ ...form, phone2: phone });
+                    }
+                  }}
+                />
+              </div>
+              {errorData && renderFieldErrors('phone2', errorData)}
+            </div>
+
+            {/* Website */}
+            <div className="grid w-full max-w-lg items-center gap-1.5">
+              <Label htmlFor="url">{t("admin.agencyCreate.fields.web")}</Label>
+              <Input
+                type="text"
+                id="url"
+                placeholder={t("admin.agencyCreate.fields.webPlaceholder")}
+                value={form.url}
+                onChange={(e) => setForm({ ...form, url: e.target.value })}
+              />
+              {errorData && renderFieldErrors('url', errorData)}
+            </div>
+
+            {/* RNT */}
+            <div className="grid w-full max-w-lg items-center gap-1.5">
+              <Label htmlFor="rnt">{t("admin.agencyCreate.fields.rnt")}</Label>
+              <Input
+                type="text"
+                id="rnt"
+                placeholder={t("admin.agencyCreate.fields.rntPlaceholder")}
+                value={form.rnt}
+                onChange={(e) => setForm({ ...form, rnt: e.target.value })}
+              />
+              {errorData && renderFieldErrors('rnt', errorData)}
+            </div>
+
+            {/* Address */}
+            <div className="grid w-full max-w-lg items-center gap-1.5">
+              <Label htmlFor="address">{t("admin.agencyCreate.fields.address")}</Label>
+              <Input
+                type="text"
+                id="address"
+                placeholder={t("admin.agencyCreate.fields.address")}
+                value={form.address}
+                onChange={(e) => setForm({ ...form, address: e.target.value })}
+              />
+              {errorData && renderFieldErrors('address', errorData)}
+            </div>
+
+            {/* Country */}
+            {countries && (
+              <div className="grid w-full max-w-lg items-center gap-1.5">
+                <Label htmlFor="country">{t("admin.agencyCreate.fields.country")}</Label>
+                <Countries
+                  countries={countries}
+                  selectedCountry={form.country}
+                  onCountryChange={(newCountry) => {
+                    setForm({ ...form, country: newCountry, state: '', city: '' });
+                    const fetchedStates = State.getStatesOfCountry(newCountry);
+                    setStates(fetchedStates);
+                  }}
+                />
+                {errorData && renderFieldErrors('country', errorData)}
+              </div>
+            )}
+
+            {/* State */}
+            {form.country && (
+              <div className="grid w-full max-w-lg items-center gap-1.5">
+                <Label htmlFor="state">{t("admin.agencyCreate.fields.state")}</Label>
+                <States
+                  states={states}
+                  selectedState={form.state}
+                  onStateChange={(newState) => {
+                    setForm({ ...form, state: newState });
+                    const fetchedCities = City.getCitiesOfState(form.country, newState);
+                    setCities(fetchedCities);
+                  }}
+                />
+                {errorData && renderFieldErrors('state', errorData)}
+              </div>
+            )}
+
+            {/* City */}
+            {cities.length > 0 && (
+              <div className="grid w-full max-w-lg items-center gap-1.5">
+                <Label htmlFor="city">{t("admin.agencyCreate.fields.city")}</Label>
+                <Cities
+                  cities={cities}
+                  selectedCity={form.city}
+                  onCityChange={(newCity) => {
+                    setForm({ ...form, city: newCity });
+                  }}
+                />
+                {errorData && renderFieldErrors('city', errorData)}
+              </div>
+            )}
 
           </div>
         </CardContent>
         <CardFooter className="w-full">
-          <Button                 
+          <Button
             onClick={() => setOpen(true)}
-            className="w-full md:w-[100px]" >
-              { buttonLoading 
-                ? (<span className="w-4 h-4 border-[1.5px] border-white border-t-transparent rounded-full animate-spin"></span>)
-                : (<span>Crear Agencia</span>) }
+            className="w-full md:w-[100px]"
+          >
+            {buttonLoading
+              ? (<span className="w-4 h-4 border-[1.5px] border-white border-t-transparent rounded-full animate-spin"></span>)
+              : (<span>{t("common.save")}</span>)}
           </Button>
 
           <AlertDialog open={open} onOpenChange={setOpen}>
-              <AlertDialogContent>
-                <AlertDialogHeader>
-                  <AlertDialogTitle>Estás seguro de crear esta agencia?</AlertDialogTitle>
-                  <AlertDialogDescription>
-                    Una vez creada la agencia podrá crear roles a usar dentro de la misma.
-                  </AlertDialogDescription>
-                </AlertDialogHeader>
-                <AlertDialogFooter>
-                  <AlertDialogCancel >Cancelar</AlertDialogCancel>
-                  <AlertDialogAction onClick={handleCreateAgency} >Continuar</AlertDialogAction>
-                </AlertDialogFooter>
-              </AlertDialogContent>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>{t("admin.agencyCreate.confirmTitle")}</AlertDialogTitle>
+                <AlertDialogDescription>
+                  {t("admin.agencyCreate.confirmDescription")}
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>{t("common.cancel")}</AlertDialogCancel>
+                <AlertDialogAction onClick={handleCreateAgency}>{t("common.continue")}</AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
           </AlertDialog>
 
         </CardFooter>

@@ -4,41 +4,137 @@
       "searchName": "Search name...",
       "actions": "Actions",
       "cancel": "Cancel",
+      "save": "Save",
       "continue": "Continue",
-      "openMenu": "Open menu"
-    },
-    "agencies": {
-      "list": {
-        "title": "Agencies List",
-        "description": "Below is a list with general aspects of the agencies.",
-        "noAgenciesFound": "No agencies found."
+      "openMenu": "Open menu",
+      "country": {
+        "selectACountry": "Select a country",
+        "seekForACountryPlaceholder": "Look for a country...",
+        "countryNotFound": "Country not found"
       },
+      "state": {
+        "selectAState": "Select a state",
+        "seekForAStatePlaceholder": "Look for a state...",
+        "stateNotFound": "State not found"
+      },
+      "city": {
+        "selectACity": "Select a city",
+        "seekForACityPlaceholder": "Look for a city...",
+        "cityNotFound": "City not found"
+      }
+    },
+
+    "admin": {
+
+      "agenciesList": {
+        "list": {
+          "title": "Agencies List",
+          "description": "Below is a list with general aspects of the agencies.",
+          "noAgenciesFound": "No agencies found."
+        },
+        "fields": {
+          "name": "Name",
+          "email": "Email",
+          "phone": "Phone",
+          "address": "Address",
+          "city": "City",
+          "state": "State",
+          "country": "Country",
+          "web": "Web",
+          "status": "Status"
+        },
+        "actions": {
+          "view": "View Agency",
+          "edit": "Edit Agency",
+          "delete": "Delete Agency"
+        },
+        "delete": {
+          "confirmTitle": "Are you sure you want to delete this agency?",
+          "confirmDescription": "This action cannot be undone. The agency will be permanently deleted from the database, please verify this action before proceeding."
+        },
+        "toggleState": {
+          "confirmTitle": "Are you sure you want to change the state of this agency?",
+          "activateDescription": "This action will activate the agency in the database, its users will be able to use their credentials and use the platform.",
+          "deactivateDescription": "This action will deactivate the agency in the database, its users will not be able to use their credentials and use the platform."
+        }
+      },
+
+      "agencyCreate": {
+        "title": "Create Agency",
+        "description": "Window to create an agency, add all the information to continue.",
+        "confirmTitle": "Are you sure you want to create this agency?",
+        "confirmDescription": "Once the agency is created, you will be able to create roles to use within it.",
+        "success": "Agency created successfully.",
+        "imageUploadError": "There was an error uploading the image. Please try again later.",
+        "fields": {
+          "name": "Name",
+          "email": "Email",
+          "phone": "Phone",
+          "alternatePhone": "Alternate Phone",
+          "address": "Address",
+          "city": "City",
+          "state": "State",
+          "country": "Country",
+          "web": "Website",
+          "status": "Status",
+          "rnt": "National Tourism Registry",
+          "logo": "Logo",
+          "phonePlaceholder": "Phone number (10 digits)...",
+          "webPlaceholder": "Website...",
+          "rntPlaceholder": "RNT..."
+        }
+      },
+
+      "agencyEdit": {
+        "title": "Edit Agency",
+        "description": "Window to edit an agency, add all the information to continue.",
+        "confirmTitle": "Are you sure you want to edit this agency?",
+        "confirmDescription": "Once the agency is updated, you will be able to create roles to use within it.",
+        "success": "Agency updated successfully.",
+        "imageUploadError": "There was an error uploading the image. Please try again later.",
+        "fields": {
+          "name": "Name",
+          "email": "Email",
+          "phone": "Phone",
+          "alternatePhone": "Alternate Phone",
+          "address": "Address",
+          "city": "City",
+          "state": "State",
+          "country": "Country",
+          "web": "Website",
+          "status": "Status",
+          "rnt": "National Tourism Registry",
+          "logo": "Logo",
+          "phonePlaceholder": "Phone number (10 digits)...",
+          "webPlaceholder": "Website...",
+          "rntPlaceholder": "RNT..."
+        }
+      },
+
+      "agencyShow": {
+      "title": "Agency Information",
+      "description": "In this window you can view all the information related to the agency.",
       "fields": {
         "name": "Name",
         "email": "Email",
-        "phone": "Phone",
+        "phone": "Phone Number",
+        "alternatePhone": "Alternative Phone",
         "address": "Address",
         "city": "City",
         "state": "State",
         "country": "Country",
-        "web": "Web",
-        "status": "Status"
-      },
-      "actions": {
-        "view": "View Agency",
-        "edit": "Edit Agency",
-        "delete": "Delete Agency"
-      },
-      "delete": {
-        "confirmTitle": "Are you sure you want to delete this agency?",
-        "confirmDescription": "This action cannot be undone. The agency will be permanently deleted from the database, please verify this action before proceeding."
-      },
-      "toggleState": {
-        "confirmTitle": "Are you sure you want to change the state of this agency?",
-        "activateDescription": "This action will activate the agency in the database, its users will be able to use their credentials and use the platform.",
-        "deactivateDescription": "This action will deactivate the agency in the database, its users will not be able to use their credentials and use the platform."
+        "web": "Website Link",
+        "rnt": "National Tourism Registry",
+        "logo": "Logo",
+        "phonePlaceholder": "Phone number (10 digits)...",
+        "webPlaceholder": "Website...",
+        "rntPlaceholder": "RNT..."
       }
+    }
+
+
     },
+
     "toast": {
       "error": {
         "title": "Uh oh! Something went wrong.",
@@ -48,6 +144,7 @@
       "success": {
         "title": "Success!",
         "agencyDeleted": "Agency successfully deleted.",
+        "agencyCreated": "Agency created successfully.",
         "agencyStatusChanged": "Agency status successfully changed."
       }
     },

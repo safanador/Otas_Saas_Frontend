@@ -1,28 +1,46 @@
 {
-    "common": {
-      "item": "Ítem",
-      "searchName": "Buscar nombre...",
-      "actions": "Acciones",
-      "cancel": "Cancelar",
-      "continue": "Continuar",
-      "openMenu": "Abrir menú"
+  "common": {
+    "item": "Elemento",
+    "searchName": "Buscar nombre...",
+    "actions": "Acciones",
+    "cancel": "Cancelar",
+    "continue": "Continuar",
+    "save": "Guardar",
+    "openMenu": "Abrir menú",
+    "country": {
+      "selectACountry": "Selecciona un país",
+      "seekForACountryPlaceholder": "Busca un país...",
+      "countryNotFound": "País no encontrado"
     },
-    "agencies": {
+    "state": {
+      "selectAState": "Selecciona un departamento",
+      "seekForAStatePlaceholder": "Busca un departamento...",
+      "stateNotFound": "Departamento no encontrado"
+    },
+    "city": {
+      "selectACity": "Selecciona una ciudad",
+      "seekForACityPlaceholder": "Busca una ciudad...",
+      "cityNotFound": "Ciudad no encontrado"
+    }
+  },
+
+  "admin": {
+    "agenciesList": {
       "list": {
-        "title": "Lista de agencias",
-        "description": "A continuación se presenta una lista con aspectos generales de las agencias.",
+        "title": "Lista de Agencias",
+        "description": "A continuación se muestra una lista con aspectos generales de las agencias.",
         "noAgenciesFound": "No se encontraron agencias."
       },
       "fields": {
         "name": "Nombre",
-        "email": "Correo",
+        "email": "Correo electrónico",
         "phone": "Teléfono",
         "address": "Dirección",
         "city": "Ciudad",
-        "state": "Estado",
+        "state": "Departamento",
         "country": "País",
-        "web": "Web",
-        "status": "Estatus"
+        "web": "Sitio web",
+        "status": "Estado"
       },
       "actions": {
         "view": "Ver Agencia",
@@ -30,28 +48,105 @@
         "delete": "Eliminar Agencia"
       },
       "delete": {
-        "confirmTitle": "¿Estás seguro de eliminar esta agencia?",
-        "confirmDescription": "Esta acción no se puede deshacer. La agencia será permanentemente eliminada de la base de datos, por favor verifique esta acción antes de realizarla."
+        "confirmTitle": "¿Estás seguro de que deseas eliminar esta agencia?",
+        "confirmDescription": "Esta acción no se puede deshacer. La agencia se eliminará permanentemente de la base de datos, por favor verifica esta acción antes de continuar."
       },
       "toggleState": {
-        "confirmTitle": "¿Estás seguro de cambiar el estado de esta agencia?",
-        "activateDescription": "Esta acción activará la agencia en la base de datos, sus usuarios podrán utilizar sus credenciales y utilizar la plataforma.",
-        "deactivateDescription": "Esta acción desactivará la agencia en la base de datos, sus usuarios no podrán utilizar sus credenciales y utilizar la plataforma."
+        "confirmTitle": "¿Estás seguro de que deseas cambiar el estado de esta agencia?",
+        "activateDescription": "Esta acción activará la agencia en la base de datos, sus usuarios podrán usar sus credenciales y utilizar la plataforma.",
+        "deactivateDescription": "Esta acción desactivará la agencia en la base de datos, sus usuarios no podrán usar sus credenciales ni utilizar la plataforma."
       }
     },
-    "toast": {
-      "error": {
-        "title": "¡Ups! Parece que algo salió mal.",
-        "tryLater": "Por favor, intenta más tarde.",
-        "serverConnection": "No se pudo conectar con el servidor. Por favor, intenta más tarde."
-      },
-      "success": {
-        "title": "¡Realizado!",
-        "agencyDeleted": "Agencia eliminada exitosamente.",
-        "agencyStatusChanged": "El estatus de la agencia ha sido cambiado exitosamente."
+
+    "agencyCreate": {
+      "title": "Crear Agencia",
+      "description": "Ventana para crear una agencia, agrega toda la información para continuar.",
+      "confirmTitle": "¿Estás seguro de que deseas crear esta agencia?",
+      "confirmDescription": "Una vez creada la agencia, podrás crear roles para usar dentro de ella.",
+      "success": "Agencia creada exitosamente.",
+      "imageUploadError": "Hubo un error al subir la imagen. Por favor intenta más tarde.",
+      "fields": {
+        "name": "Nombre",
+        "email": "Correo electrónico",
+        "phone": "Teléfono",
+        "alternatePhone": "Teléfono alternativo",
+        "address": "Dirección",
+        "city": "Ciudad",
+        "state": "Departamento",
+        "country": "País",
+        "web": "Sitio web",
+        "status": "Estado",
+        "rnt": "Registro Nacional de Turismo",
+        "logo": "Logo",
+        "phonePlaceholder": "Número de teléfono (10 dígitos)...",
+        "webPlaceholder": "Sitio web...",
+        "rntPlaceholder": "RNT..."
       }
     },
-    "errors": {
-      "fetchingAgencies": "Error al obtener las agencias:"
+
+    "agencyEdit": {
+        "title": "Editar agencia",
+        "description": "Ventana para editar una agencia, añade o modifica la información para continuar.",
+        "confirmTitle": "Estás seguro de editar esta agencia?",
+        "confirmDescription": "Una vez la agencia haya sido actualizada, podrás crear roles y modificar roles dentro de ella.",
+        "success": "Agencia actualizada exitosamente.",
+        "imageUploadError": "Hubo un error subiendo la imagen. Por favor intente de nuevo más tarde.",
+        "fields": {
+          "name": "Nombre",
+          "email": "Correo electrónico",
+          "phone": "Teléfono",
+          "alternatePhone": "Teléfono alternativo",
+          "address": "Dirección",
+          "city": "Ciudad",
+          "state": "Departamento",
+          "country": "País",
+          "web": "Sitio web",
+          "status": "Estado",
+          "rnt": "Registro Nacional de Turismo",
+          "logo": "Logo",
+          "phonePlaceholder": "Número de teléfono (10 dígitos)...",
+          "webPlaceholder": "Sitio web...",
+          "rntPlaceholder": "RNT..."
+        }
+    },
+
+    "agencyShow": {
+      "title": "Información de la agencia",
+      "description": "En esta ventana puedes ver toda la información relacionada a la agencia.",
+      "fields": {
+        "name": "Nombre",
+        "email": "Correo electrónico",
+        "phone": "Teléfono principal",
+        "alternatePhone": "Teléfono alternativo",
+        "address": "Dirección",
+        "city": "Ciudad",
+        "state": "Estado/Provincia",
+        "country": "País",
+        "web": "Sitio web",
+        "rnt": "Registro Nacional de Turismo (RNT)",
+        "logo": "Logo",
+        "phonePlaceholder": "Número de teléfono (10 dígitos)...",
+        "webPlaceholder": "Ingrese la URL del sitio web...",
+        "rntPlaceholder": "Ingrese el RNT..."
+      }
     }
+  },
+
+  "toast": {
+    "error": {
+      "title": "¡Ups! Algo salió mal.",
+      "tryLater": "Por favor intenta nuevamente más tarde.",
+      "serverConnection": "No se pudo conectar con el servidor. Por favor intenta más tarde."
+    },
+    "success": {
+      "title": "¡Éxito!",
+      "agencyDeleted": "Agencia eliminada exitosamente.",
+      "agencyCreated": "Agencia creada exitosamente.",
+      "agencyStatusChanged": "Estado de la agencia cambiado exitosamente."
+    }
+  },
+
+  "errors": {
+    "fetchingAgencies": "Error al obtener las agencias:"
   }
+}
