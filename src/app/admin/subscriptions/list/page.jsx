@@ -16,8 +16,24 @@ import permissions from "@/lib/permissions";
 import { fetchData } from "@/services/api";
 import endpoints from "@/lib/endpoints";
 import PermissionGuard from "@/components/PermissionGuard";
+import { useSelector } from "react-redux";
+import { useTranslation } from "react-i18next";
 
 const SubscritionList = () => {
+
+  // Get language from Redux store
+  const { preferredLanguage } = useSelector((state) => state.auth.user);
+
+  // Initialize translation hook
+  const { t, i18n } = useTranslation();
+  
+   // Set the language from Redux
+   useEffect(() => {
+     if (preferredLanguage) {
+      i18n.changeLanguage(preferredLanguage);
+     }
+   }, [preferredLanguage, i18n]);
+
   const [subscriptions, setSubscriptions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
@@ -26,13 +42,19 @@ const SubscritionList = () => {
   const [open, setOpen] = useState(false);
   const [selectedSubscription, setSelectedSubscription] = useState();
 
-    const formattedDate = (date) => {
-      return new Date(date).toLocaleDateString('es-ES', {
-        year: 'numeric',
-        month: 'short',
-        day: 'numeric',
-      });
-    } 
+  const formattedDate = (date) => {
+    const locale = {
+      en: 'en-US',
+      es: 'es-ES',
+      pt: 'pt-BR'
+    }[preferredLanguage] || 'en-US';
+  
+    return new Date(date).toLocaleDateString(locale, {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+    });
+  }
   
 
   useEffect(() => {
@@ -81,8 +103,8 @@ const SubscritionList = () => {
 
       toast({
         variant: "success",
-        title: "Realizado!",
-        description: "Status de la suscripción cambiado exitosamente.",
+        title: t('toast.success.title'),
+        description: t('toast.success.subscriptionStatusChanged'),
       })
       setTimeout(() => {
         window.location.reload();
@@ -91,8 +113,8 @@ const SubscritionList = () => {
     } catch (error) {
         toast({
           variant: "destructive",
-          title: "Uh oh! Parece que algo salió mal.",
-          description: "No se pudo conectar con el servidor. Por favor, intenta más tarde.",
+          title: t('toast.error.title'),
+          description: t('toast.error.serverConnection'),
         })
     }
   };
@@ -101,8 +123,8 @@ const SubscritionList = () => {
     <AdminLayout>
       <Card>
         <CardHeader>
-          <CardTitle>Listado de Suscripciones</CardTitle>
-          <CardDescription>A continuación se presenta una lista con aspectos generales de todas las suscripciones.</CardDescription>
+          <CardTitle>{t('admin.subscriptionsList.title')}</CardTitle>
+          <CardDescription>{t('admin.subscriptionsList.description')}</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="container mx-auto py-2">
@@ -110,7 +132,7 @@ const SubscritionList = () => {
               <div className="flex items-center gap-2">
                 <Input 
                 type="search" 
-                placeholder="Buscar agencia..." 
+                placeholder={t('admin.subscriptionsList.searchPlaceholder')}
                 value={searchTerm} 
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="w-full md:w-64" />
@@ -121,14 +143,30 @@ const SubscritionList = () => {
                 <Table>
                   <TableHeader>
                     <TableRow>
-                    <TableHead className="text-center">Item</TableHead>
-                      <TableHead className="text-left">Agencia</TableHead>
-                      <TableHead className="text-left">Validez</TableHead>
-                      <TableHead className="text-left">Plan</TableHead>
-                      <TableHead className="text-left">Precio</TableHead>
-                      <TableHead className="text-left">Duración</TableHead>
-                      <TableHead className="text-left">Estado</TableHead>
-                      <TableHead className="text-left"></TableHead>
+                    <TableHead className="text-center">
+                        {t('admin.subscriptionsList.table.headers.item')}
+                    </TableHead>
+                      <TableHead className="text-left">
+                        {t('admin.subscriptionsList.table.headers.agency')}
+                      </TableHead>
+                      <TableHead className="text-left">
+                        {t('admin.subscriptionsList.table.headers.validity')}
+                      </TableHead>
+                      <TableHead className="text-left">
+                        {t('admin.subscriptionsList.table.headers.plan')}
+                      </TableHead>
+                      <TableHead className="text-left">
+                        {t('admin.subscriptionsList.table.headers.price')}
+                      </TableHead>
+                      <TableHead className="text-left">
+                        {t('admin.subscriptionsList.table.headers.duration')}
+                      </TableHead>
+                      <TableHead className="text-left">
+                        {t('admin.subscriptionsList.table.headers.status')}
+                      </TableHead>
+                      <TableHead className="text-left">
+                        {t('admin.subscriptionsList.table.headers.actions')}
+                      </TableHead>
 
                     </TableRow>
                   </TableHeader>
@@ -144,27 +182,27 @@ const SubscritionList = () => {
                           {sub.plan.price}
                         </TableCell>
                         <TableCell>
-                          {sub.plan.durationInDays} días
+                          {sub.plan.durationInDays} {t('admin.subscriptionsList.table.body.days')}
                         </TableCell>
                         <TableCell>
-                          {sub.isActive ? "Activo" : "Inactivo"}
+                          {sub.isActive ? t('admin.subscriptionsList.table.body.active') : t('admin.subscriptionsList.table.body.inactive')}
                         </TableCell>
                         <TableCell>
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
                               <Button variant="ghost" className="h-8 w-8 p-0">
-                              <span className="sr-only">Open menu</span>
+                              <span className="sr-only">{t('common.openMenu')}</span>
                               <MoreHorizontal className="h-4 w-4" />
                               </Button>
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end">
-                              <DropdownMenuLabel>Acciones</DropdownMenuLabel>
+                              <DropdownMenuLabel>{t('common.actions')}</DropdownMenuLabel>
                               <DropdownMenuItem onClick={() => router.push(`/admin/subscriptions/show/${sub.id}`)}>
-                                <Eye />  Ver Suscripcion
+                                <Eye />  {t('admin.subscriptionsList.table.actions.view')}
                               </DropdownMenuItem>
                               {/*<PermissionGuard requiredPermission={permissions.subscription_update}>
                                 <DropdownMenuItem onClick={() => router.push(`/admin/subscriptions/edit/${sub.id}`) } >
-                                  <Pencil /> Editar Suscripción
+                                  <Pencil /> {t('admin.subscriptionsList.table.actions.edit')}
                                 </DropdownMenuItem>
                               </PermissionGuard> No hay una funcionalidad clara a editar */}
                               <DropdownMenuSeparator />
@@ -175,7 +213,7 @@ const SubscritionList = () => {
                                       setSelectedSubscription(sub);
                                     }}>
                                 <Repeat color="red" /> 
-                                  <span className="text-red-500" >Cambiar status</span>
+                                  <span className="text-red-500" >{t('admin.subscriptionsList.table.actions.changeStatus')}</span>
                                 </DropdownMenuItem>
                               </PermissionGuard>      
                           </DropdownMenuContent>
@@ -186,7 +224,7 @@ const SubscritionList = () => {
                   ) : (
                       <TableRow>
                         <TableCell colSpan={8} className="text-center">
-                          No se encontraron suscripciones.
+                          {t('admin.subscriptionsList.table.body.noSubscriptions')}
                         </TableCell>
                       </TableRow>
                   )
@@ -198,14 +236,14 @@ const SubscritionList = () => {
                 <AlertDialog open={open} onOpenChange={setOpen}>
                   <AlertDialogContent>
                     <AlertDialogHeader>
-                      <AlertDialogTitle>Estás seguro de cambiar el status de esta suscripción?</AlertDialogTitle>
+                      <AlertDialogTitle>{t('admin.subscriptionsList.changeStatusDialog.title')}</AlertDialogTitle>
                       <AlertDialogDescription>
-                        Esta acción se puede deshacer, sin embargo puede causar inconsistencias en el flujo de trabajo de los usuarios de las agencias asociadas.
+                        {t('admin.subscriptionsList.changeStatusDialog.description')}
                       </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
-                      <AlertDialogCancel >Cancelar</AlertDialogCancel>
-                      <AlertDialogAction className={buttonVariants({ variant: "destructive" })} onClick={() => handleDelete(selectedSubscription?.id)} >Continuar</AlertDialogAction>
+                      <AlertDialogCancel >{t('common.cancel')}</AlertDialogCancel>
+                      <AlertDialogAction className={buttonVariants({ variant: "destructive" })} onClick={() => handleDelete(selectedSubscription?.id)} >{t('common.continue')}</AlertDialogAction>
                     </AlertDialogFooter>
                   </AlertDialogContent>
                 </AlertDialog>

@@ -281,6 +281,114 @@
           "language": "Select a language",
           "role": "Select a role"
         }
+      },
+
+      "subscriptionCreate": {
+        "title": "Subscription creation",
+        "description": "When generating a subscription, the added agency will be able to use the platform and the credentials of all its associated users.",
+        "fields": {
+          "agency": "Select an agency",
+          "plan": "Select a plan",
+          "description": "Description",
+          "price": "Price",
+          "duration": "Duration in days",
+          "trial": "Trial?"
+        },
+        "placeholders": {
+          "agency": "Agencies...",
+          "plan": "Plans..."
+        },
+        "selectLabels": {
+          "agency": "Agencies",
+          "plan": "Plans"
+        },
+        "confirmation": {
+          "title": "Are you sure you want to create this subscription?",
+          "description": "When generating a subscription, the added agency will be able to use the platform and the credentials of all its associated users."
+        }
+      },
+
+      "subscriptionEdit": {
+        "title": "Subscription edition",
+        "description": "When editing a subscription, the added agency will be able to use the platform and the credentials of all its associated users.",
+        "fields": {
+          "agency": "Select an agency",
+          "plan": "Select a plan",
+          "description": "Description",
+          "price": "Price",
+          "duration": "Duration in days",
+          "trial": "Trial?"
+        },
+        "placeholders": {
+          "agency": "Agencies...",
+          "plan": "Plans..."
+        },
+        "selectLabels": {
+          "agency": "Agencies",
+          "plan": "Plans"
+        },
+        "confirmation": {
+          "title": "Are you sure you want to edit this subscription?",
+          "description": "When editing a subscription, the added agency will be able to use the platform and the credentials of all its associated users."
+        }
+      },
+
+      "subscriptionsList": {
+        "title": "Subscriptions List",
+        "description": "Below is a list with general aspects of all subscriptions.",
+        "searchPlaceholder": "Search agency...",
+        "table": {
+          "headers": {
+            "item": "Item",
+            "agency": "Agency",
+            "validity": "Validity",
+            "plan": "Plan",
+            "price": "Price",
+            "duration": "Duration",
+            "status": "Status",
+            "actions": "Actions"
+          },
+          "body": {
+            "active": "Active",
+            "inactive": "Inactive",
+            "days": "days",
+            "noSubscriptions": "No subscriptions found."
+          },
+          "actions": {
+            "view": "View Subscription",
+            "edit": "Edit Subscription",
+            "changeStatus": "Change status"
+          }
+        },
+        "changeStatusDialog": {
+          "title": "Are you sure you want to change the status of this subscription?",
+          "description": "This action can be undone, however it may cause inconsistencies in the workflow of the associated agency users."
+        }
+      },
+
+      "subscriptionShow": {
+        "title": "Subscription Details",
+        "description": "Below is all the information related to the subscription. The added agency will be able to use the platform and the credentials of all its associated users.",
+        "fields": {
+          "agency": "Selected agency",
+          "plan": "Selected plan",
+          "description": "Description",
+          "price": "Price",
+          "duration": "Duration in days",
+          "trial": "Trial?"
+        },
+        "placeholders": {
+          "agency": "Agencies...",
+          "plan": "Plans..."
+        },
+        "selectLabels": {
+          "agency": "Agencies",
+          "plan": "Plans"
+        },
+        "confirmation": {
+          "title": "Are you sure you want to create this subscription?",
+          "description": "When generating a subscription, the added agency will be able to use the platform and the credentials of all its associated users."
+        }
       }
 
     },
@@ -295,11 +403,17 @@
         "title": "Success!",
         "agencyDeleted": "Agency successfully deleted.",
         "agencyCreated": "Agency created successfully.",
+        "agencyStatusChanged": "Agency status successfully changed.",
+
         "userCreated": "User created successfully.",
         "userEdited": "User updated successfully.",
         "userDeleted": "User deleted successfully.",
         "userStatus": "User status successfully changed.",
-        "agencyStatusChanged": "Agency status successfully changed."
+
+        "subscriptionCreate": "Subscription created successfully.",
+        "subscriptionEdited": "Subscription edited successfully.",
+        "subscriptionStatusChanged": "Subscription status changed successfully."
+
       }
     },
     "errors": {

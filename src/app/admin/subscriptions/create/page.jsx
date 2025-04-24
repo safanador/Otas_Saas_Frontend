@@ -1,13 +1,18 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Input } from "@/components/ui/input";
 import AdminLayout from "../../components/SideBar/AdminLayout";
-
-import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
+import React, { useEffect, useState } from "react";
+import withAuth from "@/app/middleware/withAuth";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { useToast } from "@/hooks/use-toast";
+import permissions from "@/lib/permissions";
+import { fetchData } from "@/services/api";
+import endpoints from "@/lib/endpoints";
 import {
   Select,
   SelectContent,
@@ -17,16 +22,24 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { Button } from "@/components/ui/button";
-import { useToast } from "@/hooks/use-toast";
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
-import withAuth from "@/app/middleware/withAuth";
-import permissions from "@/lib/permissions";
-import { fetchData } from "@/services/api";
-import endpoints from "@/lib/endpoints";
-
+import { useSelector } from "react-redux";
+import { useTranslation } from "react-i18next";
 
 const SubscriptionCreate = () => {
+
+    // Get language from Redux store
+    const { preferredLanguage } = useSelector((state) => state.auth.user);
+
+    // Initialize translation hook
+    const { t, i18n } = useTranslation();
+  
+    // Set the language from Redux
+    useEffect(() => {
+      if (preferredLanguage) {
+        i18n.changeLanguage(preferredLanguage);
+      }
+    }, [preferredLanguage, i18n]);  
+
   const [plans, setPlans] = useState([]);
   const [agencies, setAgencies] = useState([]);
   const [form, setForm] = useState({
@@ -99,8 +112,8 @@ const SubscriptionCreate = () => {
 
         toast({
           variant: "success",
-          title: "Realizado!",
-          description: "Suscripción creada exitosamente.",
+          title: t("toast.success.title"),
+          description: t("toast.success.subscriptionCreated"),
         })
 
         setForm({
@@ -111,8 +124,8 @@ const SubscriptionCreate = () => {
       } catch (error) {
           toast({
             variant: "destructive",
-            title: "Uh oh! Parece que algo salió mal.",
-            description: "No se pudo conectar con el servidor. Por favor, intenta más tarde.",
+            title: t("toast.error.title"),
+            description: t("toast.error.serverConnection"),
           })
       } finally {
         setButtonLoading(false);
@@ -133,25 +146,25 @@ const SubscriptionCreate = () => {
     <AdminLayout>
       <Card>
         <CardHeader>
-          <CardTitle>Creación de suscripciones</CardTitle>
+          <CardTitle>{t("admin.subscriptionCreate.title")}</CardTitle>
           <CardDescription>
-            Al generar una suscripción, la agencia agregada va poder usar la plataforma y las credenciales de todos sus usuarios asociados.
+            {t("admin.subscriptionCreate.description")}
           </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="container space-y-4 mx-auto py-2">
             <div className="grid w-full max-w-lg items-center gap-1.5" >
-              <Label htmlFor="user-type" >Selecciona una agencia</Label>
+              <Label htmlFor="user-type" >{t("admin.subscriptionCreate.fields.agency")}</Label>
               <Select
                 value={form.agencyId}
                 onValueChange={(value) => setForm({...form, agencyId: value})}
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="Agencias..." />
+                  <SelectValue placeholder={t("admin.subscriptionCreate.placeholders.agency")} />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectGroup>
-                    <SelectLabel>Agencias</SelectLabel>
+                    <SelectLabel>{t("admin.subscriptionCreate.selectLabels.agency")}</SelectLabel>
                       {agencies.map((agency) => (
                           <SelectItem key={agency.id} value={agency.id} >
                             {agency.name}
@@ -164,17 +177,17 @@ const SubscriptionCreate = () => {
             </div>
 
             <div className="grid w-full max-w-lg items-center gap-1.5" >
-              <Label htmlFor="user-type" >Selecciona un plan</Label>
+              <Label htmlFor="user-type" >{t("admin.subscriptionCreate.fields.plan")}</Label>
               <Select
                 value={form.planId}
                 onValueChange={(value) => setForm({...form, planId: value})}
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="Planes.." />
+                  <SelectValue placeholder={t("admin.subscriptionCreate.placeholders.plan")} />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectGroup>
-                    <SelectLabel>Planes</SelectLabel>
+                    <SelectLabel>{t("admin.subscriptionCreate.selectLabels.plan")}</SelectLabel>
                       {plans.map((plan) => (
                           <SelectItem key={plan.id} value={plan.id} >
                             {plan.name}
@@ -189,41 +202,38 @@ const SubscriptionCreate = () => {
             { form.planId && (
               <div className="container space-y-4 mx-auto py-2">
                 <div className="grid w-full max-w-lg items-center gap-1.5">
-                  <Label htmlFor="name">Descripción</Label>
+                  <Label htmlFor="name">{t("admin.subscriptionCreate.fields.description")}</Label>
                   <Input 
                     disabled
                     type="text" 
                     id="email" 
-                    placeholder="Descripción..." 
                     value={foundPlan.description}/>
                 </div>
 
                   {/** price Done */}
                 <div className="grid w-full max-w-lg items-center gap-1.5">
-                  <Label htmlFor="name">Precio</Label>
+                  <Label htmlFor="name">{t("admin.subscriptionCreate.fields.price")}</Label>
                   <Input 
                     disabled
                     type="text" 
                     id="corporateEmail" 
-                    placeholder="Precio..." 
                     value={foundPlan.price}/>
                 </div>
 
                   {/** Duration in Days Done*/}
                 <div className="grid w-full max-w-lg items-center gap-1.5">
-                  <Label htmlFor="name">Duración en días</Label>
+                  <Label htmlFor="name">{t("admin.subscriptionCreate.fields.duration")}</Label>
                   <Input 
                     disabled
                     type="text" 
                     id="address" 
-                    placeholder="Duración..." 
                     value={foundPlan.durationInDays}
                     onChange={(e) => setForm({...form, durationInDays: e.target.value})} />
                 </div>
 
                 {/** Trial in Days Done*/}
                 <div className="flex items-center w-full max-w-lg justify-between gap-1.5">
-                  <Label htmlFor="name">Prueba?</Label>
+                  <Label htmlFor="name">{t("admin.subscriptionCreate.fields.trial")}</Label>
                   <Checkbox disabled checked={foundPlan.isTrial}  />
                 </div>
               </div>
@@ -236,20 +246,20 @@ const SubscriptionCreate = () => {
             className="w-full md:w-auto" >
               { buttonLoading 
                 ? (<span className="w-4 h-4 border-[1.5px] border-white border-t-transparent rounded-full animate-spin"></span>)
-                : (<span>Crear Suscripción</span>) }
+                : (<span>{t("common.save")}</span>) }
           </Button>
 
           <AlertDialog open={open} onOpenChange={setOpen}>
               <AlertDialogContent>
                 <AlertDialogHeader>
-                  <AlertDialogTitle>Estás seguro de crear esta suscripción?</AlertDialogTitle>
+                  <AlertDialogTitle>{t("admin.subscriptionCreate.confirmation.title")}</AlertDialogTitle>
                   <AlertDialogDescription>
-                    Al generar una suscripción, la agencia agregada va poder usar la plataforma y las credenciales de todos sus usuarios asociados.
+                    {t("admin.subscriptionCreate.confirmation.description")}
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
-                  <AlertDialogCancel >Cancelar</AlertDialogCancel>
-                  <AlertDialogAction onClick={handleCreate} >Continuar</AlertDialogAction>
+                  <AlertDialogCancel >{t("common.cancel")}</AlertDialogCancel>
+                  <AlertDialogAction onClick={handleCreate} >{t("common.continue")}</AlertDialogAction>
                 </AlertDialogFooter>
               </AlertDialogContent>
           </AlertDialog>

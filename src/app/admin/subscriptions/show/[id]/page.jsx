@@ -20,8 +20,24 @@ import withAuth from "@/app/middleware/withAuth";
 import permissions from "@/lib/permissions";
 import { fetchData } from "@/services/api";
 import endpoints from "@/lib/endpoints";
+import { useSelector } from "react-redux";
+import { useTranslation } from "react-i18next";
 
 const SubscriptionShow = () => {
+
+      // Get language from Redux store
+      const { preferredLanguage } = useSelector((state) => state.auth.user);
+
+      // Initialize translation hook
+      const { t, i18n } = useTranslation();
+    
+      // Set the language from Redux
+      useEffect(() => {
+        if (preferredLanguage) {
+          i18n.changeLanguage(preferredLanguage);
+        }
+      }, [preferredLanguage, i18n]);  
+
   const [plans, setPlans] = useState([]);
   const [agencies, setAgencies] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -104,24 +120,24 @@ const SubscriptionShow = () => {
     <AdminLayout>
       <Card>
         <CardHeader>
-          <CardTitle>Detalles de la suscripción</CardTitle>
-          <CardDescription>A continuación disponible toda la información relacionada a la suscripción, la agencia agregada va poder usar la plataforma y las credenciales de todos sus usuarios asociados.</CardDescription>
+          <CardTitle>{t("admin.subscriptionShow.title")}</CardTitle>
+          <CardDescription>{t("admin.subscriptionShow.description")}</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="container space-y-4 mx-auto py-2">
               <div className="grid w-full max-w-lg items-center gap-1.5" >
-                <Label htmlFor="user-type" >Agencia seleccionada</Label>
+                <Label htmlFor="user-type" >{t("admin.subscriptionShow.fields.agency")}</Label>
                 <Select
                   disabled
                   value={form.agencyId}
                   onValueChange={(value) => setForm({...form, agencyId: value})}
                 >
                   <SelectTrigger>
-                    <SelectValue placeholder="Agencias..." />
+                    <SelectValue placeholder={t("admin.subscriptionShow.placeholders.agency")}/>
                   </SelectTrigger>
                   <SelectContent>
                     <SelectGroup>
-                      <SelectLabel>Agencias</SelectLabel>
+                      <SelectLabel>{t("admin.subscriptionShow.selectLabels.agency")}</SelectLabel>
                         {agencies.map((agency) => (
                             <SelectItem key={agency.id} value={agency.id} >
                               {agency.name}
@@ -134,18 +150,18 @@ const SubscriptionShow = () => {
               </div>
 
               <div className="grid w-full max-w-lg items-center gap-1.5" >
-                <Label htmlFor="user-type" >Plan seleccionado</Label>
+                <Label htmlFor="user-type" >{t("admin.subscriptionShow.fields.plan")}</Label>
                 <Select
                   disabled
                   value={form.planId}
                   onValueChange={(value) => setForm({...form, planId: value})}
                 >
                   <SelectTrigger>
-                    <SelectValue placeholder="Planes.." />
+                    <SelectValue placeholder={t("admin.subscriptionShow.placeholders.plan")} />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectGroup>
-                      <SelectLabel>Planes</SelectLabel>
+                      <SelectLabel>{t("admin.subscriptionShow.selectLabels.plan")}</SelectLabel>
                         {plans.map((plan) => (
                             <SelectItem key={plan.id} value={plan.id} >
                               {plan.name}
@@ -160,41 +176,38 @@ const SubscriptionShow = () => {
               { form.planId && (
                 <div className="container space-y-4 mx-auto py-2">
                   <div className="grid w-full max-w-lg items-center gap-1.5">
-                    <Label htmlFor="name">Descripción</Label>
+                    <Label htmlFor="name">{t("admin.subscriptionShow.fields.description")}</Label>
                     <Input 
                       disabled
                       type="text" 
                       id="email" 
-                      placeholder="Descripción..." 
                       value={foundPlan.description}/>
                   </div>
 
                     {/** price Done */}
                   <div className="grid w-full max-w-lg items-center gap-1.5">
-                    <Label htmlFor="name">Precio</Label>
+                    <Label htmlFor="name">{t("admin.subscriptionShow.fields.price")}</Label>
                     <Input 
                       disabled
                       type="text" 
                       id="corporateEmail" 
-                      placeholder="Precio..." 
                       value={foundPlan.price}/>
                   </div>
 
                     {/** Duration in Days Done*/}
                   <div className="grid w-full max-w-lg items-center gap-1.5">
-                    <Label htmlFor="name">Duración en días</Label>
+                    <Label htmlFor="name">{t("admin.subscriptionShow.fields.duration")}</Label>
                     <Input 
                       disabled
                       type="text" 
                       id="address" 
-                      placeholder="Duración..." 
                       value={foundPlan.durationInDays}
                       onChange={(e) => setForm({...form, durationInDays: e.target.value})} />
                   </div>
 
                   {/** Trial in Days Done*/}
                   <div className="flex items-center w-full max-w-lg justify-between gap-1.5">
-                    <Label htmlFor="name">Prueba?</Label>
+                    <Label htmlFor="name">{t("admin.subscriptionShow.fields.trial")}</Label>
                     <Checkbox disabled checked={foundPlan.isTrial}  />
                   </div>
                 </div>

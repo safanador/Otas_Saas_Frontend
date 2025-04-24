@@ -279,6 +279,110 @@
         "language": "Selecciona un idioma",
         "role": "Selecciona un rol"
       }
+    },
+
+    "subscriptionCreate": {
+      "title": "Creación de suscripciones",
+      "description":  "Al generar una suscripción, la agencia agregada va poder usar la plataforma y las credenciales de todos sus usuarios asociados.",
+      "fields": {
+        "agency": "Selecciona una agencia",
+        "plan": "Selecciona un plan",
+        "description": "Descripción",
+        "price": "Precio",
+        "duration": "Duración en días",
+        "trial": "Prueba?"
+      },
+      "placeholders": {
+        "agency": "Agencias...",
+        "plan": "Planes..."
+      },
+      "selectLabels": {
+        "agency": "Agencias",
+        "plan": "Planes"
+      },
+      "confirmation": {
+        "title": "Estás seguro de crear esta suscripción?",
+        "description": "Al generar una suscripción, la agencia agregada va poder usar la plataforma y las credenciales de todos sus usuarios asociados."
+      }
+    },
+
+    "subscriptionEdit": {
+      "title": "Edición de suscripciones",
+      "description":  "Al editar una suscripción, la agencia agregada va poder usar la plataforma y las credenciales de todos sus usuarios asociados.",
+      "fields": {
+        "agency": "Selecciona una agencia",
+        "plan": "Selecciona un plan",
+        "description": "Descripción",
+        "price": "Precio",
+        "duration": "Duración en días",
+        "trial": "Prueba?"
+      },
+      "placeholders": {
+        "agency": "Agencias...",
+        "plan": "Planes..."
+      },
+      "selectLabels": {
+        "agency": "Agencias",
+        "plan": "Planes"
+      },
+      "confirmation": {
+        "title": "Estás seguro de editar esta suscripción?",
+        "description": "Al editar una suscripción, la agencia agregada va poder usar la plataforma y las credenciales de todos sus usuarios asociados."
+      }
+    },
+
+    "subscriptionsList": {
+      "title": "Listado de Suscripciones",
+      "description": "A continuación se presenta una lista con aspectos generales de todas las suscripciones.",
+      "searchPlaceholder": "Buscar agencia...",
+      "table": {
+        "headers": {
+          "item": "Item",
+          "agency": "Agencia",
+          "validity": "Validez",
+          "plan": "Plan",
+          "price": "Precio",
+          "duration": "Duración",
+          "status": "Estado",
+          "actions": "Acciones"
+        },
+        "body": {
+          "active": "Activo",
+          "inactive": "Inactivo",
+          "days": "días",
+          "noSubscriptions": "No se encontraron suscripciones."
+        },
+        "actions": {
+          "view": "Ver Suscripción",
+          "edit": "Editar Suscripción",
+          "changeStatus": "Cambiar status"
+        }
+      },
+      "changeStatusDialog": {
+        "title": "¿Estás seguro de cambiar el status de esta suscripción?",
+        "description": "Esta acción se puede deshacer, sin embargo puede causar inconsistencias en el flujo de trabajo de los usuarios de las agencias asociadas."
+      }
+    },
+
+    "subscriptionShow": {
+      "title": "Detalles de la suscripción",
+      "description":  "A continuación disponible toda la información relacionada a la suscripción. La agencia agregada podrá usar la plataforma y las credenciales de todos sus usuarios asociados.",
+      "fields": {
+        "agency": "Agencia seleccionada",
+        "plan": "Plan seleccionado",
+        "description": "Descripción",
+        "price": "Precio",
+        "duration": "Duración en días",
+        "trial": "Prueba?"
+      },
+      "placeholders": {
+        "agency": "Agencias...",
+        "plan": "Planes..."
+      },
+      "selectLabels": {
+        "agency": "Agencias",
+        "plan": "Planes"
+      }
     }
 
   },
@@ -293,11 +397,17 @@
       "title": "¡Éxito!",
       "agencyDeleted": "Agencia eliminada exitosamente.",
       "agencyCreated": "Agencia creada exitosamente.",
+      "agencyStatusChanged": "Estado de la agencia cambiado exitosamente.",
+
       "userCreated": "Usuario creado exitosamente.",
       "userEdited": "Usuario editado exitosamente.",
       "userDeleted": "Usuario eliminado exitosamente.",
       "userStatus": "Estatus del usuario cambiado exitosamente.",
-      "agencyStatusChanged": "Estado de la agencia cambiado exitosamente."
+
+      "subscriptionCreate": "Suscripción creada exitosamente.",
+      "subscriptionEdited": "Suscripción editada exitosamente.",
+      "subscriptionStatusChanged": "Estatus de la suscripción cambiado exitosamente."
+
     }
   },
 

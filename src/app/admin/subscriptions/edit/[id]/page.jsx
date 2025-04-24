@@ -1,13 +1,19 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Input } from "@/components/ui/input";
 import AdminLayout from "../../../components/SideBar/AdminLayout";
-
-import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
+import React, { useEffect, useState } from "react";
+import withAuth from "@/app/middleware/withAuth";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { useToast } from "@/hooks/use-toast";
+import { useParams } from "next/navigation";
+import permissions from "@/lib/permissions";
+import { fetchData } from "@/services/api";
+import endpoints from "@/lib/endpoints";
 import {
   Select,
   SelectContent,
@@ -17,17 +23,25 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { Button } from "@/components/ui/button";
-import { useToast } from "@/hooks/use-toast";
-import { useParams } from "next/navigation";
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
-import withAuth from "@/app/middleware/withAuth";
-import permissions from "@/lib/permissions";
-import { fetchData } from "@/services/api";
-import endpoints from "@/lib/endpoints";
+import { useSelector } from "react-redux";
+import { useTranslation } from "react-i18next";
 
 
 const SubscriptionEdit = () => {
+
+  // Get language from Redux store
+  const { preferredLanguage } = useSelector((state) => state.auth.user);
+
+  // Initialize translation hook
+  const { t, i18n } = useTranslation();
+    
+  // Set the language from Redux
+  useEffect(() => {
+    if (preferredLanguage) {
+        i18n.changeLanguage(preferredLanguage);
+    }
+  }, [preferredLanguage, i18n]);  
+
   const [plans, setPlans] = useState([]);
   const [loading, setLoading] = useState(true);
   const [form, setForm] = useState({});
@@ -121,32 +135,25 @@ const SubscriptionEdit = () => {
           body: JSON.stringify(form),
         });
 
-        if (response.status === 403) {
-          window.location.href = '/auth/login';
-        }
-        if (response.status === 401) {
-          window.location.href = '/admin/unauthorized';
+        if (response.error) {
+          setErrorData(response.error)
+          return          
         }
 
-        if (response.ok) {
-          setButtonLoading(false);
-          toast({
-            variant: "success",
-            title: "Realizado!",
-            description: "Suscripción editada exitosamente.",
-          })
-        }else{
-          setButtonLoading(false);
-          const errorData = await response.json(); 
-          setErrorData(errorData.message)
-        }
+        toast({
+          variant: "success",
+          title: t("toast.success.title"),
+          description: t("toast.success.subscriptionEdited"),
+        })
+
       } catch (error) {
-          setButtonLoading(false);
           toast({
             variant: "destructive",
-            title: "Uh oh! Parece que algo salió mal.",
-            description: "No se pudo conectar con el servidor. Por favor, intenta más tarde.",
+            title: t("toast.error.title"),
+            description: t("toast.error.serverConnection"),
           })
+      } finally {
+        setButtonLoading(false);
       }
     };
 
@@ -164,24 +171,24 @@ const SubscriptionEdit = () => {
     <AdminLayout>
       <Card>
         <CardHeader>
-          <CardTitle>Edición de suscripción</CardTitle>
-          <CardDescription>A continuación puedes editar el plan asociado a la suscripción.</CardDescription>
+          <CardTitle>{t("admin.subscriptionEdit.title")}</CardTitle>
+          <CardDescription>{t("admin.subscriptionEdit.description")}</CardDescription>
         </CardHeader>
         <CardContent>
             <div className="container space-y-4 mx-auto py-2">
               <div className="grid w-full max-w-lg items-center gap-1.5" >
-                <Label htmlFor="user-type" >Agencia seleccionada</Label>
+                <Label htmlFor="user-type" >{t("admin.subscriptionEdit.fields.agency")}</Label>
                 <Select
                   disabled
                   value={form.agencyId}
                   onValueChange={(value) => setForm({...form, agencyId: value})}
                 >
                   <SelectTrigger>
-                    <SelectValue placeholder="Agencias..." />
+                    <SelectValue placeholder={t("admin.subscriptionEdit.placeholders.agency")} />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectGroup>
-                      <SelectLabel>Agencias</SelectLabel>
+                      <SelectLabel>{t("admin.subscriptionEdit.selectLabels.agency")}</SelectLabel>
                         {agencies.map((agency) => (
                             <SelectItem key={agency.id} value={agency.id} >
                               {agency.name}
@@ -194,17 +201,17 @@ const SubscriptionEdit = () => {
               </div>
 
               <div className="grid w-full max-w-lg items-center gap-1.5" >
-                <Label htmlFor="user-type" >Plan seleccionado</Label>
+                <Label htmlFor="user-type" >{t("admin.subscriptionEdit.fields.plan")}</Label>
                 <Select
                   value={form.planId}
                   onValueChange={(value) => setForm({...form, planId: value})}
                 >
                   <SelectTrigger>
-                    <SelectValue placeholder="Planes.." />
+                    <SelectValue placeholder={t("admin.subscriptionEdit.placeholders.plan")}/>
                   </SelectTrigger>
                   <SelectContent>
                     <SelectGroup>
-                      <SelectLabel>Planes</SelectLabel>
+                      <SelectLabel>{t("admin.subscriptionEdit.selectLabels.plan")}</SelectLabel>
                         {plans.map((plan) => (
                             <SelectItem key={plan.id} value={plan.id} >
                               {plan.name}
@@ -219,41 +226,38 @@ const SubscriptionEdit = () => {
               { form.planId && (
                 <div className="container space-y-4 mx-auto py-2">
                   <div className="grid w-full max-w-lg items-center gap-1.5">
-                    <Label htmlFor="name">Descripción</Label>
+                    <Label htmlFor="name">{t("admin.subscriptionEdit.fields.description")}</Label>
                     <Input 
                       disabled
                       type="text" 
                       id="email" 
-                      placeholder="Descripción..." 
                       value={foundPlan.description}/>
                   </div>
 
                     {/** price Done */}
                   <div className="grid w-full max-w-lg items-center gap-1.5">
-                    <Label htmlFor="name">Precio</Label>
+                    <Label htmlFor="name">{t("admin.subscriptionEdit.fields.price")}</Label>
                     <Input 
                       disabled
                       type="text" 
                       id="corporateEmail" 
-                      placeholder="Precio..." 
                       value={foundPlan.price}/>
                   </div>
 
                     {/** Duration in Days Done*/}
                   <div className="grid w-full max-w-lg items-center gap-1.5">
-                    <Label htmlFor="name">Duración en días</Label>
+                    <Label htmlFor="name">{t("admin.subscriptionEdit.fields.duration")}</Label>
                     <Input 
                       disabled
                       type="text" 
                       id="address" 
-                      placeholder="Duración..." 
                       value={foundPlan.durationInDays}
                       onChange={(e) => setForm({...form, durationInDays: e.target.value})} />
                   </div>
 
                   {/** Trial in Days Done*/}
                   <div className="flex items-center w-full max-w-lg justify-between gap-1.5">
-                    <Label htmlFor="name">Prueba?</Label>
+                    <Label htmlFor="name">{t("admin.subscriptionEdit.fields.trial")}</Label>
                     <Checkbox disabled checked={foundPlan.isTrial}  />
                   </div>
                 </div>
@@ -266,20 +270,20 @@ const SubscriptionEdit = () => {
             className="w-full md:w-auto" >
               { buttonLoading 
                 ? (<span className="w-4 h-4 border-[1.5px] border-white border-t-transparent rounded-full animate-spin"></span>)
-                : (<span>Editar Suscripción</span>) }
+                : (<span>{t("common.save")}</span>) }
           </Button>
 
           <AlertDialog open={open} onOpenChange={setOpen}>
               <AlertDialogContent>
                 <AlertDialogHeader>
-                  <AlertDialogTitle>Estás seguro de editar esta suscripción?</AlertDialogTitle>
+                  <AlertDialogTitle>{t("admin.subscriptionEdit.confirmation.title")}</AlertDialogTitle>
                   <AlertDialogDescription>
-                    la agencia agregada va poder usar la plataforma y las credenciales de todos sus usuarios asociados.
+                    {t("admin.subscriptionEdit.confirmation.description")}
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
-                  <AlertDialogCancel >Cancelar</AlertDialogCancel>
-                  <AlertDialogAction onClick={handleEdit} >Continuar</AlertDialogAction>
+                  <AlertDialogCancel >{t("common.cancel")}</AlertDialogCancel>
+                  <AlertDialogAction onClick={handleEdit} >{t("common.continue")}</AlertDialogAction>
                 </AlertDialogFooter>
               </AlertDialogContent>
           </AlertDialog>
