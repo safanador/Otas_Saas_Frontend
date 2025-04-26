@@ -42,9 +42,14 @@ export default function ResetPasswordPage() {
         body: JSON.stringify(form),
       });
 
-      setSuccess(response.data.message || 'Contraseña restablecida con éxito');
+      if(response.error) {
+        console.log(response.error);
+        return
+      }
+
+      setSuccess(response.message || 'Contraseña restablecida con éxito');
     } catch (err) {
-      setError(err.response?.data?.message || 'Ocurrió un error al restablecer la contraseña');
+      setError(err || 'Ocurrió un error al restablecer la contraseña');
     }
   };
 

@@ -39,7 +39,7 @@ export default function ForgotPasswordPage() {
 
       setSuccess(true);
     } catch (err) {
-      setError(err.response?.data?.message || "Hubo un error al enviar la solicitud.");
+      setError(err || "Hubo un error al enviar la solicitud.");
     } finally {
       setLoading(false);
     }
