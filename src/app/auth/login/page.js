@@ -35,16 +35,16 @@ export default function LoginPage() {
       });
     
       //actualiza el estado global con la información del usuario
-      dispatch(setUser(response.data.user));
+      dispatch(setUser(response.user));
 
       //Redirige al usuario a la ruta adecuada
-      if (response.data.user.role.scope === 'global') {
+      if (response.user.role.scope === 'global') {
         router.push('/admin/dashboard');
-      } else if (response.data.user.role.scope === 'agency') {
+      } else if (response.user.role.scope === 'agency') {
         router.push('/ota/dashboard');
       }
     } catch (err) {
-      setError(err.response?.data?.message || "Error al iniciar sesión");
+      setError(err|| "Error al iniciar sesión");
     } finally {
       setLoading(false);
     }
