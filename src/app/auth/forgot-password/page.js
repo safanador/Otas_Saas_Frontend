@@ -6,6 +6,8 @@ import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { fetchData } from "@/services/api";
+import endpoints from "@/lib/endpoints";
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState("");
@@ -20,9 +22,20 @@ export default function ForgotPasswordPage() {
     setError(null);
 
     try {
-      await axios.post("http://localhost:3000/api/v1/auth/forgot-password", {
-        email,
+
+      let form = {
+        "email": email,
+      }
+      
+      const response = await fetchData(endpoints.auth_forgot_password(), {
+        method: 'POST',
+        body: JSON.stringify(form),
       });
+
+      if(response.error) {
+        console.log(response.error);
+        return
+      }
 
       setSuccess(true);
     } catch (err) {

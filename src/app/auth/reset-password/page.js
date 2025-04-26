@@ -7,6 +7,8 @@ import axios from 'axios';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Alert } from '@/components/ui/alert';
+import { fetchData } from '@/services/api';
+import endpoints from '@/lib/endpoints';
 
 export default function ResetPasswordPage() {
   const searchParams = useSearchParams();
@@ -30,9 +32,14 @@ export default function ResetPasswordPage() {
     }
 
     try {
-      const response = await axios.post(`http://localhost:3000/api/v1/auth/reset-password`, {
-        token,
-        newPassword,
+
+      let form = {
+        "token": token,
+        "newPassword": newPassword
+      }
+      const response = await fetchData(endpoints.auth_reset_password(), {
+        method: 'POST',
+        body: JSON.stringify(form),
       });
 
       setSuccess(response.data.message || 'Contraseña restablecida con éxito');

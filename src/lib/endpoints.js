@@ -2,13 +2,19 @@
 const API_BASE_URL = /*process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000/api/v1'*/'https://api.cloudnel.com/api/v1';
 
 const endpoints = {
-  
+  //Auth
+
   // Login
   auth_login: () => `${API_BASE_URL}/auth/login`,
 
   // Logout
   auth_logout: () => `${API_BASE_URL}/auth/logout`,
 
+  // Reset password
+  auth_reset_password: () => `${API_BASE_URL}/auth/reset-password`,
+
+  // Forgot password
+  auth_forgot_password: () => `${API_BASE_URL}/auth/forgot-password `,
 
 
   // Create Role

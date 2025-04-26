@@ -7,6 +7,8 @@ import { Button } from "@/components/ui/button"; // Botón de ShadcnUI
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { useDispatch } from "react-redux";
 import { setUser } from "@/app/GlobalRedux/Features/auth/authSlice";
+import { fetchData } from "@/services/api";
+import endpoints from "@/lib/endpoints";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -22,18 +24,19 @@ export default function LoginPage() {
     setError(null);
 
     try {
-      const response = await axios.post("http://localhost:3000/api/v1/auth/login", {
-        email,
-        password,
-      }
-      , { withCredentials: true } // Permite envío/recepción de cookies
-    );
 
-    //console.log(response);
+      let form = {
+        "email": email,
+        "password": password
+      }
+      const response = await fetchData(endpoints.auth_login(), {
+        method: 'POST',
+        body: JSON.stringify(form),
+      });
     
       //actualiza el estado global con la información del usuario
       dispatch(setUser(response.data.user));
-      //sessionStorage.setItem("user", JSON.stringify(response.data.user));
+
       //Redirige al usuario a la ruta adecuada
       if (response.data.user.role.scope === 'global') {
         router.push('/admin/dashboard');

@@ -31,27 +31,26 @@ import {
 } from "@/components/ui/sidebar"
 import { clearUser } from "@/app/GlobalRedux/Features/auth/authSlice"
 import { useDispatch } from "react-redux"
+import { fetchData } from "@/services/api"
+import endpoints from "@/lib/endpoints"
 
 export function NavUser({user}) {
   const dispatch = useDispatch();
   const { isMobile } = useSidebar()
   const logout = async () => {
     try {
-      const response = await fetch('http://localhost:3000/api/v1/auth/logout', {
-        method: "POST",
-        credentials: 'include',
+
+      const response = await fetchData(endpoints.auth_logout(), {
+        method: 'POST',
       });
-      if (response.ok) {
-        //sessionStorage.removeItem('user');
+      
+      if(response.error) {
+        console.log(response.error)
+        return
+      }
         dispatch(clearUser());
         window.location.href = '/auth/login';
-        console.log(response)
-        console.log('entra')
-      } else {
-        console.log(response)
-        console.log('no entra')
-      }
-      
+
     } catch (error) {
       console.log('Error during logout:', error);
     }
