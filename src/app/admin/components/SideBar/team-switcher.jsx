@@ -27,7 +27,7 @@ export function TeamSwitcher({teams}) {
     <SidebarMenu>
       <SidebarMenuItem>
         <DropdownMenu>
-          <DropdownMenuTrigger asChild>
+          <DropdownMenuTrigger  asChild>
             <SidebarMenuButton
               size="lg"
               className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
@@ -41,9 +41,10 @@ export function TeamSwitcher({teams}) {
                 </span>
                 <span className="truncate text-xs">{activeTeam.plan}</span>
               </div>
-              <ChevronsUpDown className="ml-auto" />
+              {/* <ChevronsUpDown className="ml-auto" />*/}
             </SidebarMenuButton>
           </DropdownMenuTrigger>
+          {/* Dropdown menu content 
           <DropdownMenuContent
             className="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg"
             align="start"
@@ -74,6 +75,7 @@ export function TeamSwitcher({teams}) {
               <div className="font-medium text-muted-foreground">Add team</div>
             </DropdownMenuItem>
           </DropdownMenuContent>
+          */}
         </DropdownMenu>
       </SidebarMenuItem>
     </SidebarMenu>

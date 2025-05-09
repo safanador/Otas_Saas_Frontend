@@ -11,27 +11,35 @@ import {
   } from "@/components/ui/card"
   import { Button } from "@/components/ui/button"
   import { useRouter } from 'next/navigation'
+import { useSelector } from "react-redux";
+import { useTranslation } from "react-i18next";
+import { useEffect } from "react";
 
 
 export default function UnauthorizedPage() {
-    const router = useRouter();
+
+  const { preferredLanguage } = useSelector((state) => state.auth.user);
+  const { t, i18n } = useTranslation();    
+
+  useEffect(() => {
+   if (preferredLanguage) {
+     i18n.changeLanguage(preferredLanguage);
+   }
+  }, [preferredLanguage, i18n]);
+
   return (
     <AdminLayout>
         <Card>
             <CardHeader>
                 <CardTitle>
-                    <h1 className="text-xl font-semibold">Acceso Denegado
-                    </h1>
+                    <h1 className="text-xl font-semibold">{t("admin.AccessDenied.title")}</h1>
                 </CardTitle>
                 <CardDescription>
-                    <p>El acceso a esta acción ha sido denegado</p>
+                    <p>{t("admin.AccessDenied.description")}</p>
                 </CardDescription>
             </CardHeader>
             <CardContent>
-                <p>
-                    No tienes los permisos requeridos para realizar esta operación.
-                    Si crees que esto es un error, contacta al administrador.
-                    </p>            
+                <p>{t("admin.AccessDenied.message")}</p>            
             </CardContent>
             <CardFooter>
                 

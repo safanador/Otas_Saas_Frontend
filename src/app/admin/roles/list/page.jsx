@@ -16,8 +16,19 @@ import permissions from "@/lib/permissions";
 import { fetchData } from "@/services/api";
 import endpoints from "@/lib/endpoints";
 import PermissionGuard from "@/components/PermissionGuard";
+import { useSelector } from "react-redux";
+import { useTranslation } from "react-i18next";
 
 const RolesList = () => {
+
+  const { preferredLanguage } = useSelector((state) => state.auth.user);
+  const { t, i18n } = useTranslation();    
+  useEffect(() => {
+   if (preferredLanguage) {
+     i18n.changeLanguage(preferredLanguage);
+   }
+  }, [preferredLanguage, i18n]);
+
   const [roles, setRoles] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
@@ -72,7 +83,12 @@ const RolesList = () => {
         return
       }
 
-      toast({ variant: "success", title: "Realizado!", description: "Role eliminado exitosamente." });
+      toast({
+        variant: "success",
+        title: t("toast.success.title"),
+        description: t("toast.success.roleDeleted"),
+      })
+      
       setTimeout(() => {
         window.location.reload();
       }, 1000);
@@ -80,8 +96,8 @@ const RolesList = () => {
     } catch (error) {
         toast({
           variant: "destructive",
-          title: "Uh oh! Parece que algo salió mal.",
-          description: "No se pudo conectar con el servidor. Por favor, intenta más tarde.",
+          title: t("toast.error.title"),
+          description: t("toast.error.serverConnection"),
         })
     }
   };
@@ -90,19 +106,18 @@ const RolesList = () => {
     <AdminLayout>
       <Card>
         <CardHeader>
-          <CardTitle>Roles</CardTitle>
-          <CardDescription>A continuación se presenta una lista con aspectos generales de los roles.</CardDescription>
+          <CardTitle>{t("admin.roleList.title")}</CardTitle>
+          <CardDescription>{t("admin.roleList.description")}</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="container mx-auto py-2">
             <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
-              <h1 className="text-lg font-bold text-gray-900 dark:text-gray-100">Lista de roles</h1>
               <div className="flex items-center gap-2">
                 <Input 
                 type="search" 
-                placeholder="Buscar roles..." 
+                placeholder={t("admin.roleList.searchPlaceholder")}
                 value={searchTerm} 
-                onChange={(e) => setSearchTerm(e.target.value)} // Actualiza el estado al escribir
+                onChange={(e) => setSearchTerm(e.target.value)}
                 className="w-full md:w-64" />
               </div>
             </div>
@@ -111,12 +126,13 @@ const RolesList = () => {
                 <Table>
                   <TableHeader>
                     <TableRow>
-                    <TableHead className="text-center">Item</TableHead>
-                      <TableHead className="text-left">Rol</TableHead>
-                      <TableHead className="text-left">Tipo de Rol</TableHead>
-                      <TableHead className="text-left">Agencia asociada</TableHead>
-                      <TableHead className="text-left">Fecha de Creación</TableHead>
-                      <TableHead className="text-left">Fecha de Actualización</TableHead>
+                    <TableHead className="text-center">{t("admin.roleList.table.headers.item")}</TableHead>
+                      <TableHead className="text-left">{t("admin.roleList.table.headers.role")}</TableHead>
+                      <TableHead className="text-left">{t("admin.roleList.table.headers.roleType")}</TableHead>
+                      <TableHead className="text-left">{t("admin.roleList.table.headers.agency")}</TableHead>
+                      <TableHead className="text-left">{t("admin.roleList.table.headers.createdAt")}</TableHead>
+                      <TableHead className="text-left">{t("admin.roleList.table.headers.updatedAt")}</TableHead>
+                      <TableHead className="text-left">{t("common.actions")}</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -124,7 +140,7 @@ const RolesList = () => {
                       <TableRow key={role.id}>
                         <TableCell className="text-center" >{index+1}</TableCell>
                         <TableCell className="capitalize" >{role.name}</TableCell>
-                        <TableCell className="capitalize" >{role.scope === 'agency' ? `Agencias` : "Empresa desarrolladora"}</TableCell>
+                        <TableCell className="capitalize" >{role.scope === t("admin.roleList.table.body.agencyScope") ? `Agencias` : t("admin.roleList.table.body.companyScope")}</TableCell>
                         <TableCell className="capitalize" >{role.agency?.name}</TableCell>
                         <TableCell>{new Date(role.createdAt).toLocaleDateString()}</TableCell>
                         <TableCell>{new Date(role.updatedAt).toLocaleDateString()}</TableCell>
@@ -132,18 +148,25 @@ const RolesList = () => {
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
                               <Button variant="ghost" className="h-8 w-8 p-0">
-                              <span className="sr-only">Open menu</span>
+                              <span className="sr-only">{t("common.openMenu")}</span>
                               <MoreHorizontal className="h-4 w-4" />
                               </Button>
                           </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end">
-                              <DropdownMenuLabel>Acciones</DropdownMenuLabel>
+                          <DropdownMenuContent 
+                            align="end"
+                            onInteractOutside={(e) => {
+                                if (open) {
+                                  e.preventDefault();
+                                }
+                              }}
+                            >
+                              <DropdownMenuLabel>{t("common.actions")}</DropdownMenuLabel>
                               <DropdownMenuItem onClick={() => router.push(`/admin/roles/show/${role.id}`)}>
-                                <Eye />  Ver Rol
+                                <Eye />{t("admin.roleList.table.body.viewRole")}
                               </DropdownMenuItem>
                               <PermissionGuard requiredPermission={permissions.role_update}>
                                 <DropdownMenuItem onClick={() => router.push(`/admin/roles/edit/${role.id}`) } >
-                                  <Pencil /> Editar Rol
+                                  <Pencil />{t("admin.roleList.table.body.editRole")}
                                 </DropdownMenuItem>
                               </PermissionGuard>
                               <DropdownMenuSeparator />
@@ -154,7 +177,7 @@ const RolesList = () => {
                                       setSelectedRole(role);
                                     }}>
                                 <Trash2 color="red" /> 
-                                  <span className="text-red-500" >Eliminar Rol</span>
+                                  <span className="text-red-500" >{t("admin.roleList.table.body.deleteRole")}</span>
                                 </DropdownMenuItem> 
                               </PermissionGuard>
                           </DropdownMenuContent>
@@ -165,7 +188,7 @@ const RolesList = () => {
                   ) : (
                       <TableRow>
                         <TableCell colSpan={5} className="text-center">
-                          No se encontraron roles.
+                          {t("admin.roleList.table.body.noRoles")}
                         </TableCell>
                       </TableRow>
                   )
@@ -175,14 +198,14 @@ const RolesList = () => {
                 <AlertDialog open={open} onOpenChange={setOpen}>
                   <AlertDialogContent>
                     <AlertDialogHeader>
-                      <AlertDialogTitle>Estás seguro de eliminar este rol?</AlertDialogTitle>
+                      <AlertDialogTitle>{t("admin.roleList.deleteDialog.title")}</AlertDialogTitle>
                       <AlertDialogDescription>
-                        Esta acción no se puede deshacer. Este será permanentemente eliminado de la base de datos.
+                        {t("admin.roleList.deleteDialog.description")}
                       </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
-                      <AlertDialogCancel >Cancelar</AlertDialogCancel>
-                      <AlertDialogAction className={buttonVariants({ variant: "destructive" })} onClick={() => handleDeleteRole(selectedRole?.id)} >Continuar</AlertDialogAction>
+                      <AlertDialogCancel >{t("common.cancel")}</AlertDialogCancel>
+                      <AlertDialogAction className={buttonVariants({ variant: "destructive" })} onClick={() => handleDeleteRole(selectedRole?.id)} >{t("common.continue")}</AlertDialogAction>
                     </AlertDialogFooter>
                   </AlertDialogContent>
                 </AlertDialog>

@@ -11,6 +11,8 @@ import withAuth from "@/app/middleware/withAuth";
 import permissions from "@/lib/permissions";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
+import { useSelector } from "react-redux";
+import { useTranslation } from "react-i18next";
 
 const LogsList = () => {
   const [logs, setLogs] = useState([
@@ -135,6 +137,15 @@ const LogsList = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [actionType, setActionType] = useState("");
   const { toast } = useToast();
+
+  const { preferredLanguage } = useSelector((state) => state.auth.user);
+  const { t, i18n } = useTranslation();    
+  useEffect(() => {
+   if (preferredLanguage) {
+     i18n.changeLanguage(preferredLanguage);
+   }
+  }, [preferredLanguage, i18n]);
+
 {/*
   useEffect(() => {
     const fetchLogs = async () => {
@@ -206,17 +217,19 @@ const LogsList = () => {
     <AdminLayout>
       <Card>
         <CardHeader>
-          <CardTitle>Registro de Actividades</CardTitle>
-          <CardDescription>Historial de acciones realizadas en el sistema.</CardDescription>
+          <CardTitle>{t("admin.logsList.title")}</CardTitle>
+          <CardDescription>{t("admin.logsList.description")}</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="container mx-auto py-2">
             <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6 gap-4">
-              <h1 className="text-lg font-bold text-gray-900 dark:text-gray-100">Registro de logs</h1>
+              <h1 className="text-lg font-bold text-gray-900 dark:text-gray-100">
+                {t("admin.logsList.heading")}
+              </h1>
               <div className="flex items-center gap-2 w-full md:w-auto">
                 <Input 
                   type="search" 
-                  placeholder="Buscar en logs..." 
+                  placeholder={t("admin.logsList.search.placeholder")} 
                   value={searchTerm} 
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="w-full md:w-64" 
@@ -224,17 +237,17 @@ const LogsList = () => {
                 
                 <Select value={actionType} onValueChange={setActionType}>
                   <SelectTrigger className="w-full md:w-48">
-                    <SelectValue placeholder="Filtrar por acción" />
+                    <SelectValue placeholder={t("admin.logsList.search.actionFilter.label")} />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectGroup>
-                      <SelectLabel>Tipo de Acción</SelectLabel>
-                      <SelectItem value={null}>Todas</SelectItem>
-                      <SelectItem value="CREATE">Creación</SelectItem>
-                      <SelectItem value="UPDATE">Actualización</SelectItem>
-                      <SelectItem value="DELETE">Eliminación</SelectItem>
-                      <SelectItem value="LOGIN">Inicio de sesión</SelectItem>
-                      <SelectItem value="LOGOUT">Cierre de sesión</SelectItem>
+                      <SelectLabel>{t("common.actions")}</SelectLabel>
+                      <SelectItem value={null}>{t("admin.logsList.search.actionFilter.options.all")}</SelectItem>
+                      <SelectItem value="CREATE">{t("admin.logsList.search.actionFilter.options.CREATE")}</SelectItem>
+                      <SelectItem value="UPDATE">{t("admin.logsList.search.actionFilter.options.UPDATE")}</SelectItem>
+                      <SelectItem value="DELETE">{t("admin.logsList.search.actionFilter.options.DELETE")}</SelectItem>
+                      <SelectItem value="LOGIN">{t("admin.logsList.search.actionFilter.options.LOGIN")}</SelectItem>
+                      <SelectItem value="LOGOUT">{t("admin.logsList.search.actionFilter.options.LOGOUT")}</SelectItem>
                     </SelectGroup>
                   </SelectContent>
                 </Select>
@@ -245,14 +258,14 @@ const LogsList = () => {
                 <Table>
                   <TableHeader>
                     <TableRow>
-                      <TableHead className="w-[100px]">ID</TableHead>
-                      <TableHead>Usuario</TableHead>
-                      <TableHead>Acción</TableHead>
-                      <TableHead>Entidad</TableHead>
-                      <TableHead>Detalles</TableHead>
-                      <TableHead>Dirección IP</TableHead>
-                      <TableHead>Dispositivo</TableHead>
-                      <TableHead>Fecha/Hora</TableHead>
+                      <TableHead className="w-[100px]">{t("admin.logsList.table.headers.id")}</TableHead>
+                      <TableHead>{t("admin.logsList.table.headers.user")}</TableHead>
+                      <TableHead>{t("admin.logsList.table.headers.action")}</TableHead>
+                      <TableHead>{t("admin.logsList.table.headers.entity")}</TableHead>
+                      <TableHead>{t("admin.logsList.table.headers.details")}</TableHead>
+                      <TableHead>{t("admin.logsList.table.headers.ip")}</TableHead>
+                      <TableHead>{t("admin.logsList.table.headers.device")}</TableHead>
+                      <TableHead>{t("admin.logsList.table.headers.date")}</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -261,7 +274,7 @@ const LogsList = () => {
                         <TableRow key={log.id}>
                           <TableCell className="font-medium">#{log.id}</TableCell>
                           <TableCell className="capitalize">
-                            {log.user?.name || 'Usuario eliminado'}
+                            {log.user?.name || t("admin.logsList.table.body.deletedUser")}
                             {log.user?.email && <div className="text-sm text-gray-500">{log.user.email}</div>}
                           </TableCell>
                           <TableCell>
@@ -277,7 +290,9 @@ const LogsList = () => {
                           <TableCell>
                             {log.userAgent && (
                               <span className="text-sm">
-                                {log.userAgent.includes('Mobile') ? '📱 Mobile' : '💻 Desktop'}
+                                {log.userAgent.includes('Mobile') 
+                                  ? '📱' + t("admin.logsList.table.body.mobile") 
+                                  : '💻' + t("admin.logsList.table.body.desktop")}
                               </span>
                             )}
                           </TableCell>
@@ -292,7 +307,7 @@ const LogsList = () => {
                     ) : (
                       <TableRow>
                         <TableCell colSpan={8} className="text-center">
-                          No se encontraron registros de actividad.
+                          {t("admin.logsList.table.body.noLogs")}
                         </TableCell>
                       </TableRow>
                     )}

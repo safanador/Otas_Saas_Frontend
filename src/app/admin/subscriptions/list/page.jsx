@@ -190,12 +190,22 @@ const SubscritionList = () => {
                         <TableCell>
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
-                              <Button variant="ghost" className="h-8 w-8 p-0">
+                              <Button 
+                                variant="ghost" 
+                                className="h-8 w-8 p-0"
+                              >
                               <span className="sr-only">{t('common.openMenu')}</span>
                               <MoreHorizontal className="h-4 w-4" />
                               </Button>
                           </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end">
+                          <DropdownMenuContent 
+                            align="end"
+                            onInteractOutside={(e) => {
+                                if (open) {
+                                  e.preventDefault();
+                                }
+                              }}
+                            >
                               <DropdownMenuLabel>{t('common.actions')}</DropdownMenuLabel>
                               <DropdownMenuItem onClick={() => router.push(`/admin/subscriptions/show/${sub.id}`)}>
                                 <Eye />  {t('admin.subscriptionsList.table.actions.view')}
@@ -208,7 +218,7 @@ const SubscritionList = () => {
                               <DropdownMenuSeparator />
                               <PermissionGuard requiredPermission={permissions.subscription_delete}>
                                 <DropdownMenuItem onClick={(e) => {
-                                      e.preventDefault(); // Evita que el menú se cierre automáticamente
+                                      e.preventDefault();
                                       setOpen(true);
                                       setSelectedSubscription(sub);
                                     }}>

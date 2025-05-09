@@ -6,7 +6,14 @@ import permissions from "@/lib/permissions";
 
 const Dashboard = () => {
     const user = useSelector((state) => state.auth.user);
-    console.log(user);
+
+    const { preferredLanguage } = useSelector((state) => state.auth.user);
+    const { t, i18n } = useTranslation();
+    useEffect(() => {
+        if (preferredLanguage) {
+            i18n.changeLanguage(preferredLanguage);
+        }
+    }, [preferredLanguage, i18n]);
 
     return(
         <AdminLayout>

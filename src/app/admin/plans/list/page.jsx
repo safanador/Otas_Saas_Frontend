@@ -158,7 +158,14 @@ const PlansList = () => {
                                 <MoreHorizontal className="h-4 w-4" />
                               </Button>
                           </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end">
+                          <DropdownMenuContent 
+                            align="end"
+                            onInteractOutside={(e) => {
+                                if (open) {
+                                  e.preventDefault();
+                                }
+                              }}
+                            >
                               <DropdownMenuLabel>{t("common.actions")}</DropdownMenuLabel>
                               <DropdownMenuItem onClick={() => router.push(`/admin/plans/show/${plan.id}`)}>
                               <Eye /> {t("admin.planList.table.body.viewPlan")}

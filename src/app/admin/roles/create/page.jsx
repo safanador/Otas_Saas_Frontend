@@ -25,9 +25,20 @@ import withAuth from "@/app/middleware/withAuth";
 import permissions from "@/lib/permissions";
 import { fetchData } from "@/services/api";
 import endpoints from "@/lib/endpoints";
+import { useSelector } from "react-redux";
+import { useTranslation } from "react-i18next";
 
 
 const RolesCreate = () => {
+  const { preferredLanguage } = useSelector((state) => state.auth.user);
+  const { t, i18n } = useTranslation();  
+  
+  useEffect(() => {
+   if (preferredLanguage) {
+     i18n.changeLanguage(preferredLanguage);
+   }
+  }, [preferredLanguage, i18n]);
+
   const [permissions, setPermissions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [form, setForm] = useState({name: "", scope: "", permissions: [], agencyId: null});
@@ -41,9 +52,11 @@ const RolesCreate = () => {
   useEffect(() => {
     const fetchPermissions = async () => {
       try {
-        const response = await fetch("http://localhost:3000/api/v1/permissions/");
-        const data = await response.json();
-        setPermissions(data);
+        const response = await fetchData(endpoints.permissions_getAll());
+        if (response.error) {
+          return console.log(response.error);
+        }
+        setPermissions(response);
       } catch (error) {
         console.error("Error fetching roles:", error);
       } finally {
@@ -55,18 +68,12 @@ const RolesCreate = () => {
 
     const fetchAgencies = async () => {
       try {
-        const response = await fetch("http://localhost:3000/api/v1/agencies", {
-          credentials: 'include'
-        });
-        if (response.status === 401) {
-          window.location.href = '/auth/login';
+        const response = await fetchData(endpoints.agency_getAll());
+        if (response.error) {
+          return console.log(response.error);
         }
-        if (response.status === 403) {
-          window.location.href = '/admin/unauthorized';
-        }
-        const agencies = await response.json();
-        console.log(agencies);
-        setAgencies(agencies);
+        
+        setAgencies(response);
       } catch (error) {
         console.error("Error fetching agencies:", error);
       } finally {
@@ -80,22 +87,22 @@ const RolesCreate = () => {
   if (loading) {
     return (
         <AdminLayout>
-            <div className="flex items-center justify-center h-full">
-                <p className="text-center">Cargando...</p>
-            </div>
+          <div className="flex items-center justify-center h-full">
+            <span className="w-8 h-8 border-[3px] border-black border-t-transparent rounded-full animate-spin"></span>
+          </div>
         </AdminLayout>
     );
   }
   // tabla de permisos
   const entities = [
-    { spanish: 'Dashboard', english: 'dashboard' },
-    { spanish: 'Rol', english: 'role' },
-    { spanish: 'Usuario', english: 'user' },
-    { spanish: 'Agencia', english: 'agency' },
-    { spanish: 'Planes', english: 'plan' },
-    { spanish: 'Suscripciones', english: 'subscription' },
-    { spanish: 'Pagos', english: 'payment' },
-    { spanish: 'Logs', english: 'log' },
+    { spanish: t("admin.roleCreate.permissionsTable.entities.dashboard"), english: 'dashboard' },
+    { spanish: t("admin.roleCreate.permissionsTable.entities.role"), english: 'role' },
+    { spanish: t("admin.roleCreate.permissionsTable.entities.user"), english: 'user' },
+    { spanish: t("admin.roleCreate.permissionsTable.entities.agency"), english: 'agency' },
+    { spanish: t("admin.roleCreate.permissionsTable.entities.plan"), english: 'plan' },
+    { spanish: t("admin.roleCreate.permissionsTable.entities.subscription"), english: 'subscription' },
+    { spanish: t("admin.roleCreate.permissionsTable.entities.payment"), english: 'payment' },
+    { spanish: t("admin.roleCreate.permissionsTable.entities.log"), english: 'log' },
   ];
 
 
@@ -140,17 +147,17 @@ const RolesCreate = () => {
 
         toast({
           variant: "success",
-          title: "Realizado!",
-          description: "Rol creado exitosamente.",
-        })
+          title: t("toast.success.title"),
+          description: t("toast.success.roleCreated"),
+        });
 
         setForm({name: "", scope: "", permissions: [], agencyId: null});
       } catch (error) {
           toast({
             variant: "destructive",
-            title: "Uh oh! Parece que algo salió mal.",
-            description: "No se pudo conectar con el servidor. Por favor, intenta más tarde.",
-          })
+            title: t("toast.error.title"),
+            description: t("toast.error.serverConnection"),
+          });
       } finally {
         setButtonLoading(false);
       }
@@ -170,59 +177,57 @@ const RolesCreate = () => {
     <AdminLayout>
       <Card>
         <CardHeader>
-          <CardTitle>Creación de rol</CardTitle>
+          <CardTitle>{t("admin.roleCreate.title")}</CardTitle>
           <CardDescription>
-            Este rol permite gestionar el contenido de la aplicación mediante un sistema de permisos y roles.
+            {t("admin.roleCreate.description")}
           </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="container space-y-4 mx-auto py-2">
-          <h1 className="text-lg font-bold text-gray-900 dark:text-gray-100">Rol</h1>
           <div className="grid w-full max-w-lg items-center gap-1.5">
-            <Label htmlFor="name">Nombre del rol</Label>
+            <Label htmlFor="name">{t("admin.roleCreate.fields.name")}</Label>
             <Input 
               type="text" 
               id="name" 
-              placeholder="Nombre..." 
+              placeholder={t("admin.roleCreate.placeholders.name")}
               value={form.name}
               onChange={(e) => setForm({...form, name: e.target.value})} />
               {errorData && renderFieldErrors('name',errorData)}
           </div>
 
             <div className="grid w-full max-w-lg items-center gap-1.5" >
-              <Label htmlFor="user-type" >Tipo de usuario</Label>
+              <Label htmlFor="user-type" >{t("admin.roleCreate.fields.type")}</Label>
               <Select
                 value={form.scope}
                 onValueChange={(value) => setForm({...form, scope: value})}
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="Tipo de usuario" />
+                  <SelectValue placeholder={t("admin.roleCreate.placeholders.type")}/>
                 </SelectTrigger>
                 <SelectContent>
                   <SelectGroup>
-                    <SelectLabel>Tipos</SelectLabel>
-                    <SelectItem value="agency">Agencia</SelectItem>
-                    <SelectItem value="global">Empresa desarrolladora</SelectItem>
+                    <SelectLabel>{t("admin.roleCreate.selectOptions.types.label")}</SelectLabel>
+                    <SelectItem value="agency">{t("admin.roleCreate.selectOptions.types.agency")}</SelectItem>
+                    <SelectItem value="global">{t("admin.roleCreate.selectOptions.types.global")}</SelectItem>
                   </SelectGroup>
                 </SelectContent>
               </Select>
               {errorData && renderFieldErrors('scope',errorData)}
-
             </div>
 
             { form.scope === 'agency' && (
               <div className="grid w-full max-w-lg items-center gap-1.5" >
-                <Label htmlFor="user-type" >Agencia asociada</Label>
+                <Label htmlFor="user-type" >{t("admin.roleCreate.fields.agency")}</Label>
                 <Select
                   value={form.agencyId}
                   onValueChange={(value) => setForm({...form, agencyId: value})}
                 >
                   <SelectTrigger>
-                    <SelectValue placeholder="Selecciona una agencia" />
+                    <SelectValue placeholder={t("admin.roleCreate.placeholders.agency")} />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectGroup>
-                      <SelectLabel>Agencias</SelectLabel>
+                      <SelectLabel>{t("admin.roleCreate.selectedOptions.agencies.label")}</SelectLabel>
                       {agencies.map((agency) => (
                         <SelectItem key={agency.id} value={agency.id} >
                           {agency.name}
@@ -237,18 +242,18 @@ const RolesCreate = () => {
             )}
 
             <div className="grid w-full max-w-lg items-center gap-1.5" >
-            <Label htmlFor="permissions" >Selecciona permisos</Label>
+            <Label htmlFor="permissions" >{t("admin.roleCreate.fields.permissions")}</Label>
             <div className="overflow-x-auto bg-white rounded-lg shadow dark:bg-gray-800">
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead className="text-center">Entidades</TableHead>
-                    <TableHead className="text-center">Ver</TableHead>
-                    <TableHead className="text-center">Listar</TableHead>
-                    <TableHead className="text-center">Crear</TableHead>
-                    <TableHead className="text-center">Actualizar</TableHead>
-                    <TableHead className="text-center">Borrar</TableHead>
-                    <TableHead className="text-center">Desactivar</TableHead>
+                    <TableHead className="text-center">{t("admin.roleCreate.permissionsTable.headers.entities")}</TableHead>
+                    <TableHead className="text-center">{t("admin.roleCreate.permissionsTable.headers.show")}</TableHead>
+                    <TableHead className="text-center">{t("admin.roleCreate.permissionsTable.headers.list")}</TableHead>
+                    <TableHead className="text-center">{t("admin.roleCreate.permissionsTable.headers.create")}</TableHead>
+                    <TableHead className="text-center">{t("admin.roleCreate.permissionsTable.headers.update")}</TableHead>
+                    <TableHead className="text-center">{t("admin.roleCreate.permissionsTable.headers.delete")}</TableHead>
+                    <TableHead className="text-center">{t("admin.roleCreate.permissionsTable.headers.activate")}</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -290,20 +295,20 @@ const RolesCreate = () => {
             className="w-full md:w-[100px]" >
               { buttonLoading 
                 ? (<span className="w-4 h-4 border-[1.5px] border-white border-t-transparent rounded-full animate-spin"></span>)
-                : (<span>Crear Role</span>) }          
+                : (<span>{t("common.save")}</span>) }          
           </Button>
 
           <AlertDialog open={open} onOpenChange={setOpen}>
               <AlertDialogContent>
                 <AlertDialogHeader>
-                  <AlertDialogTitle>Estás seguro de crear este rol?</AlertDialogTitle>
+                  <AlertDialogTitle>{t("admin.roleCreate.confirmationDialog.title")}</AlertDialogTitle>
                   <AlertDialogDescription>
-                    Este rol permite gestionar el contenido de la aplicación mediante un sistema de permisos y roles.
+                    {t("admin.roleCreate.confirmationDialog.description")}
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
-                  <AlertDialogCancel >Cancelar</AlertDialogCancel>
-                  <AlertDialogAction onClick={handleCreateRole} >Continuar</AlertDialogAction>
+                  <AlertDialogCancel >{t("common.cancel")}</AlertDialogCancel>
+                  <AlertDialogAction onClick={handleCreateRole} >{t("common.continue")}</AlertDialogAction>
                 </AlertDialogFooter>
               </AlertDialogContent>
           </AlertDialog>

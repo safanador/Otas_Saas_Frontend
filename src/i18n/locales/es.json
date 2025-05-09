@@ -560,8 +560,237 @@
         "title": "¿Estás seguro de editar este plan?",
         "description": "Una vez editado, puedes seguir haciendo modificaciones en esta pantalla."
       }
+    },
+
+    "roleList": {
+      "title": "Roles",
+      "description": "A continuación se presenta una lista con aspectos generales de los roles.",
+      "searchPlaceholder": "Buscar roles...",
+      "table": {
+        "headers": {
+          "item": "Item",
+          "role": "Rol",
+          "roleType": "Tipo de Rol",
+          "agency": "Agencia asociada",
+          "createdAt": "Fecha de Creación",
+          "updatedAt": "Fecha de Actualización",
+          "actions": "Acciones"
+        },
+        "body": {
+          "agencyScope": "Agencias",
+          "companyScope": "Empresa desarrolladora",
+          "noRoles": "No se encontraron roles.",
+          "viewRole": "Ver Rol",
+          "editRole": "Editar Rol",
+          "deleteRole": "Eliminar Rol"
+        }
+      },
+      "deleteDialog": {
+        "title": "¿Estás seguro de eliminar este rol?",
+        "description": "Esta acción no se puede deshacer. Este será permanentemente eliminado de la base de datos."
+      }
+    },
+
+    "roleShow": {
+      "title": "Detalles del Rol",
+      "description": "A continuación disponible toda la información relacionada al rol.",
+      "fields": {
+        "name": "Nombre del rol",
+        "type": "Tipo de usuario",
+        "agency": "Agencia asociada",
+        "permissions": "Selecciona permisos"
+      },
+      "placeholders": {
+        "name": "Nombre...",
+        "type": "Tipo de usuario",
+        "agency": "Selecciona una agencia"
+      },
+      "selectOptions": {
+        "types": {
+          "label": "Tipos",
+          "agency": "Agencia",
+          "global": "Empresa desarrolladora"
+        },
+        "agencies": {
+          "label": "Agencias"
+        }
+      },
+      "permissionsTable": {
+        "headers": {
+          "entities": "Entidades",
+          "show": "Ver",
+          "list": "Listar",
+          "create": "Crear",
+          "update": "Actualizar",
+          "delete": "Borrar",
+          "activate": "Desactivar"
+        },
+        "entities": {
+          "dashboard": "Dashboard",
+          "role": "Rol",
+          "user": "Usuario",
+          "agency": "Agencia",
+          "plan": "Planes",
+          "subscription": "Suscripciones",
+          "payment": "Pagos",
+          "log": "Logs"
+        }
+      }
+    },
+
+    "roleCreate": {
+      "title": "Creación de rol",
+      "description": "Este rol permite gestionar el contenido de la aplicación mediante un sistema de permisos y roles.",
+      "fields": {
+        "name": "Nombre del rol",
+        "type": "Tipo de usuario",
+        "agency": "Agencia asociada",
+        "permissions": "Selecciona permisos"
+      },
+      "placeholders": {
+        "name": "Nombre...",
+        "type": "Tipo de usuario",
+        "agency": "Selecciona una agencia"
+      },
+      "selectOptions": {
+        "types": {
+          "label": "Tipos",
+          "agency": "Agencia",
+          "global": "Empresa desarrolladora"
+        },
+        "agencies": {
+          "label": "Agencias"
+        }
+      },
+      "permissionsTable": {
+        "headers": {
+          "entities": "Entidades",
+          "show": "Ver",
+          "list": "Listar",
+          "create": "Crear",
+          "update": "Actualizar",
+          "delete": "Borrar",
+          "activate": "Desactivar"
+        },
+        "entities": {
+          "dashboard": "Dashboard",
+          "role": "Rol",
+          "user": "Usuario",
+          "agency": "Agencia",
+          "plan": "Planes",
+          "subscription": "Suscripciones",
+          "payment": "Pagos",
+          "log": "Logs"
+        }
+      },
+      "confirmationDialog": {
+        "title": "¿Estás seguro de crear este rol?",
+        "description": "Este rol permite gestionar el contenido de la aplicación mediante un sistema de permisos y roles."
+      }
+    },
+
+    "roleEdit": {
+      "title": "Edición de rol",
+      "description": "A continuación edita toda la información necesaria relacionada al rol.",
+      "heading": "Rol",
+      "fields": {
+        "name": "Nombre del rol",
+        "type": "Tipo de usuario",
+        "agency": "Agencia asociada",
+        "permissions": "Selecciona permisos"
+      },
+      "placeholders": {
+        "name": "Nombre...",
+        "type": "Tipo de usuario",
+        "agency": "Selecciona una agencia"
+      },
+      "selectOptions": {
+        "types": {
+          "label": "Tipos",
+          "agency": "Agencia",
+          "global": "Empresa desarrolladora"
+        },
+        "agencies": {
+          "label": "Agencias"
+        }
+      },
+      "permissionsTable": {
+        "headers": {
+          "entities": "Entidades",
+          "show": "Ver",
+          "list": "Listar",
+          "create": "Crear",
+          "update": "Actualizar",
+          "delete": "Borrar",
+          "activate": "Desactivar"
+        },
+        "entities": {
+          "dashboard": "Dashboard",
+          "role": "Rol",
+          "user": "Usuario",
+          "agency": "Agencia",
+          "plan": "Planes",
+          "subscription": "Suscripciones",
+          "payment": "Pagos",
+          "log": "Logs"
+        }
+      },
+      "confirmationDialog": {
+        "title": "¿Estás seguro de editar este rol?",
+        "description": "Este rol permite gestionar el contenido de la aplicación mediante un sistema de permisos y roles."
+      }
+    },
+
+    "AccessDenied": {
+      "title": "Acceso Denegado",
+      "description": "El acceso a esta acción ha sido denegado",
+      "message": "No tienes los permisos requeridos para realizar esta operación.\nSi crees que esto es un error, contacta al administrador."
+    },
+
+    "logsList": {
+      "title": "Registro de Actividades",
+      "description": "Historial de acciones realizadas en el sistema.",
+      "heading": "Registro de logs",
+      "search": {
+        "placeholder": "Buscar en logs...",
+        "actionFilter": {
+          "label": "Filtrar por acción",
+          "options": {
+            "all": "Todas",
+            "CREATE": "Creación",
+            "UPDATE": "Actualización",
+            "DELETE": "Eliminación",
+            "LOGIN": "Inicio de sesión",
+            "LOGOUT": "Cierre de sesión"
+          }
+        }
+      },
+      "table": {
+        "headers": {
+          "id": "ID",
+          "user": "Usuario",
+          "action": "Acción",
+          "entity": "Entidad",
+          "details": "Detalles",
+          "ip": "Dirección IP",
+          "device": "Dispositivo",
+          "date": "Fecha/Hora"
+        },
+        "body": {
+          "deletedUser": "Usuario eliminado",
+          "mobile": "📱 Mobile",
+          "desktop": "💻 Desktop",
+          "noLogs": "No se encontraron registros de actividad."
+        },
+        "badges": {
+          "CREATE": "CREATE",
+          "UPDATE": "UPDATE",
+          "DELETE": "DELETE",
+          "LOGIN": "LOGIN",
+          "LOGOUT": "LOGOUT"
+        }
+      }
     }
-    
   },
 
   "toast": {
@@ -591,7 +820,11 @@
 
       "planDeleted": "Plan eliminado exitosamente.",
       "planCreated": "Plan creado exitosamente.",
-      "planEdited": "Plan editado exitosamente."
+      "planEdited": "Plan editado exitosamente.",
+
+      "roleDeleted": "Rol eliminado exitosamente.",
+      "roleCreated": "Rol creado exitosamente.",
+      "roleEdited": "Rol editado exitosamente."
     }
   },
 

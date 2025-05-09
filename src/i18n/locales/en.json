@@ -566,6 +566,236 @@
           "title": "Are you sure you want to edit this plan?",
           "description": "Once edited, you can continue making modifications on this screen."
         }
+      },
+
+      "roleList": {
+        "title": "Roles",
+        "description": "Below is a list with general aspects of the roles.",
+        "searchPlaceholder": "Search roles...",
+        "table": {
+          "headers": {
+            "item": "Item",
+            "role": "Role",
+            "roleType": "Role Type",
+            "agency": "Associated Agency",
+            "createdAt": "Creation Date",
+            "updatedAt": "Update Date",
+            "actions": "Actions"
+          },
+          "body": {
+            "agencyScope": "Agencies",
+            "companyScope": "Development company",
+            "noRoles": "No roles found.",
+            "viewRole": "View Role",
+            "editRole": "Edit Role",
+            "deleteRole": "Delete Role"
+          }
+        },
+        "deleteDialog": {
+          "title": "Are you sure you want to delete this role?",
+          "description": "This action cannot be undone. This will be permanently deleted from the database."
+        }
+      },
+
+      "roleShow": {
+        "title": "Role Details",
+        "description": "All information related to the role is available below.",
+        "fields": {
+          "name": "Role name",
+          "type": "User type",
+          "agency": "Associated Agency",
+          "permissions": "Select permissions"
+        },
+        "placeholders": {
+          "name": "Name...",
+          "type": "User type",
+          "agency": "Select an agency"
+        },
+        "selectOptions": {
+          "types": {
+            "label": "Types",
+            "agency": "Agency",
+            "global": "Development company"
+          },
+          "agencies": {
+            "label": "Agencies"
+          }
+        },
+        "permissionsTable": {
+          "headers": {
+            "entities": "Entities",
+            "show": "View",
+            "list": "List",
+            "create": "Create",
+            "update": "Update",
+            "delete": "Delete",
+            "activate": "Deactivate"
+          },
+          "entities": {
+            "dashboard": "Dashboard",
+            "role": "Role",
+            "user": "User",
+            "agency": "Agency",
+            "plan": "Plans",
+            "subscription": "Subscriptions",
+            "payment": "Payments",
+            "log": "Logs"
+          }
+        }
+      },
+
+      "roleCreate": {
+        "title": "Role Creation",
+        "description": "This role allows managing application content through a permissions and roles system.",
+        "fields": {
+          "name": "Role name",
+          "type": "User type",
+          "agency": "Associated Agency",
+          "permissions": "Select permissions"
+        },
+        "placeholders": {
+          "name": "Name...",
+          "type": "User type",
+          "agency": "Select an agency"
+        },
+        "selectOptions": {
+          "types": {
+            "label": "Types",
+            "agency": "Agency",
+            "global": "Development company"
+          },
+          "agencies": {
+            "label": "Agencies"
+          }
+        },
+        "permissionsTable": {
+          "headers": {
+            "entities": "Entities",
+            "show": "View",
+            "list": "List",
+            "create": "Create",
+            "update": "Update",
+            "delete": "Delete",
+            "activate": "Deactivate"
+          },
+          "entities": {
+            "dashboard": "Dashboard",
+            "role": "Role",
+            "user": "User",
+            "agency": "Agency",
+            "plan": "Plans",
+            "subscription": "Subscriptions",
+            "payment": "Payments",
+            "log": "Logs"
+          }
+        },
+        "confirmationDialog": {
+          "title": "Are you sure you want to create this role?",
+          "description": "This role allows managing application content through a permissions and roles system."
+        }
+      },
+
+      "roleEdit": {
+        "title": "Role Edit",
+        "description": "Edit all necessary information related to the role below.",
+        "heading": "Role",
+        "fields": {
+          "name": "Role name",
+          "type": "User type",
+          "agency": "Associated Agency",
+          "permissions": "Select permissions"
+        },
+        "placeholders": {
+          "name": "Name...",
+          "type": "User type",
+          "agency": "Select an agency"
+        },
+        "selectOptions": {
+          "types": {
+            "label": "Types",
+            "agency": "Agency",
+            "global": "Development company"
+          },
+          "agencies": {
+            "label": "Agencies"
+          }
+        },
+        "permissionsTable": {
+          "headers": {
+            "entities": "Entities",
+            "show": "View",
+            "list": "List",
+            "create": "Create",
+            "update": "Update",
+            "delete": "Delete",
+            "activate": "Deactivate"
+          },
+          "entities": {
+            "dashboard": "Dashboard",
+            "role": "Role",
+            "user": "User",
+            "agency": "Agency",
+            "plan": "Plans",
+            "subscription": "Subscriptions",
+            "payment": "Payments",
+            "log": "Logs"
+          }
+        },
+        "confirmationDialog": {
+          "title": "Are you sure you want to edit this role?",
+          "description": "This role allows managing application content through a permissions and roles system."
+        }
+      },
+
+      "AccessDenied": {
+        "title": "Access Denied",
+        "description": "Access to this action has been denied",
+        "message": "You don't have the required permissions to perform this operation.\nIf you believe this is an error, please contact the administrator."
+      },
+
+      "logsList": {
+        "title": "Activity Logs",
+        "description": "History of actions performed in the system.",
+        "heading": "Log records",
+        "search": {
+          "placeholder": "Search logs...",
+          "actionFilter": {
+            "label": "Filter by action",
+            "options": {
+              "all": "All",
+              "CREATE": "Creation",
+              "UPDATE": "Update",
+              "DELETE": "Delete",
+              "LOGIN": "Login",
+              "LOGOUT": "Logout"
+            }
+          }
+        },
+        "table": {
+          "headers": {
+            "id": "ID",
+            "user": "User",
+            "action": "Action",
+            "entity": "Entity",
+            "details": "Details",
+            "ip": "IP Address",
+            "device": "Device",
+            "date": "Date/Time"
+          },
+          "body": {
+            "deletedUser": "Deleted user",
+            "mobile": "📱 Mobile",
+            "desktop": "💻 Desktop",
+            "noLogs": "No activity records found."
+          },
+          "badges": {
+            "CREATE": "CREATE",
+            "UPDATE": "UPDATE",
+            "DELETE": "DELETE",
+            "LOGIN": "LOGIN",
+            "LOGOUT": "LOGOUT"
+          }
+        }
       }
     },
 
@@ -596,7 +826,12 @@
 
         "planDeleted": "Plan deleted successfully.",
         "planCreated": "Plan created successfully.",
-        "planEdited": "Plan edited successfully."
+        "planEdited": "Plan edited successfully.",
+
+        "roleDeleted": "Role deleted successfully.",
+        "roleCreated": "Role created successfully.",
+        "roleEdited": "Role edited successfully."
+
       }
     },
     "errors": {

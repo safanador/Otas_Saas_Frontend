@@ -27,13 +27,8 @@ import { useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 
 const AgenciesList = () => {
-  // Get language from Redux store
   const { preferredLanguage } = useSelector((state) => state.auth.user);
-
-  // Initialize translation hook
   const { t, i18n } = useTranslation();
-
-  // Set the language from Redux
   useEffect(() => {
     if (preferredLanguage) {
       i18n.changeLanguage(preferredLanguage);
@@ -247,7 +242,14 @@ const AgenciesList = () => {
                                 <MoreHorizontal className="h-4 w-4" />
                               </Button>
                           </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end">
+                          <DropdownMenuContent 
+                            align="end"
+                            onInteractOutside={(e) => {
+                                if (open) {
+                                  e.preventDefault();
+                                }
+                              }}
+                            >
                               <DropdownMenuLabel>{t('common.actions')}</DropdownMenuLabel>
                               <PermissionGuard requiredPermission={permissions.agency_show}>
                                 <DropdownMenuItem onClick={() => router.push(`/admin/agency/show/${agency.id}`)}>

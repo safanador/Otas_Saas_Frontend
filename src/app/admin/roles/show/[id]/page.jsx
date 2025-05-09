@@ -22,9 +22,20 @@ import withAuth from "@/app/middleware/withAuth";
 import permissions from "@/lib/permissions";
 import { fetchData } from "@/services/api";
 import endpoints from "@/lib/endpoints";
+import { useSelector } from "react-redux";
+import { useTranslation } from "react-i18next";
 
 
 const RolesShow = () => {
+  const { preferredLanguage } = useSelector((state) => state.auth.user);
+  const { t, i18n } = useTranslation();  
+  
+  useEffect(() => {
+   if (preferredLanguage) {
+     i18n.changeLanguage(preferredLanguage);
+   }
+  }, [preferredLanguage, i18n]);
+
   const [permissions, setPermissions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [form, setForm] = useState({});
@@ -34,7 +45,9 @@ const RolesShow = () => {
    if (!id) {
     return (
     <AdminLayout>
-      <p>Cargando...</p>
+      <div className="flex items-center justify-center h-full">
+        <span className="w-8 h-8 border-[3px] border-black border-t-transparent rounded-full animate-spin"></span>
+      </div>
     </AdminLayout>
     );
   }
@@ -81,14 +94,14 @@ const RolesShow = () => {
 
   // tabla de permisos
   const entities = [
-    { spanish: 'Dashboard', english: 'dashboard' },
-    { spanish: 'Rol', english: 'role' },
-    { spanish: 'Usuario', english: 'user' },
-    { spanish: 'Agencia', english: 'agency' },
-    { spanish: 'Planes', english: 'plan' },
-    { spanish: 'Suscripciones', english: 'subscription' },
-    { spanish: 'Pagos', english: 'payment' },
-    { spanish: 'Logs', english: 'log' },
+    { spanish: t("admin.roleShow.permissionsTable.entities.dashboard"), english: 'dashboard' },
+    { spanish: t("admin.roleShow.permissionsTable.entities.role"), english: 'role' },
+    { spanish: t("admin.roleShow.permissionsTable.entities.user"), english: 'user' },
+    { spanish: t("admin.roleShow.permissionsTable.entities.agency"), english: 'agency' },
+    { spanish: t("admin.roleShow.permissionsTable.entities.plan"), english: 'plan' },
+    { spanish: t("admin.roleShow.permissionsTable.entities.subscription"), english: 'subscription' },
+    { spanish: t("admin.roleShow.permissionsTable.entities.payment"), english: 'payment' },
+    { spanish: t("admin.roleShow.permissionsTable.entities.log"), english: 'log' },
   ];
 
   const getPermission = (action, entity) => {
@@ -109,38 +122,37 @@ const RolesShow = () => {
     <AdminLayout>
       <Card>
         <CardHeader>
-          <CardTitle>Detalles del Rol</CardTitle>
-          <CardDescription>A continuación disponible toda la información relacionada al rol.</CardDescription>
+          <CardTitle>{t("admin.roleShow.title")}</CardTitle>
+          <CardDescription>{t("admin.roleShow.description")}</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="container space-y-4 mx-auto py-2">
-          <h1 className="text-lg font-bold text-gray-900 dark:text-gray-100">Rol</h1>
           <div className="grid w-full max-w-lg items-center gap-1.5">
-            <Label htmlFor="name">Nombre del rol</Label>
+            <Label htmlFor="name">{t("admin.roleShow.fields.name")}</Label>
             <Input 
               disabled
               type="text" 
               id="name" 
-              placeholder="Nombre..." 
+              placeholder={t("admin.roleShow.placeholders.name")}
               value={form.name}
               onChange={(e) => setForm({...form, name: e.target.value})} />
           </div>
 
             <div className="grid w-full max-w-lg items-center gap-1.5" >
-              <Label htmlFor="user-type" >Tipo de usuario</Label>
+              <Label htmlFor="user-type" >{t("admin.roleShow.fields.type")}</Label>
               <Select
                 disabled
                 value={form.scope}
                 onValueChange={(value) => setForm({...form, scope: value})}
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="Tipo de usuario" />
+                  <SelectValue placeholder={t("admin.roleShow.placeholders.type")}/>
                 </SelectTrigger>
                 <SelectContent>
                   <SelectGroup>
-                    <SelectLabel>Tipos</SelectLabel>
-                    <SelectItem value="agency">Agencia</SelectItem>
-                    <SelectItem value="global">Empresa desarrolladora</SelectItem>
+                    <SelectLabel>{t("admin.roleShow.selectedOptions.types.label")}</SelectLabel>
+                    <SelectItem value="agency">{t("admin.roleShow.selectOptions.types.agency")}</SelectItem>
+                    <SelectItem value="global">{t("admin.roleShow.selectOptions.types.global")}</SelectItem>
                   </SelectGroup>
                 </SelectContent>
               </Select>
@@ -148,16 +160,16 @@ const RolesShow = () => {
             
             { form.scope === 'agency' && (
               <div className="grid w-full max-w-lg items-center gap-1.5" >
-                <Label htmlFor="user-type" >Agencia asociada</Label>
+                <Label htmlFor="user-type" >{t("admin.roleShow.fields.agency")}</Label>
                 <Select
                   disabled
                   value={form.agency.id}>
                   <SelectTrigger>
-                    <SelectValue placeholder="Selecciona una agencia" />
+                    <SelectValue placeholder={t("admin.roleShow.placeholders.agency")}/>
                   </SelectTrigger>
                   <SelectContent>
                     <SelectGroup>
-                      <SelectLabel>Agencias</SelectLabel>
+                      <SelectLabel>{t("admin.roleShow.selectedOptions.agencies.label")}</SelectLabel>
                         <SelectItem key={form.agency.id} value={form.agency.id} >
                           {form.agency.name}
                         </SelectItem>
@@ -168,18 +180,18 @@ const RolesShow = () => {
             )}
 
             <div className="grid w-full max-w-lg items-center gap-1.5" >
-            <Label htmlFor="permissions" >Selecciona permisos</Label>
+            <Label htmlFor="permissions" >{t("admin.roleShow.fields.permissions")}</Label>
             <div className="overflow-x-auto bg-white rounded-lg shadow dark:bg-gray-800">
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead className="text-center">Entidades</TableHead>
-                    <TableHead className="text-center">Ver</TableHead>
-                    <TableHead className="text-center">Listar</TableHead>
-                    <TableHead className="text-center">Crear</TableHead>
-                    <TableHead className="text-center">Actualizar</TableHead>
-                    <TableHead className="text-center">Borrar</TableHead>
-                    <TableHead className="text-center">Desactivar</TableHead>
+                    <TableHead className="text-center">{t("admin.roleShow.permissionsTable.headers.entities")}</TableHead>
+                    <TableHead className="text-center">{t("admin.roleShow.permissionsTable.headers.show")}</TableHead>
+                    <TableHead className="text-center">{t("admin.roleShow.permissionsTable.headers.list")}</TableHead>
+                    <TableHead className="text-center">{t("admin.roleShow.permissionsTable.headers.create")}</TableHead>
+                    <TableHead className="text-center">{t("admin.roleShow.permissionsTable.headers.update")}</TableHead>
+                    <TableHead className="text-center">{t("admin.roleShow.permissionsTable.headers.delete")}</TableHead>
+                    <TableHead className="text-center">{t("admin.roleShow.permissionsTable.headers.activate")}</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>

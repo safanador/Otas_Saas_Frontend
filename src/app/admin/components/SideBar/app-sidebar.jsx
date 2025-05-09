@@ -34,9 +34,9 @@ const data = {
   },
   teams: [
     {
-      name: "TourFlow.io",
+      name: "Cloudnel.com",
       logo: GalleryVerticalEnd,
-      plan: "Enterprise",
+      plan: "Channel manager",
     },
     {
       name: "Acme Corp.",

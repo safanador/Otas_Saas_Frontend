@@ -171,7 +171,14 @@ const PaymentsList = () => {
                               <MoreHorizontal className="h-4 w-4" />
                               </Button>
                           </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end">
+                          <DropdownMenuContent 
+                            align="end"
+                            onInteractOutside={(e) => {
+                                if (open) {
+                                  e.preventDefault();
+                                }
+                              }}
+                            >
                               <DropdownMenuLabel>{t('common.actions')}</DropdownMenuLabel>
                               <PermissionGuard requiredPermission={permissions.payment_update}>
                                 <DropdownMenuItem onClick={() => router.push(`/admin/payments/edit/${payment.id}`) } >

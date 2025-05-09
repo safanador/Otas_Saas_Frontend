@@ -272,12 +272,22 @@ const UsersList = () => {
                         <TableCell>
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
-                              <Button variant="ghost" className="h-8 w-8 p-0">
+                              <Button       
+                                variant="ghost" 
+                                className="h-8 w-8 p-0"
+                              >
                                 <span className="sr-only">Open menu</span>
                                 <MoreHorizontal className="h-4 w-4" />
                               </Button>
                           </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end">
+                          <DropdownMenuContent 
+                            align="end"
+                            onInteractOutside={(e) => {
+                                if (open) {
+                                  e.preventDefault();
+                                }
+                              }}
+                            >
                               <DropdownMenuLabel>{t('common.actions')}</DropdownMenuLabel>
                               <PermissionGuard requiredPermission={permissions.user_show}>
                                 <DropdownMenuItem onClick={() => router.push(`/admin/users/show/${user.id}`)}>
@@ -292,11 +302,11 @@ const UsersList = () => {
                               <DropdownMenuSeparator />
                               <PermissionGuard requiredPermission={permissions.user_delete}>
                                 <DropdownMenuItem onClick={(e) => {
-                                      e.preventDefault(); // Evita que el menú se cierre automáticamente
+                                      e.preventDefault();
                                       setOpen(true);
                                       setSelectedUser(user);
                                     }}>
-                                  <Trash2 color="red" />
+                                  <Trash2 color="red"/>
                                   <span className="text-red-500" >{t("admin.usersList.actions.delete")}</span>
                                 </DropdownMenuItem>
                               </PermissionGuard>
