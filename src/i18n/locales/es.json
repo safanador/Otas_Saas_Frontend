@@ -467,7 +467,101 @@
         "cancel": "Cancelar",
         "continue": "Continuar"
       }
+    },
+
+    "planList": {
+      "title": "Listado de planes",
+      "description": "A continuación se presenta una lista con aspectos generales de los planes ofrecidos.",
+      "searchPlaceholder": "Buscar plan...",
+      "table": {
+        "headers": {
+          "item": "Item",
+          "name": "Nombre",
+          "description": "Descripción",
+          "price": "Precio",
+          "duration": "Duración",
+          "trial": "Prueba",
+          "actions": "Acciones"
+        },
+        "body": {
+          "noPlans": "No se encontraron planes.",
+          "viewPlan": "Ver Plan",
+          "editPlan": "Editar Plan",
+          "deletePlan": "Eliminar Plan"
+        },
+        "actions": {
+          "menuLabel": "Acciones",
+          "openMenu": "Abrir menú"
+        }
+      },
+      "deleteDialog": {
+        "title": "¿Estás seguro de eliminar este Plan?",
+        "description": "Esta acción no se puede deshacer. El plan será permanentemente eliminado de la base de datos, confirma que ninguna agencia tenga este plan asociado."
+      }
+    },
+
+    "planShow": {
+      "title": "Información del plan",
+      "description": "En esta ventana puedes ver toda la información relacionada al plan seleccionado.",
+      "fields": {
+        "name": "Nombre",
+        "description": "Descripción",
+        "price": "Precio",
+        "duration": "Duración en días",
+        "trial": "¿Prueba?"
+      },
+      "placeholders": {
+        "name": "Nombre...",
+        "description": "Descripción...",
+        "price": "Precio...",
+        "duration": "Duración..."
+      }
+    },
+
+    "planCreate": {
+      "title": "Creación de plan",
+      "description": "Ventana para crear un nuevo plan, agregue toda la información para poder continuar.",
+      "fields": {
+        "name": "Nombre",
+        "description": "Descripción",
+        "price": "Precio",
+        "duration": "Duración en días",
+        "trial": "¿Prueba?"
+      },
+      "placeholders": {
+        "name": "Nombre...",
+        "description": "Descripción...",
+        "price": "Precio...",
+        "duration": "Duración..."
+      },
+      "confirmationDialog": {
+        "title": "¿Estás seguro de crear este plan?",
+        "description": "Una vez creado, el plan estará disponible para suscripciones."
+      }
+    },
+
+    "planEdit": {
+      "title": "Edición de plan",
+      "description": "Ventana para editar un plan existente, actualice toda la información necesaria para continuar.",
+      "fields": {
+        "name": "Nombre",
+        "description": "Descripción",
+        "price": "Precio",
+        "duration": "Duración en días",
+        "trial": "¿Prueba?"
+      },
+      "placeholders": {
+        "name": "Nombre...",
+        "description": "Descripción...",
+        "price": "Precio...",
+        "duration": "Duración..."
+      },
+      "confirmationDialog": {
+        "title": "¿Estás seguro de editar este plan?",
+        "description": "Una vez editado, puedes seguir haciendo modificaciones en esta pantalla."
+      }
     }
+    
   },
 
   "toast": {
@@ -493,7 +587,11 @@
 
       "paymentDeleted": "Pago eliminado exitosamente.",
       "paymentCreate": "Pago creado exitosamente.",
-      "paymentEdit": "Pago editado exitosamente."
+      "paymentEdit": "Pago editado exitosamente.",
+
+      "planDeleted": "Plan eliminado exitosamente.",
+      "planCreated": "Plan creado exitosamente.",
+      "planEdited": "Plan editado exitosamente."
     }
   },
 

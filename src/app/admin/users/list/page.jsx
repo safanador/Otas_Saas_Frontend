@@ -26,18 +26,14 @@ import { Cities } from "../../components/CountryStateCity/Cities";
 import { Countries } from "../../components/CountryStateCity/Country";
 
 const UsersList = () => {
-      // Get language from Redux store
-      const { preferredLanguage } = useSelector((state) => state.auth.user);
-
-      // Initialize translation hook
-      const { t, i18n } = useTranslation();
-    
-      // Set the language from Redux
-      useEffect(() => {
-        if (preferredLanguage) {
-          i18n.changeLanguage(preferredLanguage);
-        }
-      }, [preferredLanguage, i18n]);
+  
+  const { preferredLanguage } = useSelector((state) => state.auth.user);
+  const { t, i18n } = useTranslation();    
+  useEffect(() => {
+   if (preferredLanguage) {
+     i18n.changeLanguage(preferredLanguage);
+   }
+  }, [preferredLanguage, i18n]);
 
   const [users, setUsers] = useState([]);
   const [agencies, setAgencies] = useState([]);

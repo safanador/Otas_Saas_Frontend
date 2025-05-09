@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import AdminLayout from "../../components/SideBar/AdminLayout";
@@ -13,9 +13,21 @@ import withAuth from "@/app/middleware/withAuth";
 import permissions from "@/lib/permissions";
 import { fetchData } from "@/services/api";
 import endpoints from "@/lib/endpoints";
+import { useSelector } from "react-redux";
+import { useTranslation } from "react-i18next";
 
 
-const UsersCreate = () => {
+const PlansCreate = () => {
+
+  const { preferredLanguage } = useSelector((state) => state.auth.user);
+  const { t, i18n } = useTranslation(); 
+
+  useEffect(() => {
+   if (preferredLanguage) {
+     i18n.changeLanguage(preferredLanguage);
+   }
+  }, [preferredLanguage, i18n]);
+
   const [buttonLoading, setButtonLoading] = useState(false);
   const initialFormState = {
     name: "",
@@ -48,8 +60,8 @@ const UsersCreate = () => {
       // Mostrar mensaje de éxito
       toast({
         variant: "success",
-        title: "Realizado!",
-        description: "Plan creado exitosamente.",
+        title: t("toast.success.title"),
+        description: t("toast.success.planCreated"),
       });
       setForm(initialFormState);
   
@@ -57,9 +69,10 @@ const UsersCreate = () => {
 
       toast({
         variant: "destructive",
-        title: "Uh oh! Parece que algo salió mal.",
-        description: "No se pudo conectar con el servidor. Por favor, intenta más tarde.",
+        title: t("toast.error.title"),
+        description: t("toast.error.serverConnection"),
       });
+
     } finally { 
       setButtonLoading(false);
     }
@@ -79,20 +92,20 @@ const UsersCreate = () => {
     <AdminLayout>
       <Card>
         <CardHeader>
-          <CardTitle>Creación de plan</CardTitle>
+          <CardTitle>{t("admin.planCreate.title")}</CardTitle>
           <CardDescription>
-            Ventana para crear un nuevo plan, agregue toda la información para poder continuar.
+            {t("admin.planCreate.description")}
           </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="container space-y-4 mx-auto py-2">
                 {/** Name Done */}
               <div className="grid w-full max-w-lg items-center gap-1.5">
-                <Label htmlFor="name">Nombre</Label>
+                <Label htmlFor="name">{t("admin.planCreate.fields.name")}</Label>
                 <Input
                   type="text" 
                   id="name" 
-                  placeholder="Nombre..." 
+                  placeholder={t("admin.planCreate.placeholders.name")}
                   value={form.name}
                   onChange={(e) => setForm({...form, name: e.target.value})} 
                 />
@@ -101,11 +114,11 @@ const UsersCreate = () => {
 
                 {/** description Done*/}
               <div className="grid w-full max-w-lg items-center gap-1.5">
-                <Label htmlFor="name">Descripción</Label>
+                <Label htmlFor="name">{t("admin.planCreate.fields.description")}</Label>
                 <Input 
                   type="text" 
                   id="email" 
-                  placeholder="Descripción..." 
+                  placeholder={t("admin.planCreate.placeholders.description")}
                   value={form.description}
                   onChange={(e) => setForm({...form, description: e.target.value})} 
                 />
@@ -114,11 +127,11 @@ const UsersCreate = () => {
 
                 {/** price Done */}
               <div className="grid w-full max-w-lg items-center gap-1.5">
-                <Label htmlFor="name">Precio</Label>
+                <Label htmlFor="name">{t("admin.planCreate.fields.price")}</Label>
                 <Input 
                   type="number" 
                   id="corporateEmail" 
-                  placeholder="Precio..." 
+                  placeholder={t("admin.planCreate.placeholders.price")}
                   value={form.price}
                   onChange={(e) => setForm({...form, price: e.target.value})} 
                 />
@@ -127,11 +140,11 @@ const UsersCreate = () => {
 
                 {/** Duration in Days Done*/}
               <div className="grid w-full max-w-lg items-center gap-1.5">
-                <Label htmlFor="name">Duración en días</Label>
+                <Label htmlFor="name">{t("admin.planCreate.fields.duration")}</Label>
                 <Input 
                   type="number" 
                   id="address" 
-                  placeholder="Duración..." 
+                  placeholder={t("admin.planCreate.placeholders.duration")}
                   value={form.durationInDays}
                   onChange={(e) => setForm({...form, durationInDays: e.target.value})} 
                 />
@@ -140,7 +153,7 @@ const UsersCreate = () => {
 
               {/** Trial in Days Done*/}
               <div className="flex items-center w-full max-w-lg justify-between gap-1.5">
-                <Label htmlFor="name">Prueba?</Label>
+                <Label htmlFor="name">{t("admin.planCreate.fields.trial")}</Label>
                 <Checkbox                   
                   onCheckedChange={(e) => setForm({...form, isTrial: e})}
                   checked={form.isTrial}  />
@@ -153,20 +166,20 @@ const UsersCreate = () => {
             className="w-full md:w-[100px]" >
               { buttonLoading 
                 ? (<span className="w-4 h-4 border-[1.5px] border-white border-t-transparent rounded-full animate-spin"></span>)
-                : (<span>Crear Plan</span>) }
+                : (<span>{t("common.save")}</span>) }
           </Button>
 
           <AlertDialog open={open} onOpenChange={setOpen}>
               <AlertDialogContent>
                 <AlertDialogHeader>
-                  <AlertDialogTitle>Estás seguro de crear este usuario?</AlertDialogTitle>
+                  <AlertDialogTitle>{t("admin.planCreate.confirmationDialog.title")}</AlertDialogTitle>
                   <AlertDialogDescription>
-                    Una vez creado el usuario va a recibir un correo electronico de confirmación.
+                    {t("admin.planCreate.confirmationDialog.description")}
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
-                  <AlertDialogCancel >Cancelar</AlertDialogCancel>
-                  <AlertDialogAction onClick={handleCreate} >Continuar</AlertDialogAction>
+                  <AlertDialogCancel >{t("common.cancel")}</AlertDialogCancel>
+                  <AlertDialogAction onClick={handleCreate} >{t("common.continue")}</AlertDialogAction>
                 </AlertDialogFooter>
               </AlertDialogContent>
           </AlertDialog>
@@ -177,4 +190,4 @@ const UsersCreate = () => {
   );
 };
 
-export default withAuth(UsersCreate, permissions.user_create) ;
+export default withAuth(PlansCreate, permissions.plan_create);

@@ -14,8 +14,20 @@ import withAuth from "@/app/middleware/withAuth";
 import permissions from "@/lib/permissions";
 import { fetchData } from "@/services/api";
 import endpoints from "@/lib/endpoints";
+import { useSelector } from "react-redux";
+import { useTranslation } from "react-i18next";
 
 const PlanEdit = () => {
+  
+  const { preferredLanguage } = useSelector((state) => state.auth.user);
+  const { t, i18n } = useTranslation(); 
+
+  useEffect(() => {
+   if (preferredLanguage) {
+     i18n.changeLanguage(preferredLanguage);
+   }
+  }, [preferredLanguage, i18n]);
+
   const { id } = useParams();
   const { toast } = useToast();
   const [form, setForm] = useState({});
@@ -85,16 +97,16 @@ const PlanEdit = () => {
         // Mostrar mensaje de éxito
         toast({
           variant: "success",
-          title: "Realizado!",
-          description: "Plan editado exitosamente.",
+          title: t("toast.success.title"),
+          description: t("toast.success.planEdited"),
         });
       } catch (error) {
         setButtonLoading(false);
         console.error("Error:", error);
         toast({
           variant: "destructive",
-          title: "Uh oh! Parece que algo salió mal.",
-          description: "No se pudo conectar con el servidor. Por favor, intenta más tarde.",
+          title: t("toast.error.title"),
+          description: t("toast.error.serverConnection"),
         });
       } finally {
         setButtonLoading(false);
@@ -115,20 +127,20 @@ const PlanEdit = () => {
     <AdminLayout>
       <Card>
         <CardHeader>
-          <CardTitle>Edición de usuario</CardTitle>
+          <CardTitle>{t("admin.planEdit.title")}</CardTitle>
           <CardDescription>
-            Ventana para un usuario ya registrado, agregue toda la información del usuario para poder continuar.
+            {t("admin.planCreate.description")}
           </CardDescription>
         </CardHeader>
         <CardContent>
         <div className="container space-y-4 mx-auto py-2">
                 {/** Name Done */}
               <div className="grid w-full max-w-lg items-center gap-1.5">
-                <Label htmlFor="name">Nombre</Label>
+                <Label htmlFor="name">{t("admin.planCreate.fields.name")}</Label>
                 <Input
                   type="text" 
                   id="name" 
-                  placeholder="Nombre..." 
+                  placeholder={t("admin.planCreate.placeholders.name")}
                   value={form.name}
                   onChange={(e) => setForm({...form, name: e.target.value})} 
                 />
@@ -137,11 +149,11 @@ const PlanEdit = () => {
 
                 {/** description Done*/}
               <div className="grid w-full max-w-lg items-center gap-1.5">
-                <Label htmlFor="name">Descripción</Label>
+                <Label htmlFor="name">{t("admin.planCreate.fields.description")}</Label>
                 <Input 
                   type="text" 
                   id="email" 
-                  placeholder="Descripción..." 
+                  placeholder={t("admin.planCreate.placeholders.description")}
                   value={form.description}
                   onChange={(e) => setForm({...form, description: e.target.value})} 
                 />
@@ -150,11 +162,11 @@ const PlanEdit = () => {
 
                 {/** price Done */}
               <div className="grid w-full max-w-lg items-center gap-1.5">
-                <Label htmlFor="name">Precio</Label>
+                <Label htmlFor="name">{t("admin.planCreate.fields.price")}</Label>
                 <Input 
                   type="number" 
                   id="corporateEmail" 
-                  placeholder="Precio..." 
+                  placeholder={t("admin.planCreate.placeholders.price")}
                   value={form.price}
                   onChange={(e) => setForm({...form, price: e.target.value})} 
                 />
@@ -163,11 +175,11 @@ const PlanEdit = () => {
 
                 {/** Duration in Days Done*/}
               <div className="grid w-full max-w-lg items-center gap-1.5">
-                <Label htmlFor="name">Duración en días</Label>
+                <Label htmlFor="name">{t("admin.planCreate.fields.duration")}</Label>
                 <Input 
                   type="number" 
                   id="address" 
-                  placeholder="Duración..." 
+                  placeholder={t("admin.planCreate.placeholders.duration")}
                   value={form.durationInDays}
                   onChange={(e) => setForm({...form, durationInDays: e.target.value})} 
                 />
@@ -176,7 +188,7 @@ const PlanEdit = () => {
 
               {/** Trial in Days Done*/}
               <div className="flex items-center w-full max-w-lg justify-between gap-1.5">
-                <Label htmlFor="name">Prueba?</Label>
+                <Label htmlFor="name">{t("admin.planCreate.fields.trial")}</Label>
                 <Checkbox                   
                   onCheckedChange={(e) => setForm({...form, isTrial: e})}
                   checked={form.isTrial}  />
@@ -189,20 +201,20 @@ const PlanEdit = () => {
             className="w-full md:w-[100px]" >
               { buttonLoading 
                 ? (<span className="w-4 h-4 border-[1.5px] border-white border-t-transparent rounded-full animate-spin"></span>)
-                : (<span className="px-2 py-1">Editar Plan</span>) }
+                : (<span className="px-2 py-1">{t("common.save")}</span>) }
           </Button>
 
           <AlertDialog open={open} onOpenChange={setOpen}>
               <AlertDialogContent>
                 <AlertDialogHeader>
-                  <AlertDialogTitle>Estás seguro de editar este plan?</AlertDialogTitle>
+                  <AlertDialogTitle>{t("admin.planEdit.confirmationDialog.title")}</AlertDialogTitle>
                   <AlertDialogDescription>
-                    Una vez editado el plan puede seguir haciendo modificaciones en esta pantalla.
+                    {t("admin.planEdit.confirmationDialog.description")}
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
-                  <AlertDialogCancel >Cancelar</AlertDialogCancel>
-                  <AlertDialogAction onClick={handleEdit} >Continuar</AlertDialogAction>
+                  <AlertDialogCancel >{t("common.cancel")}</AlertDialogCancel>
+                  <AlertDialogAction onClick={handleEdit} >{t("common.continue")}</AlertDialogAction>
                 </AlertDialogFooter>
               </AlertDialogContent>
           </AlertDialog>

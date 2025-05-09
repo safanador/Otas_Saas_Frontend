@@ -17,9 +17,19 @@ import permissions from "@/lib/permissions";
 import { fetchData } from "@/services/api";
 import endpoints from "@/lib/endpoints";
 import PermissionGuard from "@/components/PermissionGuard";
-
+import { useSelector } from "react-redux";
+import { useTranslation } from "react-i18next";
 
 const PlansList = () => {
+  
+  const { preferredLanguage } = useSelector((state) => state.auth.user);
+  const { t, i18n } = useTranslation();    
+  useEffect(() => {
+   if (preferredLanguage) {
+     i18n.changeLanguage(preferredLanguage);
+   }
+  }, [preferredLanguage, i18n]);
+
   const [plans, setPlans] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
@@ -73,16 +83,20 @@ const PlansList = () => {
         return
       }
 
-      toast({ variant: "success", title: "Realizado!", description: "Plan eliminado exitosamente." });
+      toast({
+        variant: "success",
+        title: t("toast.success.title"),
+        description: t("toast.success.planDeleted"),
+      })
       setTimeout(() => {
-        window.location.reload(); // Recargar la página actual
+        window.location.reload();
       }, 1000);
       
     } catch (error) {
         toast({
           variant: "destructive",
-          title: "Uh oh! Parece que algo salió mal.",
-          description: "No se pudo conectar con el servidor. Por favor, intenta más tarde.",
+          title: t("toast.error.title"),
+          description: t("toast.error.serverConnection"),
         })
     }
   };
@@ -96,8 +110,8 @@ const PlansList = () => {
     <AdminLayout>
       <Card>
         <CardHeader>
-          <CardTitle>Listado de planes</CardTitle>
-          <CardDescription>A continuación se presenta una lista con aspectos generales de los planes ofrecidos.</CardDescription>
+          <CardTitle>{t("admin.planList.title")}</CardTitle>
+          <CardDescription>{t("admin.planList.description")}</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="container mx-auto py-2">
@@ -105,9 +119,9 @@ const PlansList = () => {
               <div className="flex items-center gap-2">
                 <Input 
                 type="search" 
-                placeholder="Buscar plan..." 
+                placeholder={t("admin.planList.searchPlaceholder")}
                 value={searchTerm} 
-                onChange={(e) => setSearchTerm(e.target.value)} // Actualiza el estado al escribir
+                onChange={(e) => setSearchTerm(e.target.value)}
                 className="w-full md:w-64" />
               </div>
             </div>
@@ -116,13 +130,13 @@ const PlansList = () => {
                 <Table>
                   <TableHeader>
                     <TableRow>
-                      <TableHead className="text-center">Item</TableHead>
-                      <TableHead className="text-left">Nombre</TableHead>
-                      <TableHead className="text-left">Descripción</TableHead>
-                      <TableHead className="text-left">Precio</TableHead>
-                      <TableHead className="text-left">Duración</TableHead>
-                      <TableHead className="text-left">Prueba</TableHead>
-                      <TableHead className="text-left"></TableHead>
+                      <TableHead className="text-center">{t("admin.planList.table.headers.item")}</TableHead>
+                      <TableHead className="text-left">{t("admin.planList.table.headers.name")}</TableHead>
+                      <TableHead className="text-left">{t("admin.planList.table.headers.description")}</TableHead>
+                      <TableHead className="text-left">{t("admin.planList.table.headers.price")}</TableHead>
+                      <TableHead className="text-left">{t("admin.planList.table.headers.duration")}</TableHead>
+                      <TableHead className="text-left">{t("admin.planList.table.headers.trial")}</TableHead>
+                      <TableHead className="text-left">{t("admin.planList.table.headers.actions")}</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -140,18 +154,18 @@ const PlansList = () => {
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
                               <Button variant="ghost" className="h-8 w-8 p-0">
-                                <span className="sr-only">Open menu</span>
+                                <span className="sr-only">{t("common.openMenu")}</span>
                                 <MoreHorizontal className="h-4 w-4" />
                               </Button>
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end">
-                              <DropdownMenuLabel>Acciones</DropdownMenuLabel>
+                              <DropdownMenuLabel>{t("common.actions")}</DropdownMenuLabel>
                               <DropdownMenuItem onClick={() => router.push(`/admin/plans/show/${plan.id}`)}>
-                              <Eye /> Ver Plan
+                              <Eye /> {t("admin.planList.table.body.viewPlan")}
                               </DropdownMenuItem>
                               <PermissionGuard requiredPermission={permissions.plan_update}>
                                 <DropdownMenuItem onClick={() => router.push(`/admin/plans/edit/${plan.id}`) } >
-                                <Pencil/> Editar Plan
+                                <Pencil/> {t("admin.planList.table.body.editPlan")}
                                 </DropdownMenuItem>
                               </PermissionGuard>
                               <DropdownMenuSeparator />
@@ -162,7 +176,7 @@ const PlansList = () => {
                                       setSelectedPlan(plan);
                                     }}>
                                   <Trash2 color="red" />
-                                  <span className="text-red-500" >Eliminar Plan</span>
+                                  <span className="text-red-500" >{t("admin.planList.table.body.deletePlan")}</span>
                                 </DropdownMenuItem>
                               </PermissionGuard>
                               
@@ -174,7 +188,7 @@ const PlansList = () => {
                   ) : (
                       <TableRow>
                         <TableCell colSpan={6} className="text-center">
-                          No se encontraron planes.
+                          {t("admin.planList.table.body.noPlans")}
                         </TableCell>
                       </TableRow>
                   )
@@ -187,14 +201,14 @@ const PlansList = () => {
                 <AlertDialog open={open} onOpenChange={setOpen}>
                   <AlertDialogContent>
                     <AlertDialogHeader>
-                      <AlertDialogTitle>Estás seguro de eliminar este Plan?</AlertDialogTitle>
+                      <AlertDialogTitle>{t("admin.planList.deleteDialog.title")}</AlertDialogTitle>
                       <AlertDialogDescription>
-                        Esta acción no se puede deshacer. El plan será permanentemente eliminado de la base de datos, confirma que ninguna agencia tenga este plan asociado.
+                        {t("admin.planList.deleteDialog.description")}
                       </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
-                      <AlertDialogCancel >Cancelar</AlertDialogCancel>
-                      <AlertDialogAction className={buttonVariants({ variant: "destructive" })} onClick={() => handleDelete(selectedPlan?.id)} >Continuar</AlertDialogAction>
+                      <AlertDialogCancel >{t("common.cancel")}</AlertDialogCancel>
+                      <AlertDialogAction className={buttonVariants({ variant: "destructive" })} onClick={() => handleDelete(selectedPlan?.id)} >{t("common.continue")}</AlertDialogAction>
                     </AlertDialogFooter>
                   </AlertDialogContent>
                 </AlertDialog>

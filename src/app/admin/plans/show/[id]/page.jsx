@@ -10,8 +10,20 @@ import withAuth from "@/app/middleware/withAuth";
 import permissions from "@/lib/permissions";
 import { fetchData } from "@/services/api";
 import endpoints from "@/lib/endpoints";
+import { useSelector } from "react-redux";
+import { useTranslation } from "react-i18next";
 
 const PlanShow = () => {
+
+  const { preferredLanguage } = useSelector((state) => state.auth.user);
+  const { t, i18n } = useTranslation();  
+  
+  useEffect(() => {
+   if (preferredLanguage) {
+     i18n.changeLanguage(preferredLanguage);
+   }
+  }, [preferredLanguage, i18n]);
+
   const [loading, setLoading] = useState(true);
   const [form, setForm] = useState({
     name: "",
@@ -65,61 +77,61 @@ const PlanShow = () => {
     <AdminLayout>
       <Card>
         <CardHeader>
-          <CardTitle>Información del plan</CardTitle>
+          <CardTitle>{t("admin.planShow.title")}</CardTitle>
           <CardDescription>
-            En esta ventana puedes ver toda la información relacionada al plan seleccionado.
+            {t("admin.planShow.description")}
           </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="container space-y-4 mx-auto py-2">
               {/** Name Done */}
             <div className="grid w-full max-w-lg items-center gap-1.5">
-              <Label htmlFor="name">Nombre</Label>
+              <Label htmlFor="name">{t("admin.planShow.fields.name")}</Label>
               <Input
                 disabled
                 type="text" 
                 id="name" 
-                placeholder="Nombre..." 
+                placeholder={t("admin.planShow.placeholders.name")}
                 value={form.name}/>
             </div>
 
               {/** description Done*/}
             <div className="grid w-full max-w-lg items-center gap-1.5">
-              <Label htmlFor="name">Descripción</Label>
+              <Label htmlFor="name">{t("admin.planShow.fields.description")}</Label>
               <Input 
                 disabled
                 type="text" 
                 id="email" 
-                placeholder="Descripción..." 
+                placeholder={t("admin.planShow.placeholders.description")}
                 value={form.description}/>
             </div>
 
               {/** price Done */}
             <div className="grid w-full max-w-lg items-center gap-1.5">
-              <Label htmlFor="name">Precio</Label>
+              <Label htmlFor="name">{t("admin.planShow.fields.price")}</Label>
               <Input 
                 disabled
                 type="text" 
                 id="corporateEmail" 
-                placeholder="Precio..." 
+                placeholder={t("admin.planShow.placeholders.price")}
                 value={form.price}/>
             </div>
 
               {/** Duration in Days Done*/}
             <div className="grid w-full max-w-lg items-center gap-1.5">
-              <Label htmlFor="name">Duración en días</Label>
+              <Label htmlFor="name">{t("admin.planShow.fields.duration")}</Label>
               <Input 
                 disabled
                 type="text" 
                 id="address" 
-                placeholder="Duración..." 
+                placeholder={t("admin.planShow.placeholders.duration")}
                 value={form.durationInDays}
                 onChange={(e) => setForm({...form, durationInDays: e.target.value})} />
             </div>
 
             {/** Trial in Days Done*/}
             <div className="flex items-center w-full max-w-lg justify-between gap-1.5">
-              <Label htmlFor="name">Prueba?</Label>
+              <Label htmlFor="name">{t("admin.planShow.fields.trial")}</Label>
               <Checkbox disabled checked={form.isTrial}  />
             </div>
         </div>

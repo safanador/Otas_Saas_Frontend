@@ -33,18 +33,14 @@ import { useTranslation } from "react-i18next";
 
 
 const UsersCreate = () => {
-    // Get language from Redux store
-    const { preferredLanguage } = useSelector((state) => state.auth.user);
-
-    // Initialize translation hook
-    const { t, i18n } = useTranslation();
   
-    // Set the language from Redux
-    useEffect(() => {
-      if (preferredLanguage) {
-        i18n.changeLanguage(preferredLanguage);
-      }
-    }, [preferredLanguage, i18n]);
+  const { preferredLanguage } = useSelector((state) => state.auth.user);
+  const { t, i18n } = useTranslation();
+  useEffect(() => {
+    if (preferredLanguage) {
+       i18n.changeLanguage(preferredLanguage);
+     }
+  }, [preferredLanguage, i18n]);
 
   const [roles, setRoles] = useState([]);
   const [loading, setLoading] = useState(true);
