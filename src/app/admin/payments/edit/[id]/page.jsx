@@ -23,9 +23,20 @@ import withAuth from "@/app/middleware/withAuth";
 import permissions from "@/lib/permissions";
 import { fetchData } from "@/services/api";
 import endpoints from "@/lib/endpoints";
+import { useSelector } from "react-redux";
+import { useTranslation } from "react-i18next";
 
 
 const PaymentEdit = () => {
+  const { preferredLanguage } = useSelector((state) => state.auth.user);
+  const { t, i18n } = useTranslation();
+    
+  useEffect(() => {
+    if (preferredLanguage) {
+       i18n.changeLanguage(preferredLanguage);
+     }
+  }, [preferredLanguage, i18n]);  
+
   const [buttonLoading, setButtonLoading] = useState(false);
   const [subscriptions, setSubscriptions] = useState([]);
   const [errorData, setErrorData] = useState([]);
@@ -106,14 +117,19 @@ const PaymentEdit = () => {
           return
         }
 
-        toast({ variant: "success", title: "Realizado!", description: "Pago creado exitosamente." });
+        toast({
+          variant: "success",
+          title: t("toast.success.title"),
+          description: t("toast.success.paymentEdited"),
+        })
+
       } catch (error) {
         setButtonLoading(false);
         console.log(error);
         toast({
           variant: "destructive",
-          title: "Uh oh! Parece que algo salió mal.",
-          description: "No se pudo conectar con el servidor. Por favor, intenta más tarde.",
+          title: t("toast.error.title"),
+          description: t("toast.error.serverConnection"),
         })
       } finally {
         setButtonLoading(false);
@@ -134,23 +150,23 @@ const PaymentEdit = () => {
     <AdminLayout>
       <Card>
         <CardHeader>
-          <CardTitle>Edición de pago</CardTitle>
-          <CardDescription>A continuación puedes editar el estatus del pago registrado en sistema.</CardDescription>
+          <CardTitle>{t("admin.paymentEdit.title")}</CardTitle>
+          <CardDescription>{t("admin.paymentEdit.description")}</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="container space-y-4 mx-auto py-2">
             <div className="grid w-full max-w-lg items-center gap-1.5" >
-              <Label htmlFor="user-type" >Agencia suscrita</Label>
+              <Label htmlFor="user-type" >{t("admin.paymentEdit.fields.agency")}</Label>
               <Select
                 value={form.subscriptionId}
                 onValueChange={(value) => setForm({...form, subscriptionId: value})}
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="Agencias..." />
+                  <SelectValue placeholder={t("admin.paymentEdit.placeholders.agency")} />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectGroup>
-                    <SelectLabel>Suscriptores</SelectLabel>
+                    <SelectLabel>{t("admin.paymentEdit.selectLabels.agency")}</SelectLabel>
                       {subscriptions.map((subscription) => (
                           <SelectItem key={subscription.id} value={subscription.id} >
                             {subscription.agency.name}
@@ -164,11 +180,11 @@ const PaymentEdit = () => {
 
             {/** price Done */}
             <div className="grid w-full max-w-lg items-center gap-1.5">
-                <Label htmlFor="name">Monto</Label>
+                <Label htmlFor="name">{t("admin.paymentEdit.fields.amount")}</Label>
                 <Input 
                   type="number" 
                   id="corporateEmail" 
-                  placeholder="Monto..." 
+                  placeholder={t("admin.paymentEdit.placeholders.amount")}
                   value={form.amount}
                   onChange={(e) => setForm({...form, amount: e.target.value})} 
                 />
@@ -176,33 +192,33 @@ const PaymentEdit = () => {
               </div>
 
               <div className="grid w-full max-w-lg items-center gap-1.5">
-                <Label htmlFor="name">Método de pago</Label>
+                <Label htmlFor="name">{t("admin.paymentEdit.fields.paymentMethod")}</Label>
                 <Input 
                   type="text" 
                   id="name" 
-                  placeholder="Metodo de pago..." 
+                  placeholder={t("admin.paymentEdit.placeholders.paymentMethod")}
                   value={form.transactionId}
                   onChange={(e) => setForm({...form, transactionId: e.target.value})} />
                   {errorData && renderFieldErrors('paymentMethod',errorData)}
               </div>
 
               <div className="grid w-full max-w-lg items-center gap-1.5">
-                <Label htmlFor="name">Id del pago</Label>
+                <Label htmlFor="name">{t("admin.paymentEdit.fields.transactionId")}</Label>
                 <Input 
                   type="text" 
                   id="name" 
-                  placeholder="Referencia de pago..." 
+                  placeholder={t("admin.paymentEdit.placeholders.transactionId")}
                   value={form.transactionId}
                   onChange={(e) => setForm({...form, transactionId: e.target.value})} />
                   {errorData && renderFieldErrors('transactionId',errorData)}
               </div>
 
               <div className="grid w-full max-w-lg items-center gap-1.5">
-                <Label htmlFor="name">Estado de la transacción</Label>
+                <Label htmlFor="name">{t("admin.paymentEdit.fields.status")}</Label>
                 <Input 
                   type="text" 
                   id="name" 
-                  placeholder="Estatus de pago..." 
+                  placeholder={t("admin.paymentEdit.placeholders.status")}
                   value={form.status}
                   onChange={(e) => setForm({...form, status: e.target.value})} />
                   {errorData && renderFieldErrors('status',errorData)}
@@ -215,20 +231,20 @@ const PaymentEdit = () => {
             className="w-full md:w-auto" >
               { buttonLoading 
                 ? (<span className="w-4 h-4 border-[1.5px] border-white border-t-transparent rounded-full animate-spin"></span>)
-                : (<span>Editar Pago</span>) }
+                : (<span>{t("common.save")}</span>) }
           </Button>
 
           <AlertDialog open={open} onOpenChange={setOpen}>
               <AlertDialogContent>
                 <AlertDialogHeader>
-                  <AlertDialogTitle>Estás seguro de editar este pago?</AlertDialogTitle>
+                  <AlertDialogTitle>{t("admin.paymentEdit.confirmation.title")}</AlertDialogTitle>
                   <AlertDialogDescription>
-                    El estatus del pago cambiara inmediatamente después de confirmado el cambio.
+                    {t("admin.paymentEdit.confirmation.description")}
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
-                  <AlertDialogCancel >Cancelar</AlertDialogCancel>
-                  <AlertDialogAction onClick={handleEdit} >Continuar</AlertDialogAction>
+                  <AlertDialogCancel >{t("common.cancel")}</AlertDialogCancel>
+                  <AlertDialogAction onClick={handleEdit} >{t("common.continue")}</AlertDialogAction>
                 </AlertDialogFooter>
               </AlertDialogContent>
           </AlertDialog>

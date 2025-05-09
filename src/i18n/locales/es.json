@@ -383,8 +383,91 @@
         "agency": "Agencias",
         "plan": "Planes"
       }
-    }
+    },
 
+    "paymentList": {
+      "title": "Pagos",
+      "description": "A continuación se presenta una lista con los pagos que han realizado las agencias a la plataforma.",
+      "searchPlaceholder": "Buscar agencia...",
+      "table": {
+        "headers": {
+          "item": "Item",
+          "agency": "Agencia",
+          "plan": "Plan",
+          "payment": "Pago",
+          "status": "Estatus",
+          "paymentMethod": "Método de pago",
+          "paymentId": "ID de pago",
+          "paymentDate": "Fecha de pago",
+          "actions": "Acciones"
+        },
+        "body": {
+          "noPayments": "No se encontraron pagos.",
+          "editPayment": "Editar Pago",
+          "deletePayment": "Eliminar Pago"
+        },
+        "deleteDialog": {
+          "title": "¿Estás seguro de eliminar este pago?",
+          "description": "Esta acción no se puede deshacer. Este será permanentemente eliminado de la base de datos.",
+          "cancel": "Cancelar",
+          "continue": "Continuar"
+        }
+      }
+    },
+
+    "paymentCreate": {
+      "title": "Creación de pago",
+      "description": "Esta ventana permite registrar manualmente el pago asociado a una suscripción NO Free Trial.",
+      "fields": {
+        "agency": "Agencia suscrita",
+        "amount": "Monto",
+        "paymentMethod": "Método de pago",
+        "transactionId": "Id del pago",
+        "status": "Estado de la transacción"
+      },
+      "placeholders": {
+        "agency": "Agencias...",
+        "amount": "Monto...",
+        "paymentMethod": "Método de pago...",
+        "transactionId": "Referencia de pago...",
+        "status": "Estatus de pago..."
+      },
+      "selectLabels": {
+        "agency": "Suscriptores"
+      },
+      "confirmation": {
+        "title": "¿Estás seguro de crear este pago?",
+        "description": "Este pago se asociará a la suscripción que tiene registrada actualmente la agencia en la plataforma."
+      }
+    },
+
+    "paymentEdit": {
+      "title": "Edición de pago",
+      "description": "A continuación puedes editar el estatus del pago registrado en sistema.",
+      "fields": {
+        "agency": "Agencia suscrita",
+        "amount": "Monto",
+        "paymentMethod": "Método de pago",
+        "transactionId": "ID del pago",
+        "status": "Estado de la transacción"
+      },
+      "placeholders": {
+        "agency": "Agencias...",
+        "amount": "Monto...",
+        "paymentMethod": "Método de pago...",
+        "transactionId": "Referencia de pago...",
+        "status": "Estatus de pago..."
+      },
+      "selectLabels": {
+        "agency": "Suscriptores"
+      },
+      "confirmation": {
+        "title": "¿Estás seguro de editar este pago?",
+        "description": "El estatus del pago cambiará inmediatamente después de confirmado el cambio.",
+        "cancel": "Cancelar",
+        "continue": "Continuar"
+      }
+    }
   },
 
   "toast": {
@@ -406,8 +489,11 @@
 
       "subscriptionCreate": "Suscripción creada exitosamente.",
       "subscriptionEdited": "Suscripción editada exitosamente.",
-      "subscriptionStatusChanged": "Estatus de la suscripción cambiado exitosamente."
+      "subscriptionStatusChanged": "Estatus de la suscripción cambiado exitosamente.",
 
+      "paymentDeleted": "Pago eliminado exitosamente.",
+      "paymentCreate": "Pago creado exitosamente.",
+      "paymentEdit": "Pago editado exitosamente."
     }
   },
 

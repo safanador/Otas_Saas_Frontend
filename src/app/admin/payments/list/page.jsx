@@ -16,21 +16,44 @@ import { useRouter } from "next/navigation";
 import permissions from "@/lib/permissions";
 import { fetchData } from "@/services/api";
 import endpoints from "@/lib/endpoints";
+import { useSelector } from "react-redux";
+import { useTranslation } from "react-i18next";
 
 const PaymentsList = () => {
+    // Get language from Redux store
+    const { preferredLanguage } = useSelector((state) => state.auth.user);
+
+    // Initialize translation hook
+    const { t, i18n } = useTranslation();
+  
+    // Set the language from Redux
+    useEffect(() => {
+      if (preferredLanguage) {
+        i18n.changeLanguage(preferredLanguage);
+      }
+    }, [preferredLanguage, i18n]);
+
   const [searchTerm, setSearchTerm] = useState("");
   const [payments, setPayments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [open, setOpen] = useState(false);
   const { toast } = useToast();
   const router = useRouter();
+
   const formattedDate = (date) => {
-    return new Date(date).toLocaleDateString('es-ES', {
+    const locale = {
+      en: 'en-US',
+      es: 'es-ES',
+      pt: 'pt-BR'
+    }[preferredLanguage] || 'en-US';
+  
+    return new Date(date).toLocaleDateString(locale, {
       year: 'numeric',
       month: 'short',
       day: 'numeric',
     });
-  } 
+  }
+  
   useEffect(() => {
     const fetchPayments = async () => {
       try {
@@ -76,17 +99,21 @@ const PaymentsList = () => {
         return
       }
 
-      toast({ variant: "success", title: "Realizado!", description: "Pago eliminado exitosamente." });
-      /*setTimeout(() => {
-        window.location.reload(); // Recargar la página actual
-      }, 1000);*/
+      toast({
+        variant: "success",
+        title: t('toast.success.title'),
+        description: t('toast.success.paymentDeleted'),
+      })
+      setTimeout(() => {
+        window.location.reload();
+      }, 1000);
       
     } catch (error) {
-        toast({
-          variant: "destructive",
-          title: "Uh oh! Parece que algo salió mal.",
-          description: "No se pudo conectar con el servidor. Por favor, intenta más tarde.",
-        })
+      toast({
+        variant: "destructive",
+        title: t('toast.error.title'),
+        description: t('toast.error.serverConnection'),
+      })
     }
   };
 
@@ -94,8 +121,8 @@ const PaymentsList = () => {
     <AdminLayout>
       <Card>
         <CardHeader>
-          <CardTitle>Pagos</CardTitle>
-          <CardDescription>A continuación se presenta una lista con los pagos que han realizado las agencias a la plataforma.</CardDescription>
+          <CardTitle>{t('admin.paymentList.title')}</CardTitle>
+          <CardDescription>{t('admin.paymentList.description')}</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="container mx-auto py-2">
@@ -103,9 +130,9 @@ const PaymentsList = () => {
               <div className="flex items-center gap-2">
                 <Input 
                 type="search" 
-                placeholder="Buscar agencia..." 
+                placeholder={t('admin.paymentList.searchPlaceholder')}
                 value={searchTerm} 
-                onChange={(e) => setSearchTerm(e.target.value)} // Actualiza el estado al escribir
+                onChange={(e) => setSearchTerm(e.target.value)}
                 className="w-full md:w-64" />
               </div>
             </div>
@@ -114,15 +141,15 @@ const PaymentsList = () => {
                 <Table>
                   <TableHeader>
                     <TableRow>
-                    <TableHead className="text-center">Item</TableHead>
-                      <TableHead className="text-left">Agencia</TableHead>
-                      <TableHead className="text-left">Plan</TableHead>
-                      <TableHead className="text-left">Pago</TableHead>
-                      <TableHead className="text-left">Estatus</TableHead>
-                      <TableHead className="text-left">Metodo de pago</TableHead>
-                      <TableHead className="text-left">Id de pago</TableHead>
-                      <TableHead className="text-left">Fecha de pago</TableHead>
-                      <TableHead className="text-left"></TableHead>
+                    <TableHead className="text-center">{t('admin.paymentList.table.headers.item')}</TableHead>
+                      <TableHead className="text-left">{t('admin.paymentList.table.headers.agency')}</TableHead>
+                      <TableHead className="text-left">{t('admin.paymentList.table.headers.plan')}</TableHead>
+                      <TableHead className="text-left">{t('admin.paymentList.table.headers.payment')}</TableHead>
+                      <TableHead className="text-left">{t('admin.paymentList.table.headers.status')}</TableHead>
+                      <TableHead className="text-left">{t('admin.paymentList.table.headers.paymentMethod')}</TableHead>
+                      <TableHead className="text-left">{t('admin.paymentList.table.headers.paymentId')}</TableHead>
+                      <TableHead className="text-left">{t('admin.paymentList.table.headers.paymentDate')}</TableHead>
+                      <TableHead className="text-left">{t('admin.paymentList.table.headers.actions')}</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -140,26 +167,26 @@ const PaymentsList = () => {
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
                               <Button variant="ghost" className="h-8 w-8 p-0">
-                              <span className="sr-only">Open menu</span>
+                              <span className="sr-only">{t('common.openMenu')}</span>
                               <MoreHorizontal className="h-4 w-4" />
                               </Button>
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end">
-                              <DropdownMenuLabel>Acciones</DropdownMenuLabel>
+                              <DropdownMenuLabel>{t('common.actions')}</DropdownMenuLabel>
                               <PermissionGuard requiredPermission={permissions.payment_update}>
                                 <DropdownMenuItem onClick={() => router.push(`/admin/payments/edit/${payment.id}`) } >
-                                  <Pencil /> Editar Pago
+                                  <Pencil /> {t('admin.paymentList.table.body.editPayment')}
                                 </DropdownMenuItem>
                               </PermissionGuard>
                               
                               <DropdownMenuSeparator />
                               <PermissionGuard requiredPermission={permissions.payment_delete}>
                                 <DropdownMenuItem onClick={(e) => {
-                                      e.preventDefault(); // Evita que el menú se cierre automáticamente
+                                      e.preventDefault();
                                       setOpen(true);
                                     }}>
                                 <Trash2 color="red" /> 
-                                  <span className="text-red-500" >Eliminar Pago</span>
+                                  <span className="text-red-500" >{t('admin.paymentList.table.body.deletePayment')}</span>
                                 </DropdownMenuItem>
                               </PermissionGuard>
 
@@ -167,14 +194,14 @@ const PaymentsList = () => {
                               <AlertDialog open={open} onOpenChange={setOpen}>
                                 <AlertDialogContent>
                                   <AlertDialogHeader>
-                                    <AlertDialogTitle>Estás seguro de eliminar este pago?</AlertDialogTitle>
+                                    <AlertDialogTitle>{t('admin.paymentList.table.deleteDialog.title')}</AlertDialogTitle>
                                     <AlertDialogDescription>
-                                      Esta acción no se puede deshacer. Este será permanentemente eliminado de la base de datos.
+                                      {t('admin.paymentList.table.deleteDialog.description')}
                                     </AlertDialogDescription>
                                   </AlertDialogHeader>
                                   <AlertDialogFooter>
-                                    <AlertDialogCancel >Cancelar</AlertDialogCancel>
-                                    <AlertDialogAction className={buttonVariants({ variant: "destructive" })} onClick={() => handleDelete(payment.id)} >Continuar</AlertDialogAction>
+                                    <AlertDialogCancel >{t('common.cancel')}</AlertDialogCancel>
+                                    <AlertDialogAction className={buttonVariants({ variant: "destructive" })} onClick={() => handleDelete(payment.id)} >{t('common.continue')}</AlertDialogAction>
                                   </AlertDialogFooter>
                                 </AlertDialogContent>
                               </AlertDialog>
@@ -187,7 +214,7 @@ const PaymentsList = () => {
                   ) : (
                       <TableRow>
                         <TableCell colSpan={8} className="text-center">
-                          No se encontraron pagos.
+                          {t('admin.paymentList.table.body.noPayments')}
                         </TableCell>
                       </TableRow>
                   )

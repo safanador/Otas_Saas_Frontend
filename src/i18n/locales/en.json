@@ -389,8 +389,91 @@
           "title": "Are you sure you want to create this subscription?",
           "description": "When generating a subscription, the added agency will be able to use the platform and the credentials of all its associated users."
         }
-      }
+      },
 
+      "paymentList": {
+        "title": "Payments",
+        "description": "Below is a list of payments made by agencies to the platform.",
+        "searchPlaceholder": "Search agency...",
+        "table": {
+          "headers": {
+            "item": "Item",
+            "agency": "Agency",
+            "plan": "Plan",
+            "payment": "Payment",
+            "status": "Status",
+            "paymentMethod": "Payment Method",
+            "paymentId": "Payment ID",
+            "paymentDate": "Payment Date",
+            "actions": "Actions"
+          },
+          "body": {
+            "noPayments": "No payments found.",
+            "editPayment": "Edit Payment",
+            "deletePayment": "Delete Payment"
+          },
+          "deleteDialog": {
+            "title": "Are you sure you want to delete this payment?",
+            "description": "This action cannot be undone. This will be permanently deleted from the database.",
+            "cancel": "Cancel",
+            "continue": "Continue"
+          }
+        }
+      },
+
+      "paymentCreate": {
+        "title": "Payment creation",
+        "description": "This window allows you to manually register the payment associated with a NON Free Trial subscription.",
+        "fields": {
+          "agency": "Subscribed agency",
+          "amount": "Amount",
+          "paymentMethod": "Payment method",
+          "transactionId": "Payment ID",
+          "status": "Transaction status"
+        },
+        "placeholders": {
+          "agency": "Agencies...",
+          "amount": "Amount...",
+          "paymentMethod": "Payment method...",
+          "transactionId": "Payment reference...",
+          "status": "Payment status..."
+        },
+        "selectLabels": {
+          "agency": "Subscribers"
+        },
+        "confirmation": {
+          "title": "Are you sure you want to create this payment?",
+          "description": "This payment will be associated with the subscription currently registered by the agency on the platform."
+        }
+      },
+
+      "paymentEdit": {
+        "title": "Payment Edit",
+        "description": "Below you can edit the status of the payment registered in the system.",
+        "fields": {
+          "agency": "Subscribed agency",
+          "amount": "Amount",
+          "paymentMethod": "Payment method",
+          "transactionId": "Payment ID",
+          "status": "Transaction status"
+        },
+        "placeholders": {
+          "agency": "Agencies...",
+          "amount": "Amount...",
+          "paymentMethod": "Payment method...",
+          "transactionId": "Payment reference...",
+          "status": "Payment status..."
+        },
+        "selectLabels": {
+          "agency": "Subscribers"
+        },
+        "confirmation": {
+          "title": "Are you sure you want to edit this payment?",
+          "description": "The payment status will change immediately after confirming the change.",
+          "cancel": "Cancel",
+          "continue": "Continue"
+        }
+      }
     },
 
     "toast": {
@@ -412,8 +495,11 @@
 
         "subscriptionCreate": "Subscription created successfully.",
         "subscriptionEdited": "Subscription edited successfully.",
-        "subscriptionStatusChanged": "Subscription status changed successfully."
+        "subscriptionStatusChanged": "Subscription status changed successfully.",
 
+        "paymentDeleted": "Payment deleted successfully.",
+        "paymentCreate": "Payment created successfully.",
+        "paymentEdit": "Payment edited successfully."
       }
     },
     "errors": {
