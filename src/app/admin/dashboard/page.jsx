@@ -3,6 +3,8 @@ import { useSelector, useDispatch } from "react-redux";
 import AdminLayout from "../components/SideBar/AdminLayout";
 import withAuth from "@/app/middleware/withAuth";
 import permissions from "@/lib/permissions";
+import { useTranslation } from "react-i18next";
+import { useEffect } from "react";
 
 const Dashboard = () => {
     const user = useSelector((state) => state.auth.user);
