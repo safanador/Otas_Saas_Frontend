@@ -34,6 +34,327 @@
       }
     },
 
+    "landing": {
+      "buttons": {
+        "login": "Log In",
+        "freeTrial": "Free Trial",
+        "startFreeTrial": "Start Free Trial",
+        "startFreeTrialDays": "Start Free Trial (14 days)",
+        "watchDemo": "Watch Demo",
+        "contactUs": "Contact Us",
+        "seeDemo": "See Demo",
+        "getStarted": "Get Started"
+      },
+      "noCardRequired": "No credit card required. 14 days free trial.",
+      "navbar": {
+        "logo": "Cloudnel.com",
+        "links": {
+          "features": "Features",
+          "benefits": "Benefits",
+          "plans": "Plans",
+          "testimonials": "Testimonials"
+        }
+      },
+      "hero": {
+        "title": "All your bookings in one place",
+        "description": "Simplify your tour agency management with our comprehensive platform. Save time, avoid mistakes, and increase your sales.",
+        "features": {
+          "noCard": "No credit card required",
+          "quickSetup": "Setup in minutes"
+        }
+        
+      },
+      "trustedBy": "TRUSTED BY",
+  
+      "features": {
+        "title": "A complete solution for your agency",
+        "subtitle": "Cloudnel.com centralizes all your operations in a single intuitive platform, freeing you to focus on what really matters: creating unforgettable experiences.",
+        "items": {
+          "item1":{
+            "title": "Unified Booking Management",
+            "description": "Centralize all your bookings from different sources in a single intuitive calendar."
+          },
+          "item2":{
+            "title": "Customer Management",
+            "description": "Keep detailed records of your customers and their preferences to personalize their experiences."
+          },
+          "item3":{
+            "title": "Integrated Payments",
+            "description": "Accept online payments with multiple methods and easily manage refunds and invoices."
+          },
+          "item4":{
+            "title": "Analytical Reports",
+            "description": "Get valuable insights about your tour performance and customer behavior."
+          },
+          "item5":{
+            "title": "Mobile Access",
+            "description": "Manage your business from anywhere with our responsive mobile app."
+          },
+          "item6":{
+            "title": "Integrations",
+            "description": "Connect with your favorite tools: Stripe, PayPal, Mailchimp, and more."
+          }
+        }
+      },
+      "benefits": {
+        "title": "Why choose Cloudnel.com?",
+        "description": "Our platform is specifically designed to solve the daily challenges of tour agencies.",
+        "items": {
+          "item1":{
+            "title": "Save up to 15 hours per week",
+            "description": "Automate repetitive tasks and eliminate the need to manage multiple systems."
+          },
+          "item2":{
+            "title": "Reduce errors by 95%",
+            "description": "Eliminate duplicate bookings and human errors with our automatic verification system."
+          },
+          "item3":{
+            "title": "Increase your sales by up to 30%",
+            "description": "Improve customer experience with instant confirmations and fluid communication."
+          },
+          "item4":{
+            "title": "Scalability without worries",
+            "description": "Grow your business without technological limitations. Our platform adapts to you."
+          }
+        }
+      },
+      "demo": {
+        "title": "See Cloudnel.com in action",
+        "description": "See how our platform simplifies every aspect of managing your tour agency."
+      },
+      "pricing": {
+        "title": "Plans tailored to your business",
+        "popular": "Most popular",
+        "monthly": "/month",
+        "subtitle": "We offer flexible plans that grow with you. No long contracts, no complications.",
+        "plans": {
+          "item1": {
+            "name": "Starter",
+            "price": "$49",
+            "description": "Perfect for small agencies that are just starting.",
+            "first": "Up to 100 bookings/month",
+            "second": "2 users",
+            "third": "Basic integrations",
+            "fourth": "Email support"
+          },
+          "item2":{
+            "name": "Professional",
+            "price": "$99",
+            "description": "Ideal for growing agencies with multiple destinations.",
+            "first":"Unlimited bookings",
+            "second":"5 users",
+            "third":"All integrations",
+            "fourth":"Priority support",
+            "fifth":"Advanced reports"
+          },
+          "item3":{
+            "name": "Enterprise",
+            "price": "$199",
+            "description": "For large agencies with multiple destinations and teams.",
+            "first":"Unlimited bookings",
+            "second":"Unlimited users",
+            "third":"Custom API",
+            "fourth":"24/7 support",
+            "fifth":"White-label branding"
+          }
+        }
+      },
+      "testimonials": {
+        "title": "What our clients say",
+        "subtitle": "Tour agencies from around the world trust Cloudnel.com to simplify their operations.",
+        "items1": {
+          "name": "Carlos Ramírez",
+          "company": "Adventure Tours, Mexico",
+          "quote": "Since we implemented Cloudnel.com, we reduced booking errors by 98%."
+        },
+        "items2": {
+          "name": "Luisa García",
+          "company": "Barcelona City Tours, Spain",
+          "quote": "Cloudnel.com completely changed how we operate."
+        },
+        "items3": {
+          "name": "John Miller",
+          "company": "NYC Guided Tours, USA",
+          "quote": "The only platform that truly understood our needs."
+        }
+      },
+      "faq": {
+        "title": "Frequently asked questions",
+        "description": "Answers to the most common questions about Cloudnel.com.",
+        "item1": {
+          "question": "How long does implementation take?",
+          "answer": "Most clients are fully operational in less than a week."
+        },
+        "item2": {
+          "question": "Can I integrate with my current system?",
+          "answer": "Yes, we offer robust APIs and pre-designed connectors."
+        },
+        "item3": {
+          "question": "What support options are available?",
+          "answer": "All plans include email support. Higher plans include priority support."
+        },
+        "item4": {
+          "question": "Can I cancel my subscription at any time?",
+          "answer": "Absolutely. There are no long-term contracts. You can cancel your subscription at any time without penalties. You can always export your data if you decide to leave Cloudnel.com."
+        },
+        "item5": {
+          "question": "Is Cloudnel.com safe for my data and payments?",
+          "answer": "Security is our priority. Cloudnel.com complies with PCI DSS standards for payment processing and GDPR for data protection. All communications are encrypted and we perform regular security audits."
+        }
+      },
+      "cta": {
+        "title": "Transform your tour agency management today",
+        "description": "Join hundreds of tour agencies already leveraging the power of Cloudnel.com."
+      },
+      "footer": {
+        "description": "The all-in-one platform for tour agencies. Simplify your business, maximize your profits.",
+        "quickLinks": "Quick Links",
+        "features": "Features", 
+        "benefits": "Benefits", 
+        "pricing": "Pricing", 
+        "plans": "Plans", 
+        "testimonials":"Testimonials",
+        "blog": "Blog",
+        "legal": "Legal",
+        "terms":"Terms", 
+        "privacy": "Privacy", 
+        "cookies": "Cookies", 
+        "gdpr": "GDPR",
+        "contact": "Contact",
+        "address": "123 Main St, City",
+        "email": "contact@cloudnel.com",
+        "copyright": "Cloudnel.com. All rights reserved."
+      }
+    },
+
+    "login": {
+      "title": "Welcome to Cloudnel",
+      "subtitle": "Sign in to your account to manage your tours",
+      "form": {
+        "email": {
+          "label": "Email address",
+          "placeholder": "Enter your email"
+        },
+        "password": {
+          "label": "Password",
+          "placeholder": "Enter your password",
+          "forgot": "Forgot password?"
+        },
+        "submit": "Sign In",
+        "loading": "Signing in..."
+      },
+      "error": {
+        "email": "Please enter a valid email address",
+        "password": "Password must be at least 8 characters",
+        "generic": "Invalid email or password"
+      },
+      "footer": {
+        "noAccount": "Don't have an account?",
+        "contact": "Contact us"
+      },
+      "sidebar": {
+        "title": "Manage all your bookings in one place",
+        "description": "Cloudnel helps you simplify your business and maximize your profits with our all-in-one platform for tour agencies.",
+        "feature1":{
+          "title": "Centralized management",
+          "description": "Manage all your bookings from a single dashboard."
+        },
+        "feature2":{
+          "title": "Detailed reports",
+          "description": "View your business performance with advanced analytics."
+        },
+        "feature3":{
+          "title": "24/7 support",
+          "description": "Our team is always available to help you."
+        }
+      }
+    },
+
+    "forgotPassword": {
+      "title": "Recover your password",
+      "subtitle": "Enter your email to receive a recovery link",
+      "form": {
+        "email": {
+          "label": "Email address",
+          "placeholder": "Enter your email"
+        },
+        "submit": "Send recovery link",
+        "loading": "Sending..."
+      },
+      "success": {
+        "message": "A recovery link has been sent to your email!",
+        "backToLogin": "Back to login"
+      },
+      "error": {
+        "generic": "Error processing your request"
+      },
+      "sidebar": {
+        "title": "Forgot your password?",
+        "description": "Don't worry, we'll help you regain access to your Cloudnel account. We just need to verify your email address.",
+        "feature1": {
+          "title": "Recovery email",
+          "description": "You'll receive a secure link to reset your password."
+        },
+        "feature2": {
+          "title": "Secure process",
+          "description": "Our system ensures the security of your information."
+        },
+        "feature3": {
+          "title": "Need help?",
+          "description": "Our support team is available 24/7 to assist you."
+        }
+      },
+      "backLink": "Back to login"
+    },
+
+    "resetPassword": {
+      "invalidToken": {
+        "title": "Invalid Link",
+        "message": "The password reset link is invalid or has expired",
+        "error": "A valid token is required to reset your password",
+        "newLink": "Request new link",
+        "backToLogin": "Back to login"
+      },
+      "form": {
+        "title": "Reset Password",
+        "subtitle": "Create a new secure password for your account",
+        "newPassword": {
+          "label": "New password",
+          "placeholder": "Enter your new password"
+        },
+        "confirmPassword": {
+          "label": "Confirm password",
+          "placeholder": "Confirm your new password"
+        },
+        "submit": "Reset Password",
+        "loading": "Processing..."
+      },
+      "success": {
+        "message": "Your password has been successfully reset!",
+        "goToLogin": "Go to login"
+      },
+      "error": {
+        "generic": "Error processing your request"
+      },
+      "sidebar": {
+        "title": "You're almost done",
+        "description": "Create a secure password to keep your Cloudnel account protected and continue managing your tours efficiently.",
+        "feature1":{
+          "title": "Secure password",
+          "description": "Use at least 8 characters, including numbers and symbols."
+        },
+        "feature2":{
+          "title": "Data protection",
+          "description": "Your personal and business data is protected with us."
+        },
+        "feature3":{
+          "title": "Need more help?",
+          "description": "Our support team is available 24/7 to assist you."
+        }
+      },
+      "backLink": "Back to login"
+    },
+
     "admin": {
       
       "agenciesList": {

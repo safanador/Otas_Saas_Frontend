@@ -34,6 +34,280 @@
     }
   },
 
+  "landing":  {
+    "buttons": {
+      "login": "Iniciar Sesión",
+      "freeTrial": "Prueba Gratuita",
+      "startFreeTrial": "Comenzar Prueba Gratis",
+      "startFreeTrialDays": "Comenzar Prueba Gratuita por 14 días",
+      "watchDemo": "Ver Demo",
+      "contactUs": "Contáctanos",
+      "seeDemo": "Ver Demostración",
+      "getStarted": "Empezar"
+    },
+    "noCardRequired": "No se requiere tarjeta de crédito. 14 días de prueba gratis.",
+    "navbar": {
+      "logo": "Cloudnel.com",
+      "links": {
+          "features": "Características",
+          "benefits": "Beneficios",
+          "plans": "Planes",
+          "testimonials": "Testimonios"
+        }
+    },
+    "hero": {
+      "title": "Todas tus reservas en un solo lugar",
+      "description": "Simplifica la gestión de tu agencia de tours con nuestra plataforma integral. Ahorra tiempo, evita errores y aumenta tus ventas.",
+      "features": [
+        "Sin tarjeta de crédito",
+        "Configuración en minutos"
+      ]
+    },
+    "trustedBy": "CONFÍAN EN NOSOTROS",
+    "features": {
+      "title": "Una solución completa para tu agencia",
+      "subtitle": "Cloudnel.com centraliza todas tus operaciones en una única plataforma intuitiva, liberándote para enfocarte en lo que realmente importa: crear experiencias inolvidables.",
+      
+      "items": {
+        "item1": {
+          "title": "Gestión de Reservas Unificada",
+          "description": "Centraliza todas tus reservas de diferentes fuentes en un solo calendario intuitivo."
+        },
+        "item2": {
+          "title": "Gestión de Clientes",
+          "description": "Mantén un registro detallado de tus clientes y sus preferencias para personalizar sus experiencias."
+        },
+        "item3": {
+          "title": "Pagos Integrados",
+          "description": "Acepta pagos en línea con múltiples métodos y gestiona fácilmente devoluciones y facturas."
+        },
+        "item4":{
+          "title": "Reportes Analíticos",
+          "description": "Obtén insights valiosos sobre el rendimiento de tus tours y el comportamiento de tus clientes."
+        },
+        "item5":{
+          "title": "Acceso Móvil",
+          "description": "Gestiona tu negocio desde cualquier lugar con nuestra aplicación móvil responsiva."
+        },
+        "item6":{
+          "title": "Integraciones",
+          "description": "Conecta con tus herramientas favoritas: Stripe, PayPal, Mailchimp, y más."
+        }
+      }
+    },
+    "benefits": {
+      "title": "¿Por qué elegir Cloudnel.com?",
+      "description": "Nuestra plataforma está diseñada específicamente para resolver los desafíos diarios de las agencias de tours.",
+      "items": {
+        "item1":{
+          "title": "Ahorra hasta 15 horas semanales",
+          "description": "Automatiza tareas repetitivas y elimina la necesidad de gestionar múltiples sistemas."
+        },
+        "item2":{
+          "title": "Reduce errores en un 95%",
+          "description": "Elimina reservas duplicadas y errores humanos con nuestro sistema de verificación automática."
+        },
+        "item3":{
+          "title": "Aumenta tus ventas hasta un 30%",
+          "description": "Mejora la experiencia del cliente con confirmaciones instantáneas y comunicación fluida."
+        },
+        "item4":{
+          "title": "Escalabilidad sin preocupaciones",
+          "description": "Crece tu negocio sin limitaciones tecnológicas. Nuestra plataforma se adapta a ti."
+        }
+      }
+    },
+    "demo": {
+      "title": "Ve Cloudnel.com en acción",
+      "description": "Observa cómo nuestra plataforma simplifica cada aspecto de la gestión de tu agencia de tours."
+    },
+    "pricing": {
+      "title": "Planes adaptados a tu negocio",
+      "popular": "Más Popular",
+      "monthly": "/mes",
+      "subtitle": "Ofrecemos planes flexibles que crecen contigo. Sin contratos largos, sin complicaciones.",
+      "plans": {
+        "item1":{
+          "name": "Inicio",
+          "price": "$49",
+          "description": "Perfecto para agencias pequeñas que están comenzando.",
+          "first":"Hasta 100 reservas/mes",
+          "second":"2 usuarios",
+          "third":"Integraciones básicas",
+          "fourth":"Soporte por email"
+        },
+        "item2":{
+          "name": "Profesional",
+          "price": "$99",
+          "description": "Ideal para agencias en crecimiento con múltiples destinos.",
+          "first":"Reservas ilimitadas",
+          "second":"5 usuarios",
+          "third":"Todas las integraciones",
+          "fourth":"Soporte prioritario",
+          "fifth":"Reportes avanzados"
+        },
+        "item3":{
+          "name": "Empresarial",
+          "price": "$199",
+          "description": "Para agencias grandes con múltiples destinos y equipos.",
+          "first":"Reservas ilimitadas",
+          "second":"Usuarios ilimitados",
+          "third":"API personalizada",
+          "fourth":"Soporte 24/7",
+          "fifth":"Marca personalizada"
+        }
+      }
+    },
+    "testimonials": {
+      "title": "Lo que dicen nuestros clientes",
+      "subtitle": "Agencias de tours de todo el mundo confían en Cloudnel.com para simplificar sus operaciones.",
+      "item1":{
+        "name": "Carlos Ramírez",
+        "company": "Adventure Tours, México",
+        "quote": "Desde que implementamos Cloudnel.com, redujimos los errores de reserva en un 98%."        
+      },
+      "item2":{
+        "name": "Luisa García",
+        "company": "Barcelona City Tours, España",
+        "quote": "Cloudnel.com cambió completamente nuestra forma de operar."
+      },
+      "item3":{
+        "name": "John Miller",
+        "company": "NYC Guided Tours, EE.UU.",
+        "quote": "La única plataforma que realmente entendió nuestras necesidades."
+      }
+    },
+    "faq": {
+      "title": "Preguntas frecuentes",
+      "subtitle": "Respuestas a las preguntas más comunes sobre Cloudnel.com.",
+      "item1":{
+        "question": "¿Cuánto tiempo toma la implementación?",
+        "answer": "La mayoría de clientes están operativos en menos de una semana."
+      },
+      "item2":{
+        "question": "¿Puedo integrarlo con mi sistema actual?",
+        "answer": "Sí, ofrecemos APIs robustas y conectores prediseñados."
+      },
+      "item3":{
+        "question": "¿Qué opciones de soporte hay?",
+        "answer": "Todos los planes incluyen soporte por email. Planes superiores incluyen soporte prioritario."
+      },
+      "item4":{
+        "question": "¿Puedo cancelar mi suscripción en cualquier momento?",
+        "answer": "Absolutamente. No hay contratos a largo plazo. Puedes cancelar tu suscripción en cualquier momento sin penalizaciones. Siempre puedes exportar tus datos si decides dejar Cloudnel.com."
+      },
+      "item5":{
+        "question": "¿Es seguro Cloudnel.com para mis datos y pagos?",
+        "answer": "La seguridad es nuestra prioridad. Cloudnel.com cumple con los estándares PCI DSS para procesamiento de pagos y GDPR para protección de datos. Todas las comunicaciones están encriptadas y realizamos auditorías de seguridad regularmente."
+      }
+    },
+    "cta": {
+      "title": "Transforma la gestión de tu agencia de tours hoy",
+      "description": "Únete a cientos de agencias de tours que ya aprovechan el poder de Cloudnel.com."
+    },
+    "footer": {
+      "description": "La plataforma todo-en-uno para agencias de tours. Simplifica tu negocio, maximiza tus ganancias.",
+        "quickLinks": "Enlaces rápidos",
+        "features": "Características", 
+        "benefits": "Beneficios", 
+        "pricing": "Planes y precios", 
+        "plans": "Planes", 
+        "testimonials":"Testimonios",
+        "blog": "Blog",
+        "legal": "Legal",
+        "terms":"Términos", 
+        "privacy": "Privacidad", 
+        "cookies": "Cookies", 
+        "gdpr": "GDPR",
+        "contact": "Contáctanos",
+        "address": "123 Main St, City",
+        "phone": "+1 234 567 890",
+        "email": "contact@cloudnel.com",
+        "copyright": "Cloudnel.com. Todos los derechos reservados."
+    }
+  },
+
+  "login": {
+    "title": "Bienvenido a Cloudnel",
+    "subtitle": "Accede a tu cuenta para gestionar tus tours",
+    "form": {
+      "email": {
+        "label": "Correo electrónico",
+        "placeholder": "Ingresa tu correo"
+      },
+      "password": {
+        "label": "Contraseña",
+        "placeholder": "Ingresa tu contraseña",
+        "forgot": "¿Olvidaste tu contraseña?"
+      },
+      "submit": "Iniciar sesión",
+      "loading": "Iniciando sesión..."
+    },
+    "error": {
+      "email": "Por favor ingresa un correo electrónico válido",
+      "password": "La contraseña debe tener al menos 8 caracteres",
+      "generic": "Correo o contraseña incorrectos"
+    },
+    "footer": {
+      "noAccount": "¿No tienes una cuenta?",
+      "contact": "Contáctanos"
+    },
+    "sidebar": {
+      "title": "Gestiona todas tus reservas en un solo lugar",
+      "description": "Cloudnel te ayuda a simplificar tu negocio y maximizar tus ganancias con nuestra plataforma todo-en-uno para agencias de tours.",
+      "feature1":{
+        "title": "Gestión centralizada",
+        "description": "Administra todas tus reservas desde un solo panel."
+      },
+      "feature2":{
+        "title": "Informes detallados",
+        "description": "Visualiza el rendimiento de tu negocio con analíticas avanzadas."
+      },
+      "feature3":{
+        "title": "Soporte 24/7",
+        "description": "Nuestro equipo está siempre disponible para ayudarte."
+      }
+    }
+  },
+
+  "forgotPassword": {
+    "title": "Recupera tu contraseña",
+    "subtitle": "Ingresa tu correo electrónico para recibir un enlace de recuperación",
+    "form": {
+      "email": {
+        "label": "Correo electrónico",
+        "placeholder": "Ingresa tu correo"
+      },
+      "submit": "Enviar enlace de recuperación",
+      "loading": "Enviando..."
+    },
+    "success": {
+      "message": "¡Se ha enviado un enlace de recuperación a tu correo electrónico!",
+      "backToLogin": "Volver a iniciar sesión"
+    },
+    "error": {
+      "generic": "Error al procesar tu solicitud"
+    },
+    "sidebar": {
+      "title": "¿Olvidaste tu contraseña?",
+      "description": "No te preocupes, te ayudaremos a recuperar el acceso a tu cuenta en Cloudnel. Solo necesitamos verificar tu dirección de correo electrónico.",
+      "feature1": {
+        "title": "Correo de recuperación",
+        "description": "Recibirás un enlace seguro para restablecer tu contraseña."
+      },
+      "feature2": {
+        "title": "Proceso seguro",
+        "description": "Nuestro sistema garantiza la seguridad de tu información."
+      },
+      "feature3": {
+        "title": "¿Necesitas ayuda?",
+        "description": "Nuestro equipo de soporte está disponible 24/7 para ayudarte."
+      }
+    },
+    "backLink": "Volver a iniciar sesión"
+  },
+
+
   "admin": {
     "agenciesList": {
       "list": {

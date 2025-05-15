@@ -1,5 +1,5 @@
 "use client"
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -12,8 +12,39 @@ import Image from "next/image";
 import Link from "next/link";
 import { Eye, EyeOff, Lock, Mail } from "lucide-react";
 import landingAssets from "@/lib/landingAssets";
+import { useTranslation } from "react-i18next";
 
 export default function LoginPage() {
+
+  const [currentLanguage, setCurrentLanguage] = useState('en');
+    const { t, i18n } = useTranslation();  
+    
+    useEffect(() => {
+      // 1. Primero intenta cargar el idioma guardado en localStorage
+      const savedLanguage = localStorage.getItem('unauthenticatedUserLanguage');
+      
+      if (savedLanguage && ['es', 'en', 'pt'].includes(savedLanguage)) {
+        setCurrentLanguage(savedLanguage);
+        return; // Si hay un idioma guardado, no uses el del navegador
+      }
+  
+      // 2. Si no hay idioma guardado, usa el del navegador
+      const browserLanguage = navigator.language || (navigator).userLanguage;
+      const primaryLanguage = browserLanguage.split('-')[0];
+      
+      if (['es', 'en', 'pt'].includes(primaryLanguage)) {
+        setCurrentLanguage(primaryLanguage);
+      }
+    }, []);
+  
+    useEffect(() => {
+      // Actualiza i18n y guarda en localStorage cuando cambia el idioma
+      if (currentLanguage) {
+        i18n.changeLanguage(currentLanguage);
+        localStorage.setItem('unauthenticatedUserLanguage', currentLanguage);
+      }
+    }, [currentLanguage, i18n]);
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -111,15 +142,15 @@ export default function LoginPage() {
                 />
               </div>
             </div>
-            <h1 className="text-center text-2xl font-bold text-gray-800">Bienvenido a Cloudnel</h1>
-            <p className="text-center text-gray-500 mt-2">Accede a tu cuenta para gestionar tus tours</p>
+            <h1 className="text-center text-2xl font-bold text-gray-800">{t("login.title")}</h1>
+            <p className="text-center text-gray-500 mt-2">{t("login.subtitle")}</p>
           </CardHeader>
           
           <CardContent className="pb-2">
             <form onSubmit={handleLogin} className="space-y-5">
               <div className="space-y-2">
                 <label htmlFor="email" className="block text-sm font-medium text-gray-700 pl-1">
-                  Correo electrónico
+                  {t("login.form.email.label")}
                 </label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -130,10 +161,10 @@ export default function LoginPage() {
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    placeholder="Ingresa tu correo"
-                    className={`pl-10 py-6 ${fieldErrors.email 
-                      ? "bg-red-50 border-red-300 focus:ring-red-500 focus:border-red-500" 
-                      : "bg-gray-50 border-gray-200 focus:ring-teal-500 focus:border-teal-500"} 
+                    placeholder={t("login.form.email.placeholder")}
+                    className={`pl-10 py-6 ${fieldErrors.email
+                      ? "bg-red-50 border-red-300 focus:ring-red-500 focus:border-red-500"
+                      : "bg-gray-50 border-gray-200 focus:ring-teal-500 focus:border-teal-500"}
                       rounded-lg`}
                     required
                   />
@@ -148,13 +179,13 @@ export default function LoginPage() {
               <div className="space-y-2">
                 <div className="flex justify-between">
                   <label htmlFor="password" className="block text-sm font-medium text-gray-700 pl-1">
-                    Contraseña
+                    {t("login.form.password.label")}
                   </label>
                   <Link 
                     href="/auth/forgot-password"
                     className="text-sm text-teal-600 hover:text-teal-800 transition-colors"
                   >
-                    ¿Olvidaste?
+                    {t("login.form.password.forgot")}
                   </Link>
                 </div>
                 <div className="relative">
@@ -166,10 +197,10 @@ export default function LoginPage() {
                     type={showPassword ? "text" : "password"}
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    placeholder="Ingresa tu contraseña"
-                    className={`pl-10 py-6 ${fieldErrors.password 
-                      ? "bg-red-50 border-red-300 focus:ring-red-500 focus:border-red-500" 
-                      : "bg-gray-50 border-gray-200 focus:ring-teal-500 focus:border-teal-500"} 
+                    placeholder={t("login.form.password.placeholder")}
+                    className={`pl-10 py-6 ${fieldErrors.password
+                      ? "bg-red-50 border-red-300 focus:ring-red-500 focus:border-red-500"
+                      : "bg-gray-50 border-gray-200 focus:ring-teal-500 focus:border-teal-500"}
                       rounded-lg`}
                     required
                   />
@@ -216,9 +247,9 @@ export default function LoginPage() {
           
           <CardFooter className="pt-2 pb-8 flex flex-col items-center">
             <p className="text-sm text-gray-600 mt-6">
-              ¿No tienes una cuenta? {" "}
+              {t("login.footer.noAccount")} {" "}
               <Link href={`https://wa.me/57${landingAssets.contact}?text=${encodeURIComponent('Saludos! me gustaría crear una cuenta con ustedes')}`} target="_blank" className="text-teal-600 hover:text-teal-800 font-medium transition-colors">
-                Contáctanos
+                {t("login.footer.contact")}
               </Link>
             </p>
           </CardFooter>
@@ -229,9 +260,9 @@ export default function LoginPage() {
       <div className="hidden md:flex md:w-1/2 bg-teal-600 rounded-l-3xl overflow-hidden relative">
         <div className="absolute inset-0 bg-black opacity-30"></div>
         <div className="absolute inset-0 flex flex-col justify-center px-12 text-white">
-          <h2 className="text-4xl font-bold mb-6">Gestiona todas tus reservas en un solo lugar</h2>
-          <p className="text-lg mb-8">Cloudnel te ayuda a simplificar tu negocio y maximizar tus ganancias con nuestra plataforma todo-en-uno para agencias de tours.</p>
-          
+          <h2 className="text-4xl font-bold mb-6">{t("login.sidebar.title")}</h2>
+          <p className="text-lg mb-8">{t("login.sidebar.description")}</p>
+
           <div className="space-y-4">
             <div className="flex items-start">
               <div className="bg-teal-400 p-2 rounded-full mr-4">
@@ -240,8 +271,8 @@ export default function LoginPage() {
                 </svg>
               </div>
               <div>
-                <h3 className="font-semibold text-xl">Gestión centralizada</h3>
-                <p className="text-teal-100">Administra todas tus reservas desde un solo panel.</p>
+                <h3 className="font-semibold text-xl">{t("login.sidebar.feature1.title")}</h3>
+                <p className="text-teal-100">{t("login.sidebar.feature1.description")}</p>
               </div>
             </div>
             
@@ -252,8 +283,8 @@ export default function LoginPage() {
                 </svg>
               </div>
               <div>
-                <h3 className="font-semibold text-xl">Informes detallados</h3>
-                <p className="text-teal-100">Visualiza el rendimiento de tu negocio con analíticas avanzadas.</p>
+                <h3 className="font-semibold text-xl">{t("login.sidebar.feature2.title")}</h3>
+                <p className="text-teal-100">{t("login.sidebar.feature2.description")}</p>
               </div>
             </div>
             
@@ -264,8 +295,8 @@ export default function LoginPage() {
                 </svg>
               </div>
               <div>
-                <h3 className="font-semibold text-xl">Soporte 24/7</h3>
-                <p className="text-teal-100">Nuestro equipo está siempre disponible para ayudarte.</p>
+                <h3 className="font-semibold text-xl">{t("login.sidebar.feature3.title")}</h3>
+                <p className="text-teal-100">{t("login.sidebar.feature3.description")}</p>
               </div>
             </div>
           </div>

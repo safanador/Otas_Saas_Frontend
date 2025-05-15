@@ -2,14 +2,50 @@
 import landingAssets from "@/lib/landingAssets";
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
+import LanguageSelector from "./admin/components/LanguageSelector";
 
 export default function Home() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
+  const [currentLanguage, setCurrentLanguage] = useState('en');
+  const { t, i18n } = useTranslation();  
+  
+  useEffect(() => {
+    // 1. Primero intenta cargar el idioma guardado en localStorage
+    const savedLanguage = localStorage.getItem('unauthenticatedUserLanguage');
+    
+    if (savedLanguage && ['es', 'en', 'pt'].includes(savedLanguage)) {
+      setCurrentLanguage(savedLanguage);
+      return; // Si hay un idioma guardado, no uses el del navegador
+    }
+
+    // 2. Si no hay idioma guardado, usa el del navegador
+    const browserLanguage = navigator.language || (navigator).userLanguage;
+    const primaryLanguage = browserLanguage.split('-')[0];
+    
+    if (['es', 'en', 'pt'].includes(primaryLanguage)) {
+      setCurrentLanguage(primaryLanguage);
+    }
+  }, []);
+
+  useEffect(() => {
+    // Actualiza i18n y guarda en localStorage cuando cambia el idioma
+    if (currentLanguage) {
+      i18n.changeLanguage(currentLanguage);
+      localStorage.setItem('unauthenticatedUserLanguage', currentLanguage);
+    }
+  }, [currentLanguage, i18n]);
+
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
   };
+
+  const handleLanguageChange = (newLanguage) => {
+    setCurrentLanguage(newLanguage);
+  };
+
 
   return (
     <div className="min-h-screen flex flex-col font-sans">
@@ -24,28 +60,33 @@ export default function Home() {
               height={40} 
               className="rounded-md"
             />
-            <span className="text-2xl font-bold text-teal-600">Cloudnel.com</span>
+            <span className="text-2xl font-bold text-teal-600">{t("landing.navbar.logo")}</span>
           </div>
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center gap-8">
-            <a href="#features" className="text-gray-600 hover:text-teal-600 transition-colors">Características</a>
-            <a href="#benefits" className="text-gray-600 hover:text-teal-600 transition-colors">Beneficios</a>
-            <a href="#pricing" className="text-gray-600 hover:text-teal-600 transition-colors">Planes</a>
-            <a href="#testimonials" className="text-gray-600 hover:text-teal-600 transition-colors">Testimonios</a>
+            <a href="#features" className="text-gray-600 hover:text-teal-600 transition-colors">{t("landing.navbar.links.features")}</a>
+            <a href="#benefits" className="text-gray-600 hover:text-teal-600 transition-colors">{t("landing.navbar.links.benefits")}</a>
+            <a href="#pricing" className="text-gray-600 hover:text-teal-600 transition-colors">{t("landing.navbar.links.plans")}</a>
+            <a href="#testimonials" className="text-gray-600 hover:text-teal-600 transition-colors">{t("landing.navbar.links.testimonials")}</a>
           </div>
 
           <div className="hidden md:flex items-center gap-4">
             <Link href="/auth/login">
               <button className="bg-white border border-teal-600 text-teal-600 px-5 py-2 rounded-md hover:bg-teal-50 transition-colors">
-                Iniciar Sesión
+                {t("landing.buttons.login")}
               </button>
             </Link>
             <Link href={`https://wa.me/57${landingAssets.contact}?text=${encodeURIComponent('Saludos! quiero saber más sobre la prueba gratuita')}`} target="_blank">
               <button className="bg-teal-600 text-white px-5 py-2 rounded-md hover:bg-teal-700 transition-colors">
-                Prueba Gratuita
+                {t("landing.buttons.freeTrial")}
               </button>
             </Link>
+            {/* Language Selector */}
+            <LanguageSelector 
+              currentLanguage={currentLanguage} 
+              setCurrentLanguage={handleLanguageChange}
+            />
           </div>
 
           {/* Mobile Menu Button */}
@@ -64,22 +105,27 @@ export default function Home() {
         {isMenuOpen && (
           <div className="md:hidden mt-4 bg-white p-4 rounded-lg shadow-lg">
             <div className="flex flex-col gap-4">
-              <a href="#features" className="text-gray-600 hover:text-teal-600 transition-colors" onClick={toggleMenu}>Características</a>
-              <a href="#benefits" className="text-gray-600 hover:text-teal-600 transition-colors" onClick={toggleMenu}>Beneficios</a>
-              <a href="#pricing" className="text-gray-600 hover:text-teal-600 transition-colors" onClick={toggleMenu}>Planes</a>
-              <a href="#testimonials" className="text-gray-600 hover:text-teal-600 transition-colors" onClick={toggleMenu}>Testimonios</a>
+              <a href="#features" className="text-gray-600 hover:text-teal-600 transition-colors" onClick={toggleMenu}>{t("landing.navbar.links.features")}</a>
+              <a href="#benefits" className="text-gray-600 hover:text-teal-600 transition-colors" onClick={toggleMenu}>{t("landing.navbar.links.benefits")}</a>
+              <a href="#pricing" className="text-gray-600 hover:text-teal-600 transition-colors" onClick={toggleMenu}>{t("landing.navbar.links.plans")}</a>
+              <a href="#testimonials" className="text-gray-600 hover:text-teal-600 transition-colors" onClick={toggleMenu}>{t("landing.navbar.links.testimonials")}</a>
               <hr className="my-2" />
               <div className="flex flex-col gap-2">
                 <Link href="/auth/login" onClick={toggleMenu}>
                   <button className="w-full bg-white border border-teal-600 text-teal-600 px-4 py-2 rounded-md hover:bg-teal-50 transition-colors">
-                    Iniciar Sesión
+                    {t("landing.buttons.login")}
                   </button>
                 </Link>
                 <Link href={`https://wa.me/57${landingAssets.contact}?text=${encodeURIComponent('Saludos! quiero saber más sobre la prueba gratuita')}`} target="_blank"onClick={toggleMenu}>
                   <button className="w-full bg-teal-600 text-white px-4 py-2 rounded-md hover:bg-teal-700 transition-colors">
-                    Prueba Gratuita
+                    {t("landing.buttons.freeTrial")}
                   </button>
                 </Link>
+                {/* Language Selector */}
+                <LanguageSelector 
+                  currentLanguage={currentLanguage} 
+                  setCurrentLanguage={handleLanguageChange}
+                />
               </div>
             </div>
           </div>
@@ -91,15 +137,15 @@ export default function Home() {
         <div className="max-w-7xl mx-auto grid md:grid-cols-2 gap-12 items-center">
           <div className="space-y-6">
             <h1 className="text-4xl md:text-5xl font-bold leading-tight">
-              Todas tus reservas en un solo lugar
+              {t("landing.hero.title")}
             </h1>
             <p className="text-lg md:text-xl opacity-90">
-              Simplifica la gestión de tu agencia de tours con nuestra plataforma integral. Ahorra tiempo, evita errores y aumenta tus ventas.
+              {t("landing.hero.description")}
             </p>
             <div className="flex flex-col sm:flex-row gap-4 pt-4">
               <Link href={`https://wa.me/57${landingAssets.contact}?text=${encodeURIComponent('Saludos! quiero saber más sobre la prueba gratuita')}`} target="_blank">
                 <button className="bg-white text-teal-700 px-6 py-3 rounded-md font-medium hover:bg-gray-100 transition-colors shadow-lg">
-                  Prueba Gratuita por 14 días
+                  {t("landing.buttons.startFreeTrialDays")}
                 </button>
               </Link>
               <a href="#demo-video" className="flex items-center justify-center gap-2 bg-transparent border border-white text-white px-6 py-3 rounded-md font-medium hover:bg-white/10 transition-colors">
@@ -107,13 +153,13 @@ export default function Home() {
                   <circle cx="12" cy="12" r="10"></circle>
                   <polygon points="10 8 16 12 10 16 10 8"></polygon>
                 </svg>
-                Ver Demo
+                {t("landing.buttons.watchDemo")}
               </a>
             </div>
             <div className="flex items-center gap-4 pt-2">
-              <p className="text-sm opacity-90">Sin tarjeta de crédito</p>
+              <p className="text-sm opacity-90">{t("landing.hero.features.noCard")}</p>
               <div className="w-1 h-1 rounded-full bg-white/50"></div>
-              <p className="text-sm opacity-90">Configuración en minutos</p>
+              <p className="text-sm opacity-90">{t("landing.hero.features.quickSetup")}</p>
             </div>
           </div>
           <div className="hidden md:block">
@@ -131,7 +177,7 @@ export default function Home() {
       {/* Trusted By Section */}
       <section className="bg-gray-50 py-10 px-6 md:px-16">
         <div className="max-w-7xl mx-auto text-center">
-          <p className="text-gray-500 font-medium mb-8">CONFÍAN EN NOSOTROS</p>
+          <p className="text-gray-500 font-medium mb-8">{t("landing.trustedBy")}</p>
           <div className="flex flex-wrap justify-center gap-8 md:gap-16 opacity-60">
             <Image src="/api/placeholder/120/40" alt="Logo Cliente 1" width={120} height={40} />
             <Image src="/api/placeholder/120/40" alt="Logo Cliente 2" width={120} height={40} />
@@ -146,9 +192,9 @@ export default function Home() {
       <section id="features" className="py-20 px-6 md:px-16">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold text-gray-800 mb-4">Una solución completa para tu agencia</h2>
+            <h2 className="text-3xl font-bold text-gray-800 mb-4">{t("landing.features.title")}</h2>
             <p className="text-gray-600 max-w-2xl mx-auto">
-              Cloudnel.com centraliza todas tus operaciones en una única plataforma intuitiva, liberándote para enfocarte en lo que realmente importa: crear experiencias inolvidables.
+              {t("landing.features.subtitle")}
             </p>
           </div>
 
@@ -163,9 +209,9 @@ export default function Home() {
                   <line x1="3" y1="10" x2="21" y2="10"></line>
                 </svg>
               </div>
-              <h3 className="text-xl font-semibold text-gray-800 mb-2">Gestión de Reservas Unificada</h3>
+              <h3 className="text-xl font-semibold text-gray-800 mb-2">{t("landing.features.items.item1.title")}</h3>
               <p className="text-gray-600">
-                Centraliza todas tus reservas de diferentes fuentes en un solo calendario intuitivo.
+                {t("landing.features.items.item1.description")}
               </p>
             </div>
 
@@ -179,9 +225,9 @@ export default function Home() {
                   <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
                 </svg>
               </div>
-              <h3 className="text-xl font-semibold text-gray-800 mb-2">Gestión de Clientes</h3>
+              <h3 className="text-xl font-semibold text-gray-800 mb-2">{t("landing.features.items.item2.title")}</h3>
               <p className="text-gray-600">
-                Mantén un registro detallado de tus clientes y sus preferencias para personalizar sus experiencias.
+                {t("landing.features.items.item2.description")}
               </p>
             </div>
 
@@ -193,9 +239,9 @@ export default function Home() {
                   <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
                 </svg>
               </div>
-              <h3 className="text-xl font-semibold text-gray-800 mb-2">Pagos Integrados</h3>
+              <h3 className="text-xl font-semibold text-gray-800 mb-2">{t("landing.features.items.item3.title")}</h3>
               <p className="text-gray-600">
-                Acepta pagos en línea con múltiples métodos y gestiona fácilmente devoluciones y facturas.
+                {t("landing.features.items.item3.description")}
               </p>
             </div>
 
@@ -206,9 +252,9 @@ export default function Home() {
                   <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
                 </svg>
               </div>
-              <h3 className="text-xl font-semibold text-gray-800 mb-2">Reportes Analíticos</h3>
+              <h3 className="text-xl font-semibold text-gray-800 mb-2">{t("landing.features.items.item4.title")}</h3>
               <p className="text-gray-600">
-                Obtén insights valiosos sobre el rendimiento de tus tours y el comportamiento de tus clientes.
+                {t("landing.features.items.item4.description")}
               </p>
             </div>
 
@@ -221,9 +267,9 @@ export default function Home() {
                   <line x1="12" y1="17" x2="12" y2="21"></line>
                 </svg>
               </div>
-              <h3 className="text-xl font-semibold text-gray-800 mb-2">Acceso Móvil</h3>
+              <h3 className="text-xl font-semibold text-gray-800 mb-2">{t("landing.features.items.item5.title")}</h3>
               <p className="text-gray-600">
-                Gestiona tu negocio desde cualquier lugar con nuestra aplicación móvil responsiva.
+                {t("landing.features.items.item5.description")}
               </p>
             </div>
 
@@ -234,9 +280,9 @@ export default function Home() {
                   <path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"></path>
                 </svg>
               </div>
-              <h3 className="text-xl font-semibold text-gray-800 mb-2">Integraciones</h3>
+              <h3 className="text-xl font-semibold text-gray-800 mb-2">{t("landing.features.items.item6.title")}</h3>
               <p className="text-gray-600">
-                Conecta con tus herramientas favoritas: Stripe, PayPal, Mailchimp, y más.
+                {t("landing.features.items.item6.description")}
               </p>
             </div>
           </div>
@@ -247,9 +293,9 @@ export default function Home() {
       <section id="benefits" className="py-20 px-6 md:px-16 bg-gray-50">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold text-gray-800 mb-4">¿Por qué elegir Cloudnel.com?</h2>
+            <h2 className="text-3xl font-bold text-gray-800 mb-4">{t("landing.benefits.title")}</h2>
             <p className="text-gray-600 max-w-2xl mx-auto">
-              Nuestra plataforma está diseñada específicamente para resolver los desafíos diarios de las agencias de tours.
+              {t("landing.benefits.description")}
             </p>
           </div>
 
@@ -272,9 +318,9 @@ export default function Home() {
                   </svg>
                 </div>
                 <div>
-                  <h3 className="text-xl font-semibold text-gray-800 mb-1">Ahorra hasta 15 horas semanales</h3>
+                  <h3 className="text-xl font-semibold text-gray-800 mb-1">{t("landing.benefits.items.item1.title")}</h3>
                   <p className="text-gray-600">
-                    Automatiza tareas repetitivas y elimina la necesidad de gestionar múltiples sistemas.
+                    {t("landing.benefits.items.item1.description")}
                   </p>
                 </div>
               </div>
@@ -287,9 +333,9 @@ export default function Home() {
                   </svg>
                 </div>
                 <div>
-                  <h3 className="text-xl font-semibold text-gray-800 mb-1">Reduce errores en un 95%</h3>
+                  <h3 className="text-xl font-semibold text-gray-800 mb-1">                    {t("landing.benefits.items.item2.title")}</h3>
                   <p className="text-gray-600">
-                    Elimina reservas duplicadas y errores humanos con nuestro sistema de verificación automática.
+                    {t("landing.benefits.items.item2.description")}
                   </p>
                 </div>
               </div>
@@ -302,9 +348,9 @@ export default function Home() {
                   </svg>
                 </div>
                 <div>
-                  <h3 className="text-xl font-semibold text-gray-800 mb-1">Aumenta tus ventas hasta un 30%</h3>
+                  <h3 className="text-xl font-semibold text-gray-800 mb-1">{t("landing.benefits.items.item3.title")}</h3>
                   <p className="text-gray-600">
-                    Mejora la experiencia del cliente con confirmaciones instantáneas y comunicación fluida.
+                    {t("landing.benefits.items.item3.description")}
                   </p>
                 </div>
               </div>
@@ -317,9 +363,9 @@ export default function Home() {
                   </svg>
                 </div>
                 <div>
-                  <h3 className="text-xl font-semibold text-gray-800 mb-1">Escalabilidad sin preocupaciones</h3>
+                  <h3 className="text-xl font-semibold text-gray-800 mb-1">{t("landing.benefits.items.item4.title")}</h3>
                   <p className="text-gray-600">
-                    Crece tu negocio sin limitaciones tecnológicas. Nuestra plataforma se adapta a ti.
+                    {t("landing.benefits.items.item4.description")}
                   </p>
                 </div>
               </div>
@@ -331,9 +377,9 @@ export default function Home() {
       {/* Demo Video Section */}
       <section id="demo-video" className="py-20 px-6 md:px-16">
         <div className="max-w-5xl mx-auto text-center">
-          <h2 className="text-3xl font-bold text-gray-800 mb-4">Ve Cloudnel.com en acción</h2>
+          <h2 className="text-3xl font-bold text-gray-800 mb-4">{t("landing.demo.title")}</h2>
           <p className="text-gray-600 max-w-2xl mx-auto mb-10">
-            Observa cómo nuestra plataforma simplifica cada aspecto de la gestión de tu agencia de tours.
+            {t("landing.demo.description")}
           </p>
           <div className="relative bg-gray-900 rounded-xl overflow-hidden shadow-2xl aspect-video max-w-4xl mx-auto">
             <div className="absolute inset-0 flex items-center justify-center">
@@ -358,9 +404,9 @@ export default function Home() {
       <section id="pricing" className="py-20 px-6 md:px-16 bg-gray-50">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold text-gray-800 mb-4">Planes adaptados a tu negocio</h2>
+            <h2 className="text-3xl font-bold text-gray-800 mb-4">{t("landing.pricing.title")}</h2>
             <p className="text-gray-600 max-w-2xl mx-auto">
-              Ofrecemos planes flexibles que crecen contigo. Sin contratos largos, sin complicaciones.
+              {t("landing.pricing.subtitle")}
             </p>
           </div>
 
@@ -368,45 +414,45 @@ export default function Home() {
             {/* Plan 1 */}
             <div className="bg-white rounded-lg shadow-md border border-gray-100 overflow-hidden hover:shadow-lg transition-shadow">
               <div className="p-6">
-                <h3 className="text-xl font-semibold text-gray-800">Inicio</h3>
+                <h3 className="text-xl font-semibold text-gray-800">{t("landing.pricing.plans.item1.name")}</h3>
                 <div className="mt-4 mb-6">
-                  <span className="text-4xl font-bold text-gray-800">$49</span>
-                  <span className="text-gray-600">/mes</span>
+                  <span className="text-4xl font-bold text-gray-800">{t("landing.pricing.plans.item1.price")}</span>
+                  <span className="text-gray-600">{t("landing.pricing.monthly")}</span>
                 </div>
                 <p className="text-gray-600 mb-6">
-                  Perfecto para agencias pequeñas que están comenzando.
+                  {t("landing.pricing.plans.item1.description")}
                 </p>
                 <ul className="space-y-3 mb-8">
                   <li className="flex items-center gap-2">
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-teal-600">
                       <polyline points="20 6 9 17 4 12"></polyline>
                     </svg>
-                    <span className="text-gray-700">Hasta 100 reservas/mes</span>
+                    <span className="text-gray-700">{t("landing.pricing.plans.item1.first")}</span>
                   </li>
                   <li className="flex items-center gap-2">
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-teal-600">
                       <polyline points="20 6 9 17 4 12"></polyline>
                     </svg>
-                    <span className="text-gray-700">2 usuarios</span>
+                    <span className="text-gray-700">{t("landing.pricing.plans.item1.second")}</span>
                   </li>
                   <li className="flex items-center gap-2">
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-teal-600">
                       <polyline points="20 6 9 17 4 12"></polyline>
                     </svg>
-                    <span className="text-gray-700">Integraciones básicas</span>
+                    <span className="text-gray-700">{t("landing.pricing.plans.item1.third")}</span>
                   </li>
                   <li className="flex items-center gap-2">
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-teal-600">
                       <polyline points="20 6 9 17 4 12"></polyline>
                     </svg>
-                    <span className="text-gray-700">Soporte por email</span>
+                    <span className="text-gray-700">{t("landing.pricing.plans.item1.fourth")}</span>
                   </li>
                 </ul>
               </div>
               <div className="px-6 pb-6">
                 <Link href={`https://wa.me/57${landingAssets.contact}?text=${encodeURIComponent('Saludos! estoy interesado en el plan starter para mi empresa')}`} target="_blank">
                   <button className="w-full bg-white border border-teal-600 text-teal-600 px-4 py-3 rounded-md font-medium hover:bg-teal-50 transition-colors">
-                    Comenzar prueba gratuita
+                    {t("landing.buttons.startFreeTrial")}
                   </button>
                 </Link>
               </div>
@@ -415,54 +461,54 @@ export default function Home() {
             {/* Plan 2 - Featured */}
             <div className="bg-white rounded-lg shadow-xl border-2 border-teal-600 overflow-hidden transform scale-105">
               <div className="bg-teal-600 text-white text-center py-2">
-                <p className="font-medium">Más popular</p>
+                <p className="font-medium">{t("landing.pricing.popular")}</p>
               </div>
               <div className="p-6">
-                <h3 className="text-xl font-semibold text-gray-800">Profesional</h3>
+                <h3 className="text-xl font-semibold text-gray-800">{t("landing.pricing.plans.item2.name")}</h3>
                 <div className="mt-4 mb-6">
-                  <span className="text-4xl font-bold text-gray-800">$99</span>
-                  <span className="text-gray-600">/mes</span>
+                  <span className="text-4xl font-bold text-gray-800">{t("landing.pricing.plans.item2.price")}</span>
+                  <span className="text-gray-600">{t("landing.pricing.monthly")}</span>
                 </div>
                 <p className="text-gray-600 mb-6">
-                  Ideal para agencias en crecimiento con múltiples destinos.
+                  {t("landing.pricing.plans.item2.description")}
                 </p>
                 <ul className="space-y-3 mb-8">
                   <li className="flex items-center gap-2">
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-teal-600">
                       <polyline points="20 6 9 17 4 12"></polyline>
                     </svg>
-                    <span className="text-gray-700">Reservas ilimitadas</span>
+                    <span className="text-gray-700">{t("landing.pricing.plans.item2.first")}</span>
                   </li>
                   <li className="flex items-center gap-2">
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-teal-600">
                       <polyline points="20 6 9 17 4 12"></polyline>
                     </svg>
-                    <span className="text-gray-700">5 usuarios</span>
+                    <span className="text-gray-700">{t("landing.pricing.plans.item2.second")}</span>
                   </li>
                   <li className="flex items-center gap-2">
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-teal-600">
                       <polyline points="20 6 9 17 4 12"></polyline>
                     </svg>
-                    <span className="text-gray-700">Todas las integraciones</span>
+                    <span className="text-gray-700">{t("landing.pricing.plans.item2.third")}</span>
                   </li>
                   <li className="flex items-center gap-2">
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-teal-600">
                       <polyline points="20 6 9 17 4 12"></polyline>
                     </svg>
-                    <span className="text-gray-700">Soporte prioritario</span>
+                    <span className="text-gray-700">{t("landing.pricing.plans.item2.fourth")}</span>
                   </li>
                   <li className="flex items-center gap-2">
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-teal-600">
                       <polyline points="20 6 9 17 4 12"></polyline>
                     </svg>
-                    <span className="text-gray-700">Reportes avanzados</span>
+                    <span className="text-gray-700">{t("landing.pricing.plans.item2.fifth")}</span>
                   </li>
                 </ul>
               </div>
               <div className="px-6 pb-6">
                 <Link href={`https://wa.me/57${landingAssets.contact}?text=${encodeURIComponent('Saludos! estoy interesado en el plan profesional para mi empresa')}`} target="_blank">
                   <button className="w-full bg-teal-600 text-white px-4 py-3 rounded-md font-medium hover:bg-teal-700 transition-colors">
-                    Comenzar prueba gratuita
+                    {t("landing.buttons.startFreeTrial")}
                   </button>
                 </Link>
               </div>
@@ -471,51 +517,51 @@ export default function Home() {
             {/* Plan 3 */}
             <div className="bg-white rounded-lg shadow-md border border-gray-100 overflow-hidden hover:shadow-lg transition-shadow">
               <div className="p-6">
-                <h3 className="text-xl font-semibold text-gray-800">Empresarial</h3>
+                <h3 className="text-xl font-semibold text-gray-800">{t("landing.pricing.plans.item3.name")}</h3>
                 <div className="mt-4 mb-6">
-                  <span className="text-4xl font-bold text-gray-800">$199</span>
-                  <span className="text-gray-600">/mes</span>
+                  <span className="text-4xl font-bold text-gray-800">{t("landing.pricing.plans.item3.price")}</span>
+                  <span className="text-gray-600">{t("landing.pricing.monthly")}</span>
                 </div>
                 <p className="text-gray-600 mb-6">
-                  Para agencias grandes con múltiples destinos y equipos.
+                  {t("landing.pricing.plans.item3.description")}
                 </p>
                 <ul className="space-y-3 mb-8">
                   <li className="flex items-center gap-2">
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-teal-600">
                       <polyline points="20 6 9 17 4 12"></polyline>
                     </svg>
-                    <span className="text-gray-700">Reservas ilimitadas</span>
+                    <span className="text-gray-700">{t("landing.pricing.plans.item3.first")}</span>
                   </li>
                   <li className="flex items-center gap-2">
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-teal-600">
                       <polyline points="20 6 9 17 4 12"></polyline>
                     </svg>
-                    <span className="text-gray-700">Usuarios ilimitados</span>
+                    <span className="text-gray-700">{t("landing.pricing.plans.item3.second")}</span>
                   </li>
                   <li className="flex items-center gap-2">
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-teal-600">
                       <polyline points="20 6 9 17 4 12"></polyline>
                     </svg>
-                    <span className="text-gray-700">API personalizada</span>
+                    <span className="text-gray-700">{t("landing.pricing.plans.item3.third")}</span>
                   </li>
                   <li className="flex items-center gap-2">
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-teal-600">
                       <polyline points="20 6 9 17 4 12"></polyline>
                     </svg>
-                    <span className="text-gray-700">Soporte 24/7</span>
+                    <span className="text-gray-700">{t("landing.pricing.plans.item3.fourth")}</span>
                   </li>
                   <li className="flex items-center gap-2">
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-teal-600">
                       <polyline points="20 6 9 17 4 12"></polyline>
                     </svg>
-                    <span className="text-gray-700">Marca personalizada</span>
+                    <span className="text-gray-700">{t("landing.pricing.plans.item3.fifth")}</span>
                   </li>
                 </ul>
               </div>
               <div className="px-6 pb-6">
                 <Link href={`https://wa.me/57${landingAssets.contact}?text=${encodeURIComponent('Saludos! estoy interesado en el plan enterprise para mi empresa')}`} target="_blank">
                   <button className="w-full bg-white border border-teal-600 text-teal-600 px-4 py-3 rounded-md font-medium hover:bg-teal-50 transition-colors">
-                    Comenzar prueba gratuita
+                    {t("landing.buttons.startFreeTrial")}
                   </button>
                 </Link>
               </div>
@@ -528,9 +574,9 @@ export default function Home() {
       <section id="testimonials" className="py-20 px-6 md:px-16">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold text-gray-800 mb-4">Lo que dicen nuestros clientes</h2>
+            <h2 className="text-3xl font-bold text-gray-800 mb-4">{t("landing.testimonials.title")}</h2>
             <p className="text-gray-600 max-w-2xl mx-auto">
-              Agencias de tours de todo el mundo confían en Cloudnel.com para simplificar sus operaciones.
+              {t("landing.testimonials.subtitle")}
             </p>
           </div>
 
@@ -546,12 +592,12 @@ export default function Home() {
                   className="rounded-full"
                 />
                 <div>
-                  <h4 className="font-semibold text-gray-800">Carlos Ramírez</h4>
-                  <p className="text-gray-600 text-sm">Adventure Tours, México</p>
+                  <h4 className="font-semibold text-gray-800">{t("landing.testimonials.items1.name")}</h4>
+                  <p className="text-gray-600 text-sm">{t("landing.testimonials.items1.company")}</p>
                 </div>
               </div>
               <p className="text-gray-700 italic">
-                "Desde que implementamos Cloudnel.com, redujimos los errores de reserva en un 98%. Nuestros guías tienen toda la información en tiempo real y nuestros clientes están más satisfechos que nunca."
+                {t("landing.testimonials.items1.quote")}
               </p>
               <div className="flex text-yellow-400 mt-4">
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -583,12 +629,12 @@ export default function Home() {
                   className="rounded-full"
                 />
                 <div>
-                  <h4 className="font-semibold text-gray-800">Luisa García</h4>
-                  <p className="text-gray-600 text-sm">Barcelona City Tours, España</p>
+                  <h4 className="font-semibold text-gray-800">{t("landing.testimonials.items2.name")}</h4>
+                  <p className="text-gray-600 text-sm">{t("landing.testimonials.items2.company")}</p>
                 </div>
               </div>
               <p className="text-gray-700 italic">
-                "Cloudnel.com cambió completamente nuestra forma de operar. Ahora procesamos el doble de reservas con la mitad del personal administrativo. La integración con nuestro sitio web fue sorprendentemente fácil."
+                {t("landing.testimonials.items2.quote")}
               </p>
               <div className="flex text-yellow-400 mt-4">
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -620,12 +666,12 @@ export default function Home() {
                   className="rounded-full"
                 />
                 <div>
-                  <h4 className="font-semibold text-gray-800">John Miller</h4>
-                  <p className="text-gray-600 text-sm">NYC Guided Tours, EE.UU.</p>
+                  <h4 className="font-semibold text-gray-800">{t("landing.testimonials.items3.name")}</h4>
+                  <p className="text-gray-600 text-sm">{t("landing.testimonials.items3.company")}</p>
                 </div>
               </div>
               <p className="text-gray-700 italic">
-                "Después de probar tres plataformas diferentes, Cloudnel.com es la única que realmente entendió nuestras necesidades. Los reportes analíticos nos han ayudado a optimizar nuestros tours más populares."
+                {t("landing.testimonials.items3.quote")}
               </p>
               <div className="flex text-yellow-400 mt-4">
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -653,50 +699,50 @@ export default function Home() {
       <section className="py-20 px-6 md:px-16 bg-gray-50">
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold text-gray-800 mb-4">Preguntas frecuentes</h2>
+            <h2 className="text-3xl font-bold text-gray-800 mb-4">{t("landing.faq.title")}</h2>
             <p className="text-gray-600 max-w-2xl mx-auto">
-              Respuestas a las preguntas más comunes sobre Cloudnel.com.
+              {t("landing.faq.description")}
             </p>
           </div>
 
           <div className="space-y-6">
             {/* FAQ Item 1 */}
             <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
-              <h3 className="text-xl font-semibold text-gray-800 mb-2">¿Cuánto tiempo toma implementar Cloudnel.com?</h3>
+              <h3 className="text-xl font-semibold text-gray-800 mb-2">{t("landing.faq.item1.question")}</h3>
               <p className="text-gray-600">
-                La mayoría de nuestros clientes están operando completamente en Cloudnel.com en menos de una semana. Nuestro equipo de soporte te guiará en cada paso del proceso de migración de datos y configuración.
+                {t("landing.faq.item1.answer")}
               </p>
             </div>
 
             {/* FAQ Item 2 */}
             <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
-              <h3 className="text-xl font-semibold text-gray-800 mb-2">¿Puedo integrar Cloudnel.com con mi sistema actual?</h3>
+              <h3 className="text-xl font-semibold text-gray-800 mb-2">{t("landing.faq.item2.question")}</h3>
               <p className="text-gray-600">
-                Sí, Cloudnel.com ofrece API robustas y conectores prediseñados para integrarse con la mayoría de los sistemas de reservas, sitios web, CRMs y plataformas de pago populares.
+                {t("landing.faq.item2.answer")}
               </p>
             </div>
 
             {/* FAQ Item 3 */}
             <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
-              <h3 className="text-xl font-semibold text-gray-800 mb-2">¿Qué pasa si necesito ayuda o soporte?</h3>
+              <h3 className="text-xl font-semibold text-gray-800 mb-2">{t("landing.faq.item3.question")}</h3>
               <p className="text-gray-600">
-                Todos los planes incluyen soporte por email. Los planes Profesional y Empresarial incluyen soporte prioritario y acceso a nuestro equipo de éxito del cliente. Además, ofrecemos una extensa biblioteca de recursos y webinars.
+                {t("landing.faq.item3.answer")}
               </p>
             </div>
 
             {/* FAQ Item 4 */}
             <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
-              <h3 className="text-xl font-semibold text-gray-800 mb-2">¿Puedo cancelar mi suscripción en cualquier momento?</h3>
+              <h3 className="text-xl font-semibold text-gray-800 mb-2">{t("landing.faq.item4.question")}</h3>
               <p className="text-gray-600">
-                Absolutamente. No hay contratos a largo plazo. Puedes cancelar tu suscripción en cualquier momento sin penalizaciones. Siempre puedes exportar tus datos si decides dejar Cloudnel.com.
+                {t("landing.faq.item4.answer")}
               </p>
             </div>
 
             {/* FAQ Item 5 */}
             <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
-              <h3 className="text-xl font-semibold text-gray-800 mb-2">¿Es seguro Cloudnel.com para mis datos y pagos?</h3>
+              <h3 className="text-xl font-semibold text-gray-800 mb-2">{t("landing.faq.item5.question")}</h3>
               <p className="text-gray-600">
-                La seguridad es nuestra prioridad. Cloudnel.com cumple con los estándares PCI DSS para procesamiento de pagos y GDPR para protección de datos. Todas las comunicaciones están encriptadas y realizamos auditorías de seguridad regularmente.
+                {t("landing.faq.item5.answer")}
               </p>
             </div>
           </div>
@@ -706,22 +752,22 @@ export default function Home() {
       {/* CTA Section */}
       <section className="bg-gradient-to-br from-teal-600 to-teal-800 text-white py-20 px-6 md:px-16">
         <div className="max-w-5xl mx-auto text-center">
-          <h2 className="text-3xl md:text-4xl font-bold mb-6">Transforma la gestión de tu agencia de tours hoy</h2>
+          <h2 className="text-3xl md:text-4xl font-bold mb-6">{t("landing.cta.title")}</h2>
           <p className="text-xl opacity-90 mb-10 max-w-3xl mx-auto">
-            Únete a cientos de agencias de tours que ya están aprovechando el poder de Cloudnel.com para simplificar sus operaciones.
+            {t("landing.cta.description")}
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link href={`https://wa.me/573002730186?text=${encodeURIComponent('Saludos! quiero iniciar mi prueba gratuita')}`} target="_blank">
               <button className="bg-white text-teal-700 px-8 py-4 rounded-md font-medium hover:bg-gray-100 transition-colors shadow-lg text-lg">
-                Comienza tu prueba gratuita
+                {t("landing.buttons.startFreeTrial")}
               </button>
             </Link>
             <a href="#demo-video" className="flex items-center justify-center gap-2 bg-transparent border border-white text-white px-8 py-4 rounded-md font-medium hover:bg-white/10 transition-colors text-lg">
-              Ver demostración
+              {t("landing.buttons.watchDemo")}
             </a>
           </div>
           <p className="mt-6 text-sm opacity-80">
-            No se requiere tarjeta de crédito. 14 días de prueba gratis.
+            {t("landing.noCardRequired")}
           </p>
         </div>
       </section>
@@ -738,10 +784,10 @@ export default function Home() {
                   height={40} 
                   className="rounded-md"
                 />
-                <span className="text-2xl font-bold text-teal-400">Cloudnel.com</span>
+                <span className="text-2xl font-bold text-teal-400">{t("landing.navbar.logo")}</span>
               </div>
               <p className="text-gray-400 mb-6">
-                La plataforma todo-en-uno para agencias de tours. Simplifica tu negocio, maximiza tus ganancias.
+                {t("landing.footer.description")}
               </p>
               <div className="flex gap-4">
                 <a href="#" className="text-gray-400 hover:text-teal-400 transition-colors">
@@ -772,35 +818,35 @@ export default function Home() {
             </div>
 
             <div>
-              <h4 className="text-lg font-semibold mb-4">Enlaces Rápidos</h4>
+              <h4 className="text-lg font-semibold mb-4">{t("landing.footer.quickLinks")}</h4>
               <ul className="space-y-2">
-                <li><a href="#features" className="text-gray-400 hover:text-teal-400 transition-colors">Características</a></li>
-                <li><a href="#benefits" className="text-gray-400 hover:text-teal-400 transition-colors">Beneficios</a></li>
-                <li><a href="#pricing" className="text-gray-400 hover:text-teal-400 transition-colors">Planes y Precios</a></li>
-                <li><a href="#testimonials" className="text-gray-400 hover:text-teal-400 transition-colors">Testimonios</a></li>
-                <li><a href="#" className="text-gray-400 hover:text-teal-400 transition-colors">Blog</a></li>
+                <li><a href="#features" className="text-gray-400 hover:text-teal-400 transition-colors">{t("landing.footer.features")}</a></li>
+                <li><a href="#benefits" className="text-gray-400 hover:text-teal-400 transition-colors">{t("landing.footer.benefits")}</a></li>
+                <li><a href="#pricing" className="text-gray-400 hover:text-teal-400 transition-colors">{t("landing.footer.pricing")}</a></li>
+                <li><a href="#testimonials" className="text-gray-400 hover:text-teal-400 transition-colors">{t("landing.footer.testimonials")}</a></li>
+                <li><a href="#" className="text-gray-400 hover:text-teal-400 transition-colors">{t("landing.footer.blog")}</a></li>
               </ul>
             </div>
 
             <div>
-              <h4 className="text-lg font-semibold mb-4">Legal</h4>
+              <h4 className="text-lg font-semibold mb-4">{t("landing.footer.legal")}</h4>
               <ul className="space-y-2">
-                <li><a href="#" className="text-gray-400 hover:text-teal-400 transition-colors">Términos de Servicio</a></li>
-                <li><a href="#" className="text-gray-400 hover:text-teal-400 transition-colors">Política de Privacidad</a></li>
-                <li><a href="#" className="text-gray-400 hover:text-teal-400 transition-colors">Cookies</a></li>
-                <li><a href="#" className="text-gray-400 hover:text-teal-400 transition-colors">GDPR</a></li>
+                <li><a href="#" className="text-gray-400 hover:text-teal-400 transition-colors">{t("landing.footer.terms")}</a></li>
+                <li><a href="#" className="text-gray-400 hover:text-teal-400 transition-colors">{t("landing.footer.privacy")}</a></li>
+                <li><a href="#" className="text-gray-400 hover:text-teal-400 transition-colors">{t("landing.footer.cookies")}</a></li>
+                <li><a href="#" className="text-gray-400 hover:text-teal-400 transition-colors">{t("landing.footer.gdpr")}</a></li>
               </ul>
             </div>
 
             <div>
-              <h4 className="text-lg font-semibold mb-4">Contacto</h4>
+              <h4 className="text-lg font-semibold mb-4">{t("landing.footer.contact")}</h4>
               <ul className="space-y-2">
                 <li className="flex items-center gap-2 text-gray-400">
                   <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
                     <circle cx="12" cy="10" r="3"></circle>
                   </svg>
-                  <span>Av. Insurgentes 123, CDMX</span>
+                  <span>{t("landing.footer.address")}</span>
                 </li>
                 <li className="flex items-center gap-2 text-gray-400">
                   <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -813,7 +859,7 @@ export default function Home() {
                     <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
                     <polyline points="22,6 12,13 2,6"></polyline>
                   </svg>
-                  <span>contacto@Cloudnel.com.com</span>
+                  <span>{t("landing.footer.email")}</span>
                 </li>
               </ul>
               <div className="mt-6">
@@ -823,14 +869,14 @@ export default function Home() {
                     <polyline points="10 17 15 12 10 7"></polyline>
                     <line x1="15" y1="12" x2="3" y2="12"></line>
                   </svg>
-                  Iniciar Sesión
+                  {t("landing.buttons.login")}
                 </a>
               </div>
             </div>
           </div>
           
           <div className="border-t border-gray-800 mt-12 pt-8 text-center text-gray-500">
-            <p>&copy; {new Date().getFullYear()} Cloudnel.com. Todos los derechos reservados.</p>
+            <p>&copy; {new Date().getFullYear()} {t("landing.footer.copyright")}</p>
           </div>
         </div>
       </footer>

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -11,8 +11,39 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { ArrowLeft, Eye, EyeOff, Lock } from 'lucide-react';
 import landingAssets from '@/lib/landingAssets';
+import { useTranslation } from 'react-i18next';
 
 export default function ResetPasswordPage() {
+
+    const [currentLanguage, setCurrentLanguage] = useState('en');
+        const { t, i18n } = useTranslation();  
+        
+        useEffect(() => {
+          // 1. Primero intenta cargar el idioma guardado en localStorage
+          const savedLanguage = localStorage.getItem('unauthenticatedUserLanguage');
+          
+          if (savedLanguage && ['es', 'en', 'pt'].includes(savedLanguage)) {
+            setCurrentLanguage(savedLanguage);
+            return; // Si hay un idioma guardado, no uses el del navegador
+          }
+      
+          // 2. Si no hay idioma guardado, usa el del navegador
+          const browserLanguage = navigator.language || (navigator).userLanguage;
+          const primaryLanguage = browserLanguage.split('-')[0];
+          
+          if (['es', 'en', 'pt'].includes(primaryLanguage)) {
+            setCurrentLanguage(primaryLanguage);
+          }
+        }, []);
+      
+        useEffect(() => {
+          // Actualiza i18n y guarda en localStorage cuando cambia el idioma
+          if (currentLanguage) {
+            i18n.changeLanguage(currentLanguage);
+            localStorage.setItem('unauthenticatedUserLanguage', currentLanguage);
+          }
+        }, [currentLanguage, i18n]);
+
   const searchParams = useSearchParams();
   const token = searchParams.get('token');
   const router = useRouter();
@@ -93,8 +124,8 @@ export default function ResetPasswordPage() {
                 />
               </div>
             </div>
-            <h1 className="text-center text-2xl font-bold text-gray-800">Enlace inválido</h1>
-            <p className="text-center text-gray-500 mt-2">El enlace para restablecer la contraseña no es válido o ha expirado</p>
+            <h1 className="text-center text-2xl font-bold text-gray-800">{t("resetPassword.invalidToken.title")}</h1>
+            <p className="text-center text-gray-500 mt-2">{t("resetPassword.invalidToken.message")}</p>
           </CardHeader>
           
           <CardContent className="pb-2">
@@ -102,7 +133,7 @@ export default function ResetPasswordPage() {
               <svg className="w-4 h-4 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
                 <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd"></path>
               </svg>
-              <span>Se requiere un token válido para restablecer la contraseña</span>
+              <span>{t("resetPassword.invalidToken.error")}</span>
             </div>
             
             <div className="mt-6">
@@ -110,7 +141,7 @@ export default function ResetPasswordPage() {
                 onClick={() => router.push('/auth/forgot-password')}  
                 className="w-full py-6 bg-gradient-to-r from-teal-500 to-teal-600 hover:from-teal-600 hover:to-teal-700 text-white rounded-lg font-medium shadow-md hover:shadow-lg transition-all duration-300"
               >
-                Solicitar nuevo enlace
+                {t("resetPassword.invalidToken.newLink")}
               </Button>
             </div>
           </CardContent>
@@ -119,7 +150,7 @@ export default function ResetPasswordPage() {
             <p className="text-sm text-gray-600 mt-6">
               <Link href="/auth/login" className="text-teal-600 hover:text-teal-800 font-medium transition-colors flex items-center">
                 <ArrowLeft size={16} className="mr-1" />
-                Volver a iniciar sesión
+                {t("resetPassword.invalidToken.backToLogin")}
               </Link>
             </p>
           </CardFooter>
@@ -147,8 +178,8 @@ export default function ResetPasswordPage() {
                 />
               </div>
             </div>
-            <h1 className="text-center text-2xl font-bold text-gray-800">Restablecer contraseña</h1>
-            <p className="text-center text-gray-500 mt-2">Crea una nueva contraseña segura para tu cuenta</p>
+            <h1 className="text-center text-2xl font-bold text-gray-800">{t("resetPassword.form.title")}</h1>
+            <p className="text-center text-gray-500 mt-2">{t("resetPassword.form.subtitle")}</p>
           </CardHeader>
           
           <CardContent className="pb-2">
@@ -158,21 +189,21 @@ export default function ResetPasswordPage() {
                   <svg className="w-5 h-5 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
                     <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd"></path>
                   </svg>
-                  <span>¡Tu contraseña ha sido restablecida con éxito!</span>
+                  <span>{t("resetPassword.success.message")}</span>
                 </div>
                 <Button 
                   onClick={() => router.push('/auth/login')}  
                   className="w-full py-6 bg-gradient-to-r from-teal-500 to-teal-600 hover:from-teal-600 hover:to-teal-700 text-white rounded-lg font-medium shadow-md hover:shadow-lg transition-all duration-300 flex items-center justify-center"
                 >
                   <ArrowLeft size={18} className="mr-2" />
-                  Ir a iniciar sesión
+                  {t("resetPassword.success.goToLogin")}
                 </Button>
               </div>
             ) : (
               <form onSubmit={handleSubmit} className="space-y-5">
                 <div className="space-y-2">
                   <label htmlFor="newPassword" className="block text-sm font-medium text-gray-700 pl-1">
-                    Nueva contraseña
+                    {t("resetPassword.form.newPassword.label")}
                   </label>
                   <div className="relative">
                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -183,7 +214,7 @@ export default function ResetPasswordPage() {
                       type={showPassword ? "text" : "password"}
                       value={newPassword}
                       onChange={(e) => setNewPassword(e.target.value)}
-                      placeholder="Escribe tu nueva contraseña"
+                      placeholder={t("resetPassword.form.newPassword.placeholder")}
                       className={`pl-10 py-6 ${fieldErrors.newPassword 
                         ? "bg-red-50 border-red-300 focus:ring-red-500 focus:border-red-500" 
                         : "bg-gray-50 border-gray-200 focus:ring-teal-500 focus:border-teal-500"} 
@@ -210,7 +241,7 @@ export default function ResetPasswordPage() {
                 
                 <div className="space-y-2">
                   <label htmlFor="confirm-password" className="block text-sm font-medium text-gray-700 pl-1">
-                    Confirmar contraseña
+                    {t("resetPassword.form.confirmPassword.label")}
                   </label>
                   <div className="relative">
                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -221,7 +252,7 @@ export default function ResetPasswordPage() {
                       type={showConfirmPassword ? "text" : "password"}
                       value={confirmPassword}
                       onChange={(e) => setConfirmPassword(e.target.value)}
-                      placeholder="Confirma tu nueva contraseña"
+                      placeholder={t("resetPassword.form.confirmPassword.placeholder")}
                       className={`pl-10 py-6 ${fieldErrors.confirmPassword 
                         ? "bg-red-50 border-red-300 focus:ring-red-500 focus:border-red-500" 
                         : "bg-gray-50 border-gray-200 focus:ring-teal-500 focus:border-teal-500"} 
@@ -263,9 +294,9 @@ export default function ResetPasswordPage() {
                   {loading ? (
                     <div className="flex items-center justify-center">
                       <span className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></span>
-                      <span>Procesando...</span>
+                      <span>{t("resetPassword.form.loading")}</span>
                     </div>
-                  ) : "Restablecer contraseña"}
+                  ) : t("resetPassword.form.submit")}
                 </Button>
               </form>
             )}
@@ -275,7 +306,7 @@ export default function ResetPasswordPage() {
             <p className="text-sm text-gray-600 mt-6">
               <Link href="/auth/login" className="text-teal-600 hover:text-teal-800 font-medium transition-colors flex items-center">
                 <ArrowLeft size={16} className="mr-1" />
-                Volver a iniciar sesión
+                {t("resetPassword.backLink")}
               </Link>
             </p>
           </CardFooter>
@@ -286,8 +317,8 @@ export default function ResetPasswordPage() {
       <div className="hidden md:flex md:w-1/2 bg-teal-600 rounded-l-3xl overflow-hidden relative">
         <div className="absolute inset-0 bg-black opacity-30"></div>
         <div className="absolute inset-0 flex flex-col justify-center px-12 text-white">
-          <h2 className="text-4xl font-bold mb-6">Casi has terminado</h2>
-          <p className="text-lg mb-8">Crea una contraseña segura para mantener protegida tu cuenta en Cloudnel y continuar gestionando tus tours de manera eficiente.</p>
+          <h2 className="text-4xl font-bold mb-6">{t("resetPassword.sidebar.title")}</h2>
+          <p className="text-lg mb-8">{t("resetPassword.sidebar.description")}</p>
           
           <div className="space-y-4">
             <div className="flex items-start">
@@ -297,8 +328,8 @@ export default function ResetPasswordPage() {
                 </svg>
               </div>
               <div>
-                <h3 className="font-semibold text-xl">Contraseña segura</h3>
-                <p className="text-teal-100">Utiliza al menos 8 caracteres, incluyendo números y símbolos.</p>
+                <h3 className="font-semibold text-xl">{t("resetPassword.sidebar.feature1.title")}</h3>
+                <p className="text-teal-100">{t("resetPassword.sidebar.feature1.description")}</p>
               </div>
             </div>
             
@@ -309,8 +340,8 @@ export default function ResetPasswordPage() {
                 </svg>
               </div>
               <div>
-                <h3 className="font-semibold text-xl">Protección de datos</h3>
-                <p className="text-teal-100">Tus datos personales y de negocio están protegidos con nosotros.</p>
+                <h3 className="font-semibold text-xl">{t("resetPassword.sidebar.feature2.title")}</h3>
+                <p className="text-teal-100">{t("resetPassword.sidebar.feature2.description")}</p>
               </div>
             </div>
             
@@ -321,8 +352,8 @@ export default function ResetPasswordPage() {
                 </svg>
               </div>
               <div>
-                <h3 className="font-semibold text-xl">¿Necesitas más ayuda?</h3>
-                <p className="text-teal-100">Nuestro equipo de soporte está disponible 24/7 para asistirte.</p>
+                <h3 className="font-semibold text-xl">{t("resetPassword.sidebar.feature3.title")}</h3>
+                <p className="text-teal-100">{t("resetPassword.sidebar.feature3.description")}</p>
               </div>
             </div>
           </div>
