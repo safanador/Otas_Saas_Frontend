@@ -114,7 +114,7 @@ export default function LoginPage() {
       if (response.user.role.scope === 'global') {
         router.push('/admin/dashboard');
       } else if (response.user.role.scope === 'agency') {
-        router.push('/ota/dashboard');
+        router.push(`/agency/dashboard/${response.user.role.agency.id}`);
       }
     } catch (err) {
       console.error("Error during login api call: ", err);

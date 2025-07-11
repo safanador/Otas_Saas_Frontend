@@ -4,7 +4,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import LanguageSelector from "./admin/components/LanguageSelector";
 
 export default function Home() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -82,11 +81,6 @@ export default function Home() {
                 {t("landing.buttons.freeTrial")}
               </button>
             </Link>
-            {/* Language Selector */}
-            <LanguageSelector 
-              currentLanguage={currentLanguage} 
-              setCurrentLanguage={handleLanguageChange}
-            />
           </div>
 
           {/* Mobile Menu Button */}
@@ -121,11 +115,6 @@ export default function Home() {
                     {t("landing.buttons.freeTrial")}
                   </button>
                 </Link>
-                {/* Language Selector */}
-                <LanguageSelector 
-                  currentLanguage={currentLanguage} 
-                  setCurrentLanguage={handleLanguageChange}
-                />
               </div>
             </div>
           </div>
