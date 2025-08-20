@@ -1,3 +1,4 @@
+"use client"
 import { Bell, AlertTriangle, CheckCircle, Mail } from "lucide-react";
 import Layout from "../../components/layout/layout";
 import withAuth from "@/app/middleware/withAuth";
