@@ -1,5 +1,4 @@
 "use client";
-
 import { useState } from "react";
 import {
   ChevronLeft,
@@ -12,6 +11,7 @@ import {
 } from "lucide-react";
 import Layout from "@/app/agency/components/layout/layout";
 import permissions from "@/lib/permissions";
+import withAuth from "@/app/middleware/withAuth";
 
 const BookingCalendar = ()=>  {
   const [currentDate, setCurrentDate] = useState(new Date());
