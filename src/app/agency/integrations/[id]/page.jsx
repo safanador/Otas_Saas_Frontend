@@ -17,6 +17,8 @@ import {
   Database,
 } from "lucide-react";
 import Layout from "../../components/layout/layout";
+import withAuth from "@/app/middleware/withAuth";
+import permissions from "@/lib/permissions";
 
 const DirectChannelIntegration = () => {
   const [activeTab, setActiveTab] = useState("overview");
@@ -583,4 +585,4 @@ fetch('${apiEndpoint}', {
   );
 };
 
-export default DirectChannelIntegration;
+export default withAuth( DirectChannelIntegration,'');

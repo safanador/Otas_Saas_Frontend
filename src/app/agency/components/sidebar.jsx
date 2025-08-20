@@ -26,6 +26,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { fetchData } from '@/services/api';
 import endpoints from '@/lib/endpoints';
 import { clearUser } from '@/app/GlobalRedux/Features/auth/authSlice';
+import Image from 'next/image';
 
 const menuItems = [
   {
@@ -39,7 +40,6 @@ const menuItems = [
     subItems: [
       { name: 'Lista de Tours', href: '/agency/tours/list' },
       { name: 'Crear Tour', href: '/agency/tours/create' },
-      { name: 'Categorías', href: '/agency/tours/categories' },//pending
     ],
   },
   {
@@ -278,12 +278,14 @@ export default function Sidebar() {
       {/* User Profile */}
       <div className="border-t border-gray-700 p-4">
         <div className="flex items-center space-x-3">
-          <div className="w-8 h-8 bg-gray-600 rounded-full flex items-center justify-center">
+          <div className="h-8 w-8 rounded-full overflow-hidden">
             { user && user.image ? (
-                <img
+                <Image
                   src={user.image}
                   alt="Logo"
-                  className="w-8 h-8 rounded-full"
+                  className="w-full h-full object-cover"
+                  width={32}
+                  height={32}
                 />
               ) : (
                 <Users className="w-4 h-4 text-gray-300" />

@@ -16,8 +16,10 @@ import {
 } from "lucide-react";
 import Layout from "@/app/agency/components/layout/layout";
 import { useRouter } from "next/navigation";
+import withAuth from "@/app/middleware/withAuth";
+import permissions from "@/lib/permissions";
 
-export default function ListadoReservas() {
+const BookingList = () => {
   const router = useRouter();
   const [filters, setFilters] = useState({
     fechaInicio: "",
@@ -571,3 +573,4 @@ export default function ListadoReservas() {
     </Layout>
   );
 }
+export default withAuth( BookingList, '');

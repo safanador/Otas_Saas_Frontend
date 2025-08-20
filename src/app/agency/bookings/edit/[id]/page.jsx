@@ -25,8 +25,10 @@ import {
   Shield,
 } from "lucide-react";
 import Layout from "@/app/agency/components/layout/layout";
+import withAuth from "@/app/middleware/withAuth";
+import permissions from "@/lib/permissions";
 
-export default function BookingEdit() {
+const BookingEdit = () => {
   const [currentStep, setCurrentStep] = useState(1);
   const [selectedTour, setSelectedTour] = useState(null);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -1185,3 +1187,5 @@ export default function BookingEdit() {
     </Layout>
   );
 }
+
+export default withAuth( BookingEdit,'');

@@ -12,6 +12,8 @@ import {
   CheckCircle
 } from 'lucide-react';
 import Layout from '../../components/layout/layout';
+import withAuth from '@/app/middleware/withAuth';
+import permissions from '@/lib/permissions';
 
 function KPICard({ title, value, change, changeType = 'neutral', icon: Icon }) {
    const changeColors = {
@@ -179,4 +181,4 @@ const DashboardPage = () => {
   );
 }
 
-export default DashboardPage;
+export default withAuth( DashboardPage,'' );

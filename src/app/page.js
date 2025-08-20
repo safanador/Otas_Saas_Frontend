@@ -12,15 +12,6 @@ export default function Home() {
   const { t, i18n } = useTranslation();  
   
   useEffect(() => {
-    // 1. Primero intenta cargar el idioma guardado en localStorage
-    const savedLanguage = localStorage.getItem('unauthenticatedUserLanguage');
-    
-    if (savedLanguage && ['es', 'en', 'pt'].includes(savedLanguage)) {
-      setCurrentLanguage(savedLanguage);
-      return; // Si hay un idioma guardado, no uses el del navegador
-    }
-
-    // 2. Si no hay idioma guardado, usa el del navegador
     const browserLanguage = navigator.language || (navigator).userLanguage;
     const primaryLanguage = browserLanguage.split('-')[0];
     
@@ -33,7 +24,6 @@ export default function Home() {
     // Actualiza i18n y guarda en localStorage cuando cambia el idioma
     if (currentLanguage) {
       i18n.changeLanguage(currentLanguage);
-      localStorage.setItem('unauthenticatedUserLanguage', currentLanguage);
     }
   }, [currentLanguage, i18n]);
 
@@ -67,7 +57,7 @@ export default function Home() {
             <a href="#features" className="text-gray-600 hover:text-teal-600 transition-colors">{t("landing.navbar.links.features")}</a>
             <a href="#benefits" className="text-gray-600 hover:text-teal-600 transition-colors">{t("landing.navbar.links.benefits")}</a>
             <a href="#pricing" className="text-gray-600 hover:text-teal-600 transition-colors">{t("landing.navbar.links.plans")}</a>
-            <a href="#testimonials" className="text-gray-600 hover:text-teal-600 transition-colors">{t("landing.navbar.links.testimonials")}</a>
+            {/*<a href="#testimonials" className="text-gray-600 hover:text-teal-600 transition-colors">{t("landing.navbar.links.testimonials")}</a> */}
           </div>
 
           <div className="hidden md:flex items-center gap-4">
@@ -102,7 +92,7 @@ export default function Home() {
               <a href="#features" className="text-gray-600 hover:text-teal-600 transition-colors" onClick={toggleMenu}>{t("landing.navbar.links.features")}</a>
               <a href="#benefits" className="text-gray-600 hover:text-teal-600 transition-colors" onClick={toggleMenu}>{t("landing.navbar.links.benefits")}</a>
               <a href="#pricing" className="text-gray-600 hover:text-teal-600 transition-colors" onClick={toggleMenu}>{t("landing.navbar.links.plans")}</a>
-              <a href="#testimonials" className="text-gray-600 hover:text-teal-600 transition-colors" onClick={toggleMenu}>{t("landing.navbar.links.testimonials")}</a>
+              {/* <a href="#testimonials" className="text-gray-600 hover:text-teal-600 transition-colors" onClick={toggleMenu}>{t("landing.navbar.links.testimonials")}</a>*/}
               <hr className="my-2" />
               <div className="flex flex-col gap-2">
                 <Link href="/auth/login" onClick={toggleMenu}>
@@ -137,13 +127,13 @@ export default function Home() {
                   {t("landing.buttons.startFreeTrialDays")}
                 </button>
               </Link>
-              <a href="#demo-video" className="flex items-center justify-center gap-2 bg-transparent border border-white text-white px-6 py-3 rounded-md font-medium hover:bg-white/10 transition-colors">
+              {/* <a href="#demo-video" className="flex items-center justify-center gap-2 bg-transparent border border-white text-white px-6 py-3 rounded-md font-medium hover:bg-white/10 transition-colors">
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <circle cx="12" cy="12" r="10"></circle>
                   <polygon points="10 8 16 12 10 16 10 8"></polygon>
                 </svg>
                 {t("landing.buttons.watchDemo")}
-              </a>
+              </a>*/}
             </div>
             <div className="flex items-center gap-4 pt-2">
               <p className="text-sm opacity-90">{t("landing.hero.features.noCard")}</p>
@@ -153,7 +143,7 @@ export default function Home() {
           </div>
           <div className="hidden md:block">
             <Image
-              src="/api/placeholder/600/400" 
+              src="https://res.cloudinary.com/djqpy9gf0/image/upload/v1755654466/ilnur-kalimullin-ao7E5wZ77ds-unsplash_2_phcqb9.jpg" 
               alt="Plataforma Cloudnel.com en acción"
               width={600}
               height={400}
@@ -163,7 +153,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Trusted By Section */}
+      {/* Trusted By Section 
       <section className="bg-gray-50 py-10 px-6 md:px-16">
         <div className="max-w-7xl mx-auto text-center">
           <p className="text-gray-500 font-medium mb-8">{t("landing.trustedBy")}</p>
@@ -175,7 +165,7 @@ export default function Home() {
             <Image src="/api/placeholder/120/40" alt="Logo Cliente 5" width={120} height={40} />
           </div>
         </div>
-      </section>
+      </section>*/}
 
       {/* Features Section */}
       <section id="features" className="py-20 px-6 md:px-16">
@@ -291,7 +281,7 @@ export default function Home() {
           <div className="grid md:grid-cols-2 gap-12 items-center">
             <div>
               <Image 
-                src="/api/placeholder/500/400" 
+                src="https://res.cloudinary.com/djqpy9gf0/image/upload/v1755647649/natures-path-to-calm-0410-5714010_lj0py3.jpg" 
                 alt="Dashboard de Cloudnel.com" 
                 width={500} 
                 height={400}
@@ -300,7 +290,7 @@ export default function Home() {
             </div>
             <div className="space-y-8">
               {/* Benefit 1 */}
-              <div className="flex gap-4">
+              <div className="flex gap-4 items-start">
                 <div className="flex-shrink-0 bg-teal-100 p-3 rounded-full">
                   <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-teal-600">
                     <polyline points="20 6 9 17 4 12"></polyline>
@@ -315,7 +305,7 @@ export default function Home() {
               </div>
 
               {/* Benefit 2 */}
-              <div className="flex gap-4">
+              <div className="flex gap-4 items-start">
                 <div className="flex-shrink-0 bg-teal-100 p-3 rounded-full">
                   <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-teal-600">
                     <polyline points="20 6 9 17 4 12"></polyline>
@@ -330,7 +320,7 @@ export default function Home() {
               </div>
 
               {/* Benefit 3 */}
-              <div className="flex gap-4">
+              <div className="flex gap-4 items-start">
                 <div className="flex-shrink-0 bg-teal-100 p-3 rounded-full">
                   <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-teal-600">
                     <polyline points="20 6 9 17 4 12"></polyline>
@@ -345,7 +335,7 @@ export default function Home() {
               </div>
 
               {/* Benefit 4 */}
-              <div className="flex gap-4">
+              <div className="flex gap-4 items-start">
                 <div className="flex-shrink-0 bg-teal-100 p-3 rounded-full">
                   <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-teal-600">
                     <polyline points="20 6 9 17 4 12"></polyline>
@@ -359,32 +349,6 @@ export default function Home() {
                 </div>
               </div>
             </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Demo Video Section */}
-      <section id="demo-video" className="py-20 px-6 md:px-16">
-        <div className="max-w-5xl mx-auto text-center">
-          <h2 className="text-3xl font-bold text-gray-800 mb-4">{t("landing.demo.title")}</h2>
-          <p className="text-gray-600 max-w-2xl mx-auto mb-10">
-            {t("landing.demo.description")}
-          </p>
-          <div className="relative bg-gray-900 rounded-xl overflow-hidden shadow-2xl aspect-video max-w-4xl mx-auto">
-            <div className="absolute inset-0 flex items-center justify-center">
-              <button className="bg-white/20 hover:bg-white/30 p-4 rounded-full backdrop-blur transition-colors">
-                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-white">
-                  <polygon points="5 3 19 12 5 21 5 3"></polygon>
-                </svg>
-              </button>
-            </div>
-            <Image
-              src="/api/placeholder/960/540"
-              alt="Video demo de Cloudnel.com"
-              width={960}
-              height={540}
-              className="opacity-70"
-            />
           </div>
         </div>
       </section>
@@ -559,7 +523,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Testimonials Section */}
+      {/* Testimonials Section 
       <section id="testimonials" className="py-20 px-6 md:px-16">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
@@ -570,7 +534,6 @@ export default function Home() {
           </div>
 
           <div className="grid md:grid-cols-3 gap-8">
-            {/* Testimonial 1 */}
             <div className="bg-white p-6 rounded-lg shadow-md border border-gray-100 hover:shadow-lg transition-shadow">
               <div className="flex items-center gap-4 mb-6">
                 <Image 
@@ -607,7 +570,6 @@ export default function Home() {
               </div>
             </div>
 
-            {/* Testimonial 2 */}
             <div className="bg-white p-6 rounded-lg shadow-md border border-gray-100 hover:shadow-lg transition-shadow">
               <div className="flex items-center gap-4 mb-6">
                 <Image 
@@ -644,7 +606,6 @@ export default function Home() {
               </div>
             </div>
 
-            {/* Testimonial 3 */}
             <div className="bg-white p-6 rounded-lg shadow-md border border-gray-100 hover:shadow-lg transition-shadow">
               <div className="flex items-center gap-4 mb-6">
                 <Image 
@@ -682,7 +643,7 @@ export default function Home() {
             </div>
           </div>
         </div>
-      </section>
+      </section>*/}
 
       {/* FAQ Section */}
       <section className="py-20 px-6 md:px-16 bg-gray-50">
@@ -751,9 +712,9 @@ export default function Home() {
                 {t("landing.buttons.startFreeTrial")}
               </button>
             </Link>
-            <a href="#demo-video" className="flex items-center justify-center gap-2 bg-transparent border border-white text-white px-8 py-4 rounded-md font-medium hover:bg-white/10 transition-colors text-lg">
+            {/*<a href="#demo-video" className="flex items-center justify-center gap-2 bg-transparent border border-white text-white px-8 py-4 rounded-md font-medium hover:bg-white/10 transition-colors text-lg">
               {t("landing.buttons.watchDemo")}
-            </a>
+            </a> */}
           </div>
           <p className="mt-6 text-sm opacity-80">
             {t("landing.noCardRequired")}
@@ -812,8 +773,8 @@ export default function Home() {
                 <li><a href="#features" className="text-gray-400 hover:text-teal-400 transition-colors">{t("landing.footer.features")}</a></li>
                 <li><a href="#benefits" className="text-gray-400 hover:text-teal-400 transition-colors">{t("landing.footer.benefits")}</a></li>
                 <li><a href="#pricing" className="text-gray-400 hover:text-teal-400 transition-colors">{t("landing.footer.pricing")}</a></li>
-                <li><a href="#testimonials" className="text-gray-400 hover:text-teal-400 transition-colors">{t("landing.footer.testimonials")}</a></li>
-                <li><a href="#" className="text-gray-400 hover:text-teal-400 transition-colors">{t("landing.footer.blog")}</a></li>
+                {/* <li><a href="#testimonials" className="text-gray-400 hover:text-teal-400 transition-colors">{t("landing.footer.testimonials")}</a></li>*/}
+                {/* <li><a href="#" className="text-gray-400 hover:text-teal-400 transition-colors">{t("landing.footer.blog")}</a></li>*/}
               </ul>
             </div>
 

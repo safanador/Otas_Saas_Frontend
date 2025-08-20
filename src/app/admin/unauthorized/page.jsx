@@ -14,9 +14,10 @@ import {
 import { useSelector } from "react-redux";
 import { useTranslation } from "react-i18next";
 import { useEffect } from "react";
+import withAuth from "@/app/middleware/withAuth";
 
 
-export default function UnauthorizedPage() {
+const UnauthorizedPage = () => {
 
   const { preferredLanguage } = useSelector((state) => state.auth.user);
   const { t, i18n } = useTranslation();    
@@ -28,7 +29,6 @@ export default function UnauthorizedPage() {
   }, [preferredLanguage, i18n]);
 
   return (
-    <AdminLayout>
         <Card>
             <CardHeader>
                 <CardTitle>
@@ -45,6 +45,6 @@ export default function UnauthorizedPage() {
                 
             </CardFooter>
         </Card>
-    </AdminLayout>
 )
 }
+export default withAuth(UnauthorizedPage,);

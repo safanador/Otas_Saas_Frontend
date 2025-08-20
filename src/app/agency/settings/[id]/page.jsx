@@ -18,6 +18,8 @@ import {
   UserCheck,
 } from "lucide-react";
 import Layout from "@/app/agency/components/layout/layout";
+import withAuth from "@/app/middleware/withAuth";
+import permissions from "@/lib/permissions";
 
 const ConfigurationSystem = () => {
   const [activeTab, setActiveTab] = useState("agency");
@@ -1082,4 +1084,4 @@ const ConfigurationSystem = () => {
   );
 };
 
-export default ConfigurationSystem;
+export default withAuth( ConfigurationSystem,'');

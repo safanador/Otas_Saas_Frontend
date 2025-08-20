@@ -24,6 +24,8 @@ import {
   Eye,
 } from "lucide-react";
 import Layout from "@/app/agency/components/layout/layout";
+import withAuth from "@/app/middleware/withAuth";
+import permissions from "@/lib/permissions";
 
 const SalesReport = () => {
   const [dateRange, setDateRange] = useState({
@@ -382,4 +384,4 @@ const SalesReport = () => {
   );
 };
 
-export default SalesReport;
+export default withAuth( SalesReport,'');

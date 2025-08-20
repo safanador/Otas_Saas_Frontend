@@ -24,6 +24,8 @@ import {
   CheckCircle,
 } from "lucide-react";
 import Layout from "@/app/agency/components/layout/layout";
+import withAuth from "@/app/middleware/withAuth";
+import permissions from "@/lib/permissions";
 
 const OccupancyReport = () => {
   const [dateRange, setDateRange] = useState({
@@ -576,4 +578,4 @@ const OccupancyReport = () => {
   );
 };
 
-export default OccupancyReport;
+export default withAuth( OccupancyReport,'');

@@ -16,6 +16,8 @@ import {
   Trash2,
 } from "lucide-react";
 import Layout from "@/app/agency/components/layout/layout";
+import withAuth from "@/app/middleware/withAuth";
+import permissions from "@/lib/permissions";
 
 const EditTourPage = () => {
   const [activeTab, setActiveTab] = useState("basic");
@@ -790,4 +792,4 @@ const EditTourPage = () => {
   );
 };
 
-export default EditTourPage;
+export default withAuth( EditTourPage,'');

@@ -11,8 +11,9 @@ import {
   Clock,
 } from "lucide-react";
 import Layout from "@/app/agency/components/layout/layout";
+import permissions from "@/lib/permissions";
 
-export default function CalendarioReservas() {
+const BookingCalendar = ()=>  {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [view, setView] = useState("monthly"); // monthly, weekly, daily
   const [filters, setFilters] = useState({
@@ -424,3 +425,5 @@ export default function CalendarioReservas() {
     </Layout>
   );
 }
+
+export default withAuth( BookingCalendar,'');

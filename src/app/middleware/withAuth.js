@@ -11,6 +11,9 @@ const withAuth = (WrappedComponent, requiredPermission) => {
     useEffect(() => {
       if (!user) {
         // Si no hay usuario, redirigir a la página de login
+        const currentPath = window.location.pathname + window.location.search;
+        sessionStorage.setItem('redirectAfterLogin', currentPath);
+        
         router.push('/auth/login');
       } else if (requiredPermission && !user.role.permissions.some((permission) => permission.description == requiredPermission)) {
         // Si el usuario no tiene el permiso requerido, redirigir a la página de no autorizado

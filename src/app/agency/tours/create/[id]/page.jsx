@@ -14,6 +14,8 @@ import {
   GripVertical,
 } from "lucide-react";
 import Layout from "@/app/agency/components/layout/layout";
+import withAuth from "@/app/middleware/withAuth";
+import permissions from "@/lib/permissions";
 
 const CreateTourPage = () => {
   const [activeTab, setActiveTab] = useState("basic");
@@ -533,4 +535,4 @@ const CreateTourPage = () => {
   );
 };
 
-export default CreateTourPage;
+export default withAuth( CreateTourPage,'');

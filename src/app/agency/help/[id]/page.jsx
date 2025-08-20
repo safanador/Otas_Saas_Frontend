@@ -2,6 +2,7 @@
 import { HelpCircle, Mail, ChevronDown } from "lucide-react";
 import { useState } from "react";
 import Layout from "@/app/agency/components/layout/layout";
+import withAuth from "@/app/middleware/withAuth";
 
 const faqs = [
   {
@@ -21,7 +22,7 @@ const faqs = [
   },
 ];
 
-export default function HelpCenterPage() {
+const HelpCenterPage = () => {
   const [expandedFaq, setExpandedFaq] = useState(null);
   const toggleFaq = (index) => {
     setExpandedFaq(expandedFaq === index ? null : index);
@@ -117,4 +118,6 @@ export default function HelpCenterPage() {
       </div>
     </Layout>
   );
-}
+};
+
+export default withAuth(HelpCenterPage, '');

@@ -35,6 +35,8 @@ import {
   ShoppingCart,
 } from "lucide-react";
 import Layout from "@/app/agency/components/layout/layout";
+import withAuth from "@/app/middleware/withAuth";
+import permissions from "@/lib/permissions";
 
 const ChannelAnalysisReport = () => {
   const [selectedPeriod, setSelectedPeriod] = useState("30d");
@@ -927,4 +929,4 @@ const ChannelAnalysisReport = () => {
     </Layout>
   );
 };
-export default ChannelAnalysisReport;
+export default withAuth( ChannelAnalysisReport,'');

@@ -21,8 +21,10 @@ import {
   Smartphone,
 } from "lucide-react";
 import Layout from "@/app/agency/components/layout/layout";
+import withAuth from "@/app/middleware/withAuth";
+import permissions from "@/lib/permissions";
 
-export default function DetalleReserva() {
+const BookingDetails = () => {
   const [activeTab, setActiveTab] = useState("informacion");
 
   // Datos de ejemplo de la reserva
@@ -704,3 +706,6 @@ export default function DetalleReserva() {
     </Layout>
   );
 }
+
+export default withAuth( BookingDetails, '');
+

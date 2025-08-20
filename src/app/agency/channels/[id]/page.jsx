@@ -12,6 +12,8 @@ import {
   Clock,
 } from "lucide-react";
 import Layout from "../../components/layout/layout";
+import withAuth from "@/app/middleware/withAuth";
+import permissions from "@/lib/permissions";
 
 const ChannelManager = () => {
   const [channels, setChannels] = useState([
@@ -489,4 +491,5 @@ const ChannelManager = () => {
   );
 };
 
-export default ChannelManager;
+export default withAuth( ChannelManager,'');
+
