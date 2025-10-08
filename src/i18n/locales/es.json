@@ -34,7 +34,7 @@
     }
   },
 
-  "landing":  {
+  "landing": {
     "buttons": {
       "login": "Iniciar Sesión",
       "freeTrial": "Prueba Gratuita",
@@ -49,25 +49,22 @@
     "navbar": {
       "logo": "Cloudnel.com",
       "links": {
-          "features": "Características",
-          "benefits": "Beneficios",
-          "plans": "Planes",
-          "testimonials": "Testimonios"
-        }
+        "features": "Características",
+        "benefits": "Beneficios",
+        "plans": "Planes",
+        "testimonials": "Testimonios"
+      }
     },
     "hero": {
       "title": "Todas tus reservas en un solo lugar",
       "description": "Simplifica la gestión de tu agencia de tours con nuestra plataforma integral. Ahorra tiempo, evita errores y aumenta tus ventas.",
-      "features": [
-        "Sin tarjeta de crédito",
-        "Configuración en minutos"
-      ]
+      "features": ["Sin tarjeta de crédito", "Configuración en minutos"]
     },
     "trustedBy": "CONFÍAN EN NOSOTROS",
     "features": {
       "title": "Una solución completa para tu agencia",
       "subtitle": "Cloudnel.com centraliza todas tus operaciones en una única plataforma intuitiva, liberándote para enfocarte en lo que realmente importa: crear experiencias inolvidables.",
-      
+
       "items": {
         "item1": {
           "title": "Gestión de Reservas Unificada",
@@ -81,15 +78,15 @@
           "title": "Pagos Integrados",
           "description": "Acepta pagos en línea con múltiples métodos y gestiona fácilmente devoluciones y facturas."
         },
-        "item4":{
+        "item4": {
           "title": "Reportes Analíticos",
           "description": "Obtén insights valiosos sobre el rendimiento de tus tours y el comportamiento de tus clientes."
         },
-        "item5":{
+        "item5": {
           "title": "Acceso Móvil",
           "description": "Gestiona tu negocio desde cualquier lugar con nuestra aplicación móvil responsiva."
         },
-        "item6":{
+        "item6": {
           "title": "Integraciones",
           "description": "Conecta con tus herramientas favoritas: Stripe, PayPal, Mailchimp, y más."
         }
@@ -99,19 +96,19 @@
       "title": "¿Por qué elegir Cloudnel.com?",
       "description": "Nuestra plataforma está diseñada específicamente para resolver los desafíos diarios de las agencias de tours.",
       "items": {
-        "item1":{
+        "item1": {
           "title": "Ahorra hasta 15 horas semanales",
           "description": "Automatiza tareas repetitivas y elimina la necesidad de gestionar múltiples sistemas."
         },
-        "item2":{
+        "item2": {
           "title": "Reduce errores en un 95%",
           "description": "Elimina reservas duplicadas y errores humanos con nuestro sistema de verificación automática."
         },
-        "item3":{
+        "item3": {
           "title": "Aumenta tus ventas hasta un 30%",
           "description": "Mejora la experiencia del cliente con confirmaciones instantáneas y comunicación fluida."
         },
-        "item4":{
+        "item4": {
           "title": "Escalabilidad sin preocupaciones",
           "description": "Crece tu negocio sin limitaciones tecnológicas. Nuestra plataforma se adapta a ti."
         }
@@ -127,51 +124,51 @@
       "monthly": "/mes",
       "subtitle": "Ofrecemos planes flexibles que crecen contigo. Sin contratos largos, sin complicaciones.",
       "plans": {
-        "item1":{
+        "item1": {
           "name": "Inicio",
           "price": "$49",
           "description": "Perfecto para agencias pequeñas que están comenzando.",
-          "first":"Hasta 100 reservas/mes",
-          "second":"2 usuarios",
-          "third":"Integraciones básicas",
-          "fourth":"Soporte por email"
+          "first": "Hasta 100 reservas/mes",
+          "second": "2 usuarios",
+          "third": "Integraciones básicas",
+          "fourth": "Soporte por email"
         },
-        "item2":{
+        "item2": {
           "name": "Profesional",
           "price": "$99",
           "description": "Ideal para agencias en crecimiento con múltiples destinos.",
-          "first":"Reservas ilimitadas",
-          "second":"5 usuarios",
-          "third":"Todas las integraciones",
-          "fourth":"Soporte prioritario",
-          "fifth":"Reportes avanzados"
+          "first": "Reservas ilimitadas",
+          "second": "5 usuarios",
+          "third": "Todas las integraciones",
+          "fourth": "Soporte prioritario",
+          "fifth": "Reportes avanzados"
         },
-        "item3":{
+        "item3": {
           "name": "Empresarial",
           "price": "$199",
           "description": "Para agencias grandes con múltiples destinos y equipos.",
-          "first":"Reservas ilimitadas",
-          "second":"Usuarios ilimitados",
-          "third":"API personalizada",
-          "fourth":"Soporte 24/7",
-          "fifth":"Marca personalizada"
+          "first": "Reservas ilimitadas",
+          "second": "Usuarios ilimitados",
+          "third": "API personalizada",
+          "fourth": "Soporte 24/7",
+          "fifth": "Marca personalizada"
         }
       }
     },
     "testimonials": {
       "title": "Lo que dicen nuestros clientes",
       "subtitle": "Agencias de tours de todo el mundo confían en Cloudnel.com para simplificar sus operaciones.",
-      "item1":{
+      "item1": {
         "name": "Carlos Ramírez",
         "company": "Adventure Tours, México",
-        "quote": "Desde que implementamos Cloudnel.com, redujimos los errores de reserva en un 98%."        
+        "quote": "Desde que implementamos Cloudnel.com, redujimos los errores de reserva en un 98%."
       },
-      "item2":{
+      "item2": {
         "name": "Luisa García",
         "company": "Barcelona City Tours, España",
         "quote": "Cloudnel.com cambió completamente nuestra forma de operar."
       },
-      "item3":{
+      "item3": {
         "name": "John Miller",
         "company": "NYC Guided Tours, EE.UU.",
         "quote": "La única plataforma que realmente entendió nuestras necesidades."
@@ -180,23 +177,23 @@
     "faq": {
       "title": "Preguntas frecuentes",
       "subtitle": "Respuestas a las preguntas más comunes sobre Cloudnel.com.",
-      "item1":{
+      "item1": {
         "question": "¿Cuánto tiempo toma la implementación?",
         "answer": "La mayoría de clientes están operativos en menos de una semana."
       },
-      "item2":{
+      "item2": {
         "question": "¿Puedo integrarlo con mi sistema actual?",
         "answer": "Sí, ofrecemos APIs robustas y conectores prediseñados."
       },
-      "item3":{
+      "item3": {
         "question": "¿Qué opciones de soporte hay?",
         "answer": "Todos los planes incluyen soporte por email. Planes superiores incluyen soporte prioritario."
       },
-      "item4":{
+      "item4": {
         "question": "¿Puedo cancelar mi suscripción en cualquier momento?",
         "answer": "Absolutamente. No hay contratos a largo plazo. Puedes cancelar tu suscripción en cualquier momento sin penalizaciones. Siempre puedes exportar tus datos si decides dejar Cloudnel.com."
       },
-      "item5":{
+      "item5": {
         "question": "¿Es seguro Cloudnel.com para mis datos y pagos?",
         "answer": "La seguridad es nuestra prioridad. Cloudnel.com cumple con los estándares PCI DSS para procesamiento de pagos y GDPR para protección de datos. Todas las comunicaciones están encriptadas y realizamos auditorías de seguridad regularmente."
       }
@@ -207,23 +204,23 @@
     },
     "footer": {
       "description": "La plataforma todo-en-uno para agencias de tours. Simplifica tu negocio, maximiza tus ganancias.",
-        "quickLinks": "Enlaces rápidos",
-        "features": "Características", 
-        "benefits": "Beneficios", 
-        "pricing": "Planes y precios", 
-        "plans": "Planes", 
-        "testimonials":"Testimonios",
-        "blog": "Blog",
-        "legal": "Legal",
-        "terms":"Términos", 
-        "privacy": "Privacidad", 
-        "cookies": "Cookies", 
-        "gdpr": "GDPR",
-        "contact": "Contáctanos",
-        "address": "123 Main St, City",
-        "phone": "+1 234 567 890",
-        "email": "contact@cloudnel.com",
-        "copyright": "Cloudnel.com. Todos los derechos reservados."
+      "quickLinks": "Enlaces rápidos",
+      "features": "Características",
+      "benefits": "Beneficios",
+      "pricing": "Planes y precios",
+      "plans": "Planes",
+      "testimonials": "Testimonios",
+      "blog": "Blog",
+      "legal": "Legal",
+      "terms": "Términos",
+      "privacy": "Privacidad",
+      "cookies": "Cookies",
+      "gdpr": "GDPR",
+      "contact": "Contáctanos",
+      "address": "123 Main St, City",
+      "phone": "+1 234 567 890",
+      "email": "contact@cloudnel.com",
+      "copyright": "Cloudnel.com. Todos los derechos reservados."
     }
   },
 
@@ -255,15 +252,15 @@
     "sidebar": {
       "title": "Gestiona todas tus reservas en un solo lugar",
       "description": "Cloudnel te ayuda a simplificar tu negocio y maximizar tus ganancias con nuestra plataforma todo-en-uno para agencias de tours.",
-      "feature1":{
+      "feature1": {
         "title": "Gestión centralizada",
         "description": "Administra todas tus reservas desde un solo panel."
       },
-      "feature2":{
+      "feature2": {
         "title": "Informes detallados",
         "description": "Visualiza el rendimiento de tu negocio con analíticas avanzadas."
       },
-      "feature3":{
+      "feature3": {
         "title": "Soporte 24/7",
         "description": "Nuestro equipo está siempre disponible para ayudarte."
       }
@@ -306,7 +303,6 @@
     },
     "backLink": "Volver a iniciar sesión"
   },
-
 
   "admin": {
     "agenciesList": {
@@ -369,29 +365,29 @@
     },
 
     "agencyEdit": {
-        "title": "Editar agencia",
-        "description": "Ventana para editar una agencia, añade o modifica la información para continuar.",
-        "confirmTitle": "Estás seguro de editar esta agencia?",
-        "confirmDescription": "Una vez la agencia haya sido actualizada, podrás crear roles y modificar roles dentro de ella.",
-        "success": "Agencia actualizada exitosamente.",
-        "imageUploadError": "Hubo un error subiendo la imagen. Por favor intente de nuevo más tarde.",
-        "fields": {
-          "name": "Nombre",
-          "email": "Correo electrónico",
-          "phone": "Teléfono",
-          "alternatePhone": "Teléfono alternativo",
-          "address": "Dirección",
-          "city": "Ciudad",
-          "state": "Departamento",
-          "country": "País",
-          "web": "Sitio web",
-          "status": "Estado",
-          "rnt": "Registro Nacional de Turismo",
-          "logo": "Logo",
-          "phonePlaceholder": "Número de teléfono (10 dígitos)...",
-          "webPlaceholder": "Sitio web...",
-          "rntPlaceholder": "RNT..."
-        }
+      "title": "Editar agencia",
+      "description": "Ventana para editar una agencia, añade o modifica la información para continuar.",
+      "confirmTitle": "Estás seguro de editar esta agencia?",
+      "confirmDescription": "Una vez la agencia haya sido actualizada, podrás crear roles y modificar roles dentro de ella.",
+      "success": "Agencia actualizada exitosamente.",
+      "imageUploadError": "Hubo un error subiendo la imagen. Por favor intente de nuevo más tarde.",
+      "fields": {
+        "name": "Nombre",
+        "email": "Correo electrónico",
+        "phone": "Teléfono",
+        "alternatePhone": "Teléfono alternativo",
+        "address": "Dirección",
+        "city": "Ciudad",
+        "state": "Departamento",
+        "country": "País",
+        "web": "Sitio web",
+        "status": "Estado",
+        "rnt": "Registro Nacional de Turismo",
+        "logo": "Logo",
+        "phonePlaceholder": "Número de teléfono (10 dígitos)...",
+        "webPlaceholder": "Sitio web...",
+        "rntPlaceholder": "RNT..."
+      }
     },
 
     "agencyShow": {
@@ -432,7 +428,6 @@
         "city": "Ciudad",
         "role": "Rol asociado",
         "roleLabel": "Rol, tipo y agencia"
-
       },
       "placeholders": {
         "name": "Ingresa el nombre del usuario...",
@@ -468,7 +463,6 @@
         "city": "Ciudad",
         "role": "Rol asociado",
         "roleLabel": "Rol, tipo y agencia"
-
       },
       "placeholders": {
         "name": "Ingresa el nombre del usuario...",
@@ -484,7 +478,6 @@
         "title": "¿Estás seguro de editar este usuario?",
         "description": "Una vez editado, el usuario va a recibir un correo electronico de confirmación."
       }
-  
     },
 
     "usersList": {
@@ -501,12 +494,12 @@
         "state": "Departamento",
         "country": "País",
         "status": "Status"
-      },     
+      },
       "filters": {
-          "selectAgency": "Selecciona una agencia",
-          "selectLabel": "Agencias",
-          "allAgencies": "Todas"
-        },                 
+        "selectAgency": "Selecciona una agencia",
+        "selectLabel": "Agencias",
+        "allAgencies": "Todas"
+      },
       "actions": {
         "view": "Ver Usuario",
         "edit": "Editar Usuario",
@@ -541,7 +534,6 @@
         "city": "Ciudad",
         "role": "Rol asociado",
         "roleLabel": "Rol, tipo y agencia"
-
       },
       "placeholders": {
         "name": "Ingresa el nombre del usuario...",
@@ -557,7 +549,7 @@
 
     "subscriptionCreate": {
       "title": "Creación de suscripciones",
-      "description":  "Al generar una suscripción, la agencia agregada va poder usar la plataforma y las credenciales de todos sus usuarios asociados.",
+      "description": "Al generar una suscripción, la agencia agregada va poder usar la plataforma y las credenciales de todos sus usuarios asociados.",
       "fields": {
         "agency": "Selecciona una agencia",
         "plan": "Selecciona un plan",
@@ -582,7 +574,7 @@
 
     "subscriptionEdit": {
       "title": "Edición de suscripciones",
-      "description":  "Al editar una suscripción, la agencia agregada va poder usar la plataforma y las credenciales de todos sus usuarios asociados.",
+      "description": "Al editar una suscripción, la agencia agregada va poder usar la plataforma y las credenciales de todos sus usuarios asociados.",
       "fields": {
         "agency": "Selecciona una agencia",
         "plan": "Selecciona un plan",
@@ -640,7 +632,7 @@
 
     "subscriptionShow": {
       "title": "Detalles de la suscripción",
-      "description":  "A continuación disponible toda la información relacionada a la suscripción. La agencia agregada podrá usar la plataforma y las credenciales de todos sus usuarios asociados.",
+      "description": "A continuación disponible toda la información relacionada a la suscripción. La agencia agregada podrá usar la plataforma y las credenciales de todos sus usuarios asociados.",
       "fields": {
         "agency": "Agencia seleccionada",
         "plan": "Plan seleccionado",
@@ -1015,6 +1007,64 @@
       }
     },
 
+    "categoryList": {
+      "title": "Categorías",
+      "description": "A continuación se muestra una lista con aspectos generales de las categorías.",
+      "searchPlaceholder": "Buscar categorías...",
+      "table": {
+        "headers": {
+          "item": "Elemento",
+          "name": "Nombre",
+          "description": "Descripción",
+          "createdAt": "Fecha de Creación",
+          "updatedAt": "Fecha de Actualización",
+          "actions": "Acciones"
+        },
+        "body": {
+          "noCategories": "No se encontraron categorías.",
+          "editCategory": "Editar Categoría",
+          "deleteCategory": "Eliminar Categoría"
+        }
+      },
+      "deleteDialog": {
+        "title": "¿Está seguro de que desea eliminar esta descripción?",
+        "description": "Esta acción no se puede deshacer. Los datos se eliminarán permanentemente de la base de datos."
+      }
+    },
+
+    "categoryCreate": {
+      "title": "Creación de Categoría",
+      "description": "En esta ventana puede crear una categoría para todas las OTAs del sistema",
+      "fields": {
+        "name": "Nombre de la categoría",
+        "description": "Descripción"
+      },
+      "placeholders": {
+        "name": "Nombre...",
+        "description": "Descripción"
+      },
+      "confirmationDialog": {
+        "title": "¿Está seguro de que desea crear esta categoría?"
+      }
+    },
+
+    "categoryEdit": {
+      "title": "Edición de Categoría",
+      "description": "Edite toda la información necesaria relacionada con la categoría a continuación.",
+      "heading": "Categoría",
+      "fields": {
+        "name": "Nombre de la categoría",
+        "description": "Descripción"
+      },
+      "placeholders": {
+        "name": "Nombre...",
+        "description": "Descripción"
+      },
+      "confirmationDialog": {
+        "title": "¿Está seguro de que desea editar esta categoría?"
+      }
+    },
+
     "AccessDenied": {
       "title": "Acceso Denegado",
       "description": "El acceso a esta acción ha sido denegado",
@@ -1098,7 +1148,11 @@
 
       "roleDeleted": "Rol eliminado exitosamente.",
       "roleCreated": "Rol creado exitosamente.",
-      "roleEdited": "Rol editado exitosamente."
+      "roleEdited": "Rol editado exitosamente.",
+
+      "categoryDeleted": "Categoria eliminada exitosamente.",
+      "categoryCreated": "Categoria creada exitosamente.",
+      "categoryEdited": "Categoria editada exitosamente."
     }
   },
 

@@ -18,6 +18,8 @@ import {
 import Layout from "@/app/agency/components/layout/layout";
 import withAuth from "@/app/middleware/withAuth";
 import permissions from "@/lib/permissions";
+import { fetchData } from "@/services/api";
+import endpoints from "@/lib/endpoints";
 
 const EditTourPage = () => {
   const [activeTab, setActiveTab] = useState("basic");
@@ -30,6 +32,7 @@ const EditTourPage = () => {
     duration: { hours: "", minutes: "" },
     meetingPoint: "",
     requirements: "",
+    categoryId: "",
     basePrice: "",
     adultPrice: "",
     childPrice: "",
@@ -41,6 +44,7 @@ const EditTourPage = () => {
   });
 
   const [schedules, setSchedules] = useState([]);
+  const [categories, setCategories] = useState([]);
   const [selectedDate, setSelectedDate] = useState("");
 
   const tabs = [
@@ -63,6 +67,7 @@ const EditTourPage = () => {
         meetingPoint: "Plaza Central, frente a la fuente principal",
         requirements:
           "Calzado cómodo para caminar, protector solar, agua. Nivel de condición física: básico.",
+        categoryId: "2",
         basePrice: "45",
         adultPrice: "45",
         childPrice: "25",
@@ -110,6 +115,22 @@ const EditTourPage = () => {
           booked: 0,
         },
       ]);
+
+      const fetchCategories = async () => {
+        try {
+          const response = await fetchData(endpoints.category_getAll());
+
+          if (response.error) {
+            return console.log(response.error);
+          }
+
+          setCategories(response);
+        } catch (error) {
+          console.error("Error fetching users:", error);
+        }
+      };
+
+      fetchCategories();
 
       setIsLoading(false);
     };
@@ -338,6 +359,38 @@ const EditTourPage = () => {
           value={tourData.requirements}
           onChange={(e) => handleInputChange("requirements", e.target.value)}
         />
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-2">
+          Categoría *
+        </label>
+        <select
+          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-white"
+          value={tourData.categoryId}
+          onChange={(e) => handleInputChange("categoryId", e.target.value)}
+        >
+          <option value="" disabled>
+            Selecciona una categoría
+          </option>
+          {categories.map((category) => (
+            <option key={category.id} value={category.id}>
+              {category.name}
+            </option>
+          ))}
+        </select>
+
+        {/* Mostrar descripción de la categoría seleccionada */}
+        {tourData.categoryId && (
+          <div className="mt-2 p-3 bg-gray-50 rounded-lg">
+            <p className="text-sm text-black">
+              {
+                categories.find((cat) => cat.id == tourData.categoryId)
+                  ?.description
+              }
+            </p>
+          </div>
+        )}
       </div>
     </div>
   );
@@ -792,4 +845,4 @@ const EditTourPage = () => {
   );
 };
 
-export default withAuth( EditTourPage,'');
+export default withAuth(EditTourPage, "");

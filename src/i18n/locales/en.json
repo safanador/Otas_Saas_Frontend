@@ -1068,6 +1068,64 @@
         }
       },
 
+      "categoryList": {
+        "title": "Categories",
+        "description": "Below is a list with general aspects of the categories.",
+        "searchPlaceholder": "Search categories...",
+        "table": {
+          "headers": {
+            "item": "Item",
+            "name": "Name",
+            "description": "Description",
+            "createdAt": "Creation Date",
+            "updatedAt": "Update Date",
+            "actions": "Actions"
+          },
+          "body": {
+            "noCategories": "No categories found.",
+            "editCategory": "Edit Category",
+            "deleteCategory": "Delete Category"
+          }
+        },
+        "deleteDialog": {
+          "title": "Are you sure you want to delete this description?",
+          "description": "This action cannot be undone. This will be permanently deleted from the database."
+        }
+      },
+
+      "categoryCreate": {
+        "title": "Category Creation",
+        "description": "In this window you can create a category, for all otas in the system",
+        "fields": {
+          "name": "Category name",
+          "description": "Description"
+        },
+        "placeholders": {
+          "name": "Name...",
+          "description": "Description"
+        },
+        "confirmationDialog": {
+          "title": "Are you sure you want to create this category?"
+        }
+      },
+
+      "categoryEdit": {
+        "title": "Category Edit",
+        "description": "Edit all necessary information related to the category below.",
+        "heading": "Category",
+        "fields": {
+          "name": "Category name",
+          "description": "Description"
+        },
+        "placeholders": {
+          "name": "Name...",
+          "description": "Description"
+        },
+        "confirmationDialog": {
+          "title": "Are you sure you want to edit this category?"
+        }
+      },
+
       "AccessDenied": {
         "title": "Access Denied",
         "description": "Access to this action has been denied",
@@ -1151,7 +1209,11 @@
 
         "roleDeleted": "Role deleted successfully.",
         "roleCreated": "Role created successfully.",
-        "roleEdited": "Role edited successfully."
+        "roleEdited": "Role edited successfully.",
+
+        "categoryDeleted": "Category deleted successfully.",
+        "categoryCreated": "Category created successfully.",
+        "categoryEdited": "Category edited successfully."
 
       }
     },

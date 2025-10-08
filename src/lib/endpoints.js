@@ -1,5 +1,5 @@
 
-const API_BASE_URL = /*process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000/api/v1'*/'https://api.cloudnel.com/api/v1';
+const API_BASE_URL = /*process.env.NEXT_PUBLIC_API_BASE_URL ||*/ 'http://localhost:3000/api/v1'/*'https://api.cloudnel.com/api/v1'*/;
 
 const endpoints = {
   //Auth
@@ -33,12 +33,31 @@ const endpoints = {
   role_delete: (roleId) => `${API_BASE_URL}/roles/${roleId}`,
 
 
+  // Create Category
+  category_create: () => `${API_BASE_URL}/categories`,
+
+  // Get Category
+  category_getAll: () => `${API_BASE_URL}/categories`,
+
+  // Get One Category
+  category_getOne: (roleId) => `${API_BASE_URL}/categories/${roleId}`,
+
+  // Update Category
+  category_update: (roleId) => `${API_BASE_URL}/categories/${roleId}`,
+
+  // Delete Category
+  category_delete: (roleId) => `${API_BASE_URL}/categories/${roleId}`,
+
+
 
   // Upload Image
   images_upload: () => `${API_BASE_URL}/images/upload`,
 
+  // Image signature
+  images_signature: () => `${API_BASE_URL}/images/signature`,
+
   // Delete Image
-  images_delete: (imageId) => `${API_BASE_URL}/images/${imageId}`,
+  images_delete: () => `${API_BASE_URL}/images/delete`,
 
 
 
@@ -137,6 +156,22 @@ const endpoints = {
   
   // Delete Payment
   payment_delete: (paymentId) => `${API_BASE_URL}/payments/${paymentId}`,
+
+
+
+  // Get All Tickets agency
+  ticket_agency_getAll: () => `${API_BASE_URL}/support`,
+
+  // create ticket agency
+  ticket_agency_create: () => `${API_BASE_URL}/support`,
+
+  ticket_updateResponse: (ticketId) => `${API_BASE_URL}/support/${ticketId}/responses`,
+
+  // Get All Tickets admin
+  ticket_admin_getAll: () => `${API_BASE_URL}/support/admin/all`,
+
+  // Close ticket
+  ticket_admin_close: (ticketId) => `${API_BASE_URL}/support/admin/${ticketId}/status`,
 
 };
 

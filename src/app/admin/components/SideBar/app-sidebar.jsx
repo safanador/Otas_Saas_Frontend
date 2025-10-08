@@ -13,6 +13,7 @@ import {
   Puzzle,
   House,
   Store,
+  HelpCircle,
 } from "lucide-react"
 
 //import { NavMain } from "@/components/nav-main"
@@ -128,6 +129,24 @@ const data = {
       ],
     },
     {
+      title: "Categorias",
+      titleEn: "agency",
+      url: "#",
+      icon: Frame,
+      items: [
+        {
+          title: "Listar",
+          url: "/admin/categories/list",
+          permission: "list agency",
+        },
+        {
+          title: "Crear",
+          url: "/admin/categories/create",
+          permission: "create agency",
+        },
+      ],
+    },
+    {
       title: "Planes",
       titleEn: "plan",
       url: "#",
@@ -179,6 +198,19 @@ const data = {
           url: "/admin/payments/create",
           permission: "create payment",
         },
+      ],
+    },
+    {
+      title: "Ayuda",
+      titleEn: "",
+      url: "#",
+      icon: HelpCircle,
+      items: [
+        {
+          title: "Listar",
+          url: "/admin/help",
+          permission: "",
+        }
       ],
     },
   ],

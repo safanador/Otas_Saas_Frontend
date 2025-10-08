@@ -3,6 +3,10 @@ import { HelpCircle, Mail, ChevronDown } from "lucide-react";
 import { useState } from "react";
 import Layout from "@/app/agency/components/layout/layout";
 import withAuth from "@/app/middleware/withAuth";
+import TicketSystem from "../components/TicketList";
+import { fetchData } from "@/services/api";
+import endpoints from "@/lib/endpoints";
+import { useToast } from "@/hooks/use-toast";
 
 const faqs = [
   {
@@ -23,9 +27,40 @@ const faqs = [
 ];
 
 const HelpCenterPage = () => {
+  const { toast } = useToast();
   const [expandedFaq, setExpandedFaq] = useState(null);
   const toggleFaq = (index) => {
     setExpandedFaq(expandedFaq === index ? null : index);
+  };
+
+  const [formData, setFormData] = useState({
+    subject: "",
+    initialMessage: "",
+  });
+
+  const createTicket = async () => {
+    try {
+      const ticket = await fetchData(endpoints.ticket_agency_create(), {
+        method: "POST",
+        body: JSON.stringify(formData),
+      });
+
+      if (ticket.error) {
+        return console.log(ticket.error);
+      }
+      toast({
+        variant: "success",
+        title: "Ticket creado",
+        description: "Tu ticket ha sido creado con éxito.",
+      });
+    } catch (error) {
+      console.error("Error creating ticket:", error);
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Error al crear el ticket.",
+      });
+    }
   };
 
   return (
@@ -74,7 +109,7 @@ const HelpCenterPage = () => {
                 <Mail className="h-5 w-5 text-blue-500" />
                 Contactar a soporte
               </h2>
-              <form className="space-y-4">
+              <form className="space-y-4" onSubmit={(e) => createTicket()}>
                 <div>
                   <label
                     htmlFor="subject"
@@ -82,15 +117,15 @@ const HelpCenterPage = () => {
                   >
                     Asunto
                   </label>
-                  <select
+                  <input
+                    type="text"
+                    value={formData.subject}
+                    onChange={(e) =>
+                      setFormData({ ...formData, subject: e.target.value })
+                    }
                     id="subject"
-                    className="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm"
-                  >
-                    <option>Problema técnico</option>
-                    <option>Consulta sobre facturación</option>
-                    <option>Integración con canales</option>
-                    <option>Otro</option>
-                  </select>
+                    className="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm p-2"
+                  />
                 </div>
                 <div>
                   <label
@@ -101,8 +136,12 @@ const HelpCenterPage = () => {
                   </label>
                   <textarea
                     id="message"
+                    value={formData.initialMessage}
+                    onChange={(e) =>
+                      setFormData({ ...formData, initialMessage: e.target.value })
+                    }
                     rows={4}
-                    className="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm"
+                    className="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm p-2"
                   ></textarea>
                 </div>
                 <button
@@ -115,9 +154,10 @@ const HelpCenterPage = () => {
             </div>
           </div>
         </div>
+        <TicketSystem />
       </div>
     </Layout>
   );
 };
 
-export default withAuth(HelpCenterPage, '');
+export default withAuth(HelpCenterPage, "");

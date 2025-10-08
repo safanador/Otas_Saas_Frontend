@@ -47,7 +47,7 @@ const menuItems = [
     icon: Globe,
     subItems: [
       { name: 'Configuración de Canales', href: '/agency/channels' },
-      //{ name: 'Configurar Canal', href: '/channels/setup' },
+      { name: 'Integrar tu sistema', href: '/agency/integrations' },
       //{ name: 'Sincronización', href: '/channels/sync' },
     ],
   },
@@ -67,8 +67,8 @@ const menuItems = [
     icon: BarChart3,
     subItems: [
       { name: 'Ventas', href: '/agency/reports/sales' },
-      { name: 'Ocupación', href: '/agency/reports/occupancy' },
-      { name: 'Análisis de Canales', href: '/agency/reports/channels' },
+      //{ name: 'Ocupación', href: '/agency/reports/occupancy' },
+      //{ name: 'Análisis de Canales', href: '/agency/reports/channels' },
     ],
   },
   {
@@ -79,12 +79,12 @@ const menuItems = [
 ];
 
 const supportItems = [
-  {
-    name: 'Notificaciones',
-    href: '/agency/notifications',
-    icon: Bell,
+  //{
+    //name: 'Notificaciones',
+    //href: '/agency/notifications',
+    //icon: Bell,
     //badge: '5',
-  },
+  //},
   {
     name: 'Centro de Ayuda',
     href: '/agency/help',

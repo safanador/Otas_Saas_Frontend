@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   ArrowLeft,
   Save,
@@ -15,7 +15,9 @@ import {
 } from "lucide-react";
 import Layout from "@/app/agency/components/layout/layout";
 import withAuth from "@/app/middleware/withAuth";
-import permissions from "@/lib/permissions";
+import endpoints from "@/lib/endpoints";
+import { fetchData } from "@/services/api";
+import TourImageUploader from "../../components/TourImageUploader";
 
 const CreateTourPage = () => {
   const [activeTab, setActiveTab] = useState("basic");
@@ -25,6 +27,7 @@ const CreateTourPage = () => {
     duration: { hours: "", minutes: "" },
     meetingPoint: "",
     requirements: "",
+    categoryId: "",
     basePrice: "",
     adultPrice: "",
     childPrice: "",
@@ -35,7 +38,26 @@ const CreateTourPage = () => {
   });
 
   const [schedules, setSchedules] = useState([]);
+  const [categories, setCategories] = useState([]);
   const [selectedDate, setSelectedDate] = useState("");
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await fetchData(endpoints.category_getAll());
+
+        if (response.error) {
+          return console.log(response.error);
+        }
+
+        setCategories(response);
+      } catch (error) {
+        console.error("Error fetching users:", error);
+      }
+    };
+
+    fetchCategories();
+  }, []);
 
   const tabs = [
     { id: "basic", label: "Información Básica", icon: MapPin },
@@ -73,33 +95,12 @@ const CreateTourPage = () => {
     setSchedules(schedules.filter((s) => s.id !== id));
   };
 
-  const handleImageUpload = (files) => {
-    const newImages = Array.from(files).map((file) => ({
-      id: Date.now() + Math.random(),
-      file,
-      url: URL.createObjectURL(file),
-      name: file.name,
-    }));
+  function handleUploadImagesComplete(uploadedImages) {
     setTourData((prev) => ({
       ...prev,
-      images: [...prev.images, ...newImages],
+      images: uploadedImages,
     }));
-  };
-
-  const removeImage = (id) => {
-    setTourData((prev) => ({
-      ...prev,
-      images: prev.images.filter((img) => img.id !== id),
-    }));
-  };
-
-  const moveImage = (dragIndex, hoverIndex) => {
-    const draggedImage = tourData.images[dragIndex];
-    const newImages = [...tourData.images];
-    newImages.splice(dragIndex, 1);
-    newImages.splice(hoverIndex, 0, draggedImage);
-    setTourData((prev) => ({ ...prev, images: newImages }));
-  };
+  }
 
   const renderBasicInfo = () => (
     <div className="space-y-6">
@@ -186,6 +187,38 @@ const CreateTourPage = () => {
           value={tourData.requirements}
           onChange={(e) => handleInputChange("requirements", e.target.value)}
         />
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-2">
+          Categoría *
+        </label>
+        <select
+          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-white"
+          value={tourData.categoryId}
+          onChange={(e) => handleInputChange("categoryId", e.target.value)}
+        >
+          <option value="" disabled>
+            Selecciona una categoría
+          </option>
+          {categories.map((category) => (
+            <option key={category.id} value={category.id}>
+              {category.name}
+            </option>
+          ))}
+        </select>
+
+        {/* Mostrar descripción de la categoría seleccionada */}
+        {tourData.categoryId && (
+          <div className="mt-2 p-3 bg-gray-50 rounded-lg">
+            <p className="text-sm text-black">
+              {
+                categories.find((cat) => cat.id == tourData.categoryId)
+                  ?.description
+              }
+            </p>
+          </div>
+        )}
       </div>
     </div>
   );
@@ -384,79 +417,6 @@ const CreateTourPage = () => {
     </div>
   );
 
-  const renderImages = () => (
-    <div className="space-y-6">
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
-          Subir Imágenes
-        </label>
-        <div
-          className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-indigo-400 transition-colors"
-          onDragOver={(e) => e.preventDefault()}
-          onDrop={(e) => {
-            e.preventDefault();
-            handleImageUpload(e.dataTransfer.files);
-          }}
-        >
-          <Upload className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-          <p className="text-gray-600 mb-2">
-            Arrastra y suelta las imágenes aquí
-          </p>
-          <p className="text-sm text-gray-500 mb-4">o</p>
-          <input
-            type="file"
-            multiple
-            accept="image/*"
-            className="hidden"
-            id="image-upload"
-            onChange={(e) => handleImageUpload(e.target.files)}
-          />
-          <label
-            htmlFor="image-upload"
-            className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 cursor-pointer"
-          >
-            Seleccionar Archivos
-          </label>
-        </div>
-      </div>
-
-      {tourData.images.length > 0 && (
-        <div>
-          <h4 className="font-medium text-gray-900 mb-4">Imágenes Subidas</h4>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            {tourData.images.map((image, index) => (
-              <div key={image.id} className="relative group">
-                <div className="aspect-square rounded-lg overflow-hidden bg-gray-100">
-                  <img
-                    src={image.url}
-                    alt={image.name}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-                <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                  <button
-                    onClick={() => removeImage(image.id)}
-                    className="p-1 bg-red-600 text-white rounded-full hover:bg-red-700"
-                  >
-                    <X className="w-4 h-4" />
-                  </button>
-                </div>
-                <div className="absolute top-2 left-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                  <div className="p-1 bg-black bg-opacity-50 text-white rounded cursor-move">
-                    <GripVertical className="w-4 h-4" />
-                  </div>
-                </div>
-                <div className="mt-2 text-xs text-gray-600 truncate">
-                  {image.name}
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-    </div>
-  );
-
   const handleSubmit = () => {
     console.log("Tour data:", tourData);
     console.log("Schedules:", schedules);
@@ -525,7 +485,7 @@ const CreateTourPage = () => {
                 {activeTab === "basic" && renderBasicInfo()}
                 {activeTab === "schedule" && renderSchedule()}
                 {activeTab === "pricing" && renderPricing()}
-                {activeTab === "images" && renderImages()}
+                {activeTab === "images" && <TourImageUploader onUploadComplete={handleUploadImagesComplete} />}
               </div>
             </div>
           </div>
@@ -535,4 +495,4 @@ const CreateTourPage = () => {
   );
 };
 
-export default withAuth( CreateTourPage,'');
+export default withAuth(CreateTourPage, "");
